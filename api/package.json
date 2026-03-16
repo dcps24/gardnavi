@@ -1,7 +1,0 @@
-{
-  "name": "gardnavi-api",
-  "version": "1.0.0",
-  "dependencies": {
-    "mssql": "^9.0.0"
-  }
-}
