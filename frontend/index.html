@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gårdnavi | Finn lokal mat</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green-dark: #1a3022;
+      --green-mid: #2d5a3d;
+      --green-light: #4a8c5c;
+      --cream: #f5f0e8;
+      --warm-white: #faf8f3;
+      --earth: #c8a96e;
+      --earth-light: #e8d5a3;
+      --text-dark: #1a1a14;
+      --text-mid: #3d3d2e;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--warm-white);
+      color: var(--text-dark);
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.2rem 4rem;
+      background: rgba(245,240,232,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(74,140,92,0.15);
+      transition: all 0.3s ease;
+    }
+
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: var(--green-dark);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-logo span { color: var(--earth); }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-mid);
+      font-weight: 500;
+      font-size: 0.95rem;
+      letter-spacing: 0.03em;
+      position: relative;
+      transition: color 0.2s;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -3px; left: 0;
+      width: 0; height: 2px;
+      background: var(--earth);
+      transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover { color: var(--green-dark); }
+    .nav-links a:hover::after { width: 100%; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      padding-top: 5rem;
+      overflow: hidden;
+    }
+
+    .hero-left {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 6rem 4rem 6rem 4rem;
+      background: var(--green-dark);
+      position: relative;
+    }
+
+    .hero-left::before {
+      content: '';
+      position: absolute;
+      top: -100px; right: -60px;
+      width: 300px; height: 300px;
+      background: var(--earth);
+      border-radius: 50%;
+      opacity: 0.08;
+    }
+
+    .hero-tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--earth);
+      font-weight: 500;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.5rem, 4vw, 4rem);
+      font-weight: 900;
+      line-height: 1.1;
+      color: var(--cream);
+      margin-bottom: 1.8rem;
+    }
+
+    .hero-title em {
+      font-style: italic;
+      color: var(--earth);
+    }
+
+    .hero-sub {
+      font-size: 1.05rem;
+      color: rgba(245,240,232,0.7);
+      line-height: 1.7;
+      margin-bottom: 2.5rem;
+      max-width: 420px;
+    }
+
+    .btn-primary {
+      display: inline-block;
+      padding: 1rem 2.2rem;
+      background: var(--earth);
+      color: var(--green-dark);
+      font-weight: 700;
+      font-size: 0.95rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-radius: 2px;
+      transition: all 0.25s ease;
+      align-self: flex-start;
+    }
+
+    .btn-primary:hover {
+      background: var(--earth-light);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(200,169,110,0.3);
+    }
+
+    .hero-right {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-right img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: saturate(0.85) brightness(0.9);
+    }
+
+    .hero-right::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(26,48,34,0.3) 0%, transparent 60%);
+    }
+
+    /* ── ABOUT ── */
+    .about {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 80vh;
+    }
+
+    .about-img {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .about-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .about-content {
+      padding: 6rem 5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: var(--cream);
+    }
+
+    .section-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--earth);
+      font-weight: 600;
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .section-label::before {
+      content: '';
+      display: block;
+      width: 2.5rem;
+      height: 1px;
+      background: var(--earth);
+    }
+
+    .about-content h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 3vw, 2.8rem);
+      font-weight: 700;
+      color: var(--green-dark);
+      margin-bottom: 2rem;
+      line-height: 1.2;
+    }
+
+    .about-content p {
+      color: var(--text-mid);
+      line-height: 1.75;
+      margin-bottom: 2rem;
+      font-size: 1.02rem;
+    }
+
+    .pillars {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .pillar {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .pillar-icon {
+      width: 2.2rem;
+      height: 2.2rem;
+      background: var(--green-dark);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 0.85rem;
+    }
+
+    .pillar-text {
+      font-size: 1rem;
+      line-height: 1.5;
+      color: var(--text-mid);
+    }
+
+    .pillar-text strong {
+      color: var(--green-dark);
+    }
+
+    /* ── FAQ ── */
+    .faq-section {
+      background: var(--green-dark);
+      padding: 7rem 4rem;
+    }
+
+    .faq-inner {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .faq-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .faq-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 3vw, 3rem);
+      color: var(--cream);
+      margin-top: 1rem;
+    }
+
+    .faq-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .faq-card {
+      background: rgba(245,240,232,0.06);
+      border: 1px solid rgba(245,240,232,0.12);
+      border-radius: 4px;
+      padding: 1.8rem;
+      transition: all 0.25s ease;
+      cursor: pointer;
+    }
+
+    .faq-card:hover {
+      background: rgba(200,169,110,0.1);
+      border-color: rgba(200,169,110,0.3);
+      transform: translateY(-2px);
+    }
+
+    .faq-card.open { background: rgba(200,169,110,0.12); border-color: var(--earth); }
+
+    .faq-q {
+      font-weight: 600;
+      color: var(--cream);
+      font-size: 0.98rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 1rem;
+    }
+
+    .faq-toggle {
+      color: var(--earth);
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      transition: transform 0.3s;
+    }
+
+    .faq-card.open .faq-toggle { transform: rotate(45deg); }
+
+    .faq-a {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.3s;
+      color: rgba(245,240,232,0.7);
+      font-size: 0.93rem;
+      line-height: 1.7;
+    }
+
+    .faq-card.open .faq-a {
+      max-height: 300px;
+      padding-top: 1rem;
+    }
+
+    /* ── CTA ── */
+    .cta {
+      background: var(--earth);
+      padding: 6rem 4rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta::before {
+      content: '🌾';
+      position: absolute;
+      font-size: 15rem;
+      opacity: 0.08;
+      top: -2rem;
+      right: -2rem;
+      transform: rotate(-20deg);
+    }
+
+    .cta h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      color: var(--green-dark);
+      max-width: 700px;
+      margin-bottom: 1.5rem;
+      line-height: 1.2;
+    }
+
+    .cta p {
+      color: rgba(26,48,34,0.7);
+      max-width: 500px;
+      margin-bottom: 2.5rem;
+      font-size: 1.05rem;
+      line-height: 1.7;
+    }
+
+    .btn-dark {
+      display: inline-block;
+      padding: 1.1rem 2.5rem;
+      background: var(--green-dark);
+      color: var(--cream);
+      font-weight: 700;
+      font-size: 0.95rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-radius: 2px;
+      transition: all 0.25s ease;
+    }
+
+    .btn-dark:hover {
+      background: var(--green-mid);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(26,48,34,0.3);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--text-dark);
+      padding: 4rem;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+
+    .footer-brand {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: var(--cream);
+    }
+
+    .footer-logo span { color: var(--earth); }
+
+    .footer-tagline {
+      color: rgba(245,240,232,0.55);
+      font-size: 0.92rem;
+      line-height: 1.7;
+      max-width: 300px;
+    }
+
+    .footer-col h4 {
+      color: var(--earth);
+      font-size: 0.75rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-bottom: 1.2rem;
+    }
+
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
+
+    .footer-col ul a {
+      color: rgba(245,240,232,0.65);
+      text-decoration: none;
+      font-size: 0.93rem;
+      transition: color 0.2s;
+    }
+
+    .footer-col ul a:hover { color: var(--cream); }
+
+    .footer-col p {
+      color: rgba(245,240,232,0.65);
+      font-size: 0.93rem;
+      line-height: 1.8;
+    }
+
+    .footer-bottom {
+      background: rgba(0,0,0,0.3);
+      padding: 1.2rem 4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-bottom p {
+      color: rgba(245,240,232,0.35);
+      font-size: 0.82rem;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-left > * { animation: fadeUp 0.8s ease both; }
+    .hero-tag { animation-delay: 0.1s; }
+    .hero-title { animation-delay: 0.25s; }
+    .hero-sub { animation-delay: 0.4s; }
+    .btn-primary { animation-delay: 0.55s; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      nav { padding: 1rem 1.5rem; }
+      .hero, .about { grid-template-columns: 1fr; }
+      .hero-right { height: 50vh; }
+      .about-img { height: 40vh; order: -1; }
+      .about-content { padding: 4rem 2rem; }
+      .faq-grid { grid-template-columns: 1fr; }
+      footer { grid-template-columns: 1fr; gap: 2rem; padding: 3rem 1.5rem; }
+      .footer-bottom { padding: 1rem 1.5rem; flex-direction: column; gap: 0.5rem; text-align: center; }
+      .hero-left { padding: 5rem 2rem 4rem; }
+      .faq-section { padding: 5rem 1.5rem; }
+      .cta { padding: 5rem 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">Gård<span>navi</span></a>
+  <ul class="nav-links">
+    <li><a href="#">Hjem</a></li>
+    <li><a href="#">Gårder</a></li>
+    <li><a href="#">Restauranter</a></li>
+    <li><a href="#">Oppskrifter</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <span class="hero-tag">Lokal mat · Ekte råvarer · Norge</span>
+    <h1 class="hero-title">Finn <em>ekte mat</em> fra ditt nærområde</h1>
+    <p class="hero-sub">Vi kobler norske familier med lokale gårder — slik at du vet nøyaktig hvor maten kommer fra.</p>
+    <a href="#" class="btn-primary">Se gårder nær deg →</a>
+  </div>
+  <div class="hero-right">
+    <img src="https://cdn.prod.website-files.com/6994c2337d18cb8ef4a39450/6998c7791df82f9ac95184ca_foodiesfeed.com_organic-vegetables-in-a-garden.jpg" alt="Ferske grønnsaker fra hagen"/>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="om-oss">
+  <div class="about-img">
+    <img src="https://cdn.prod.website-files.com/6994c2337d18cb8ef4a39450/6998c84236f01aae375e7bb6_Gemini_Generated_Image_gb4qvbgb4qvbgb4q.png" alt="Norsk gård"/>
+  </div>
+  <div class="about-content">
+    <span class="section-label">Om oss</span>
+    <h2>Handelhjelp Gårdnavi</h2>
+    <p>Vi bygger bro mellom gårder og familier ved å gjøre det enkelt for folk i Norge å finne og handle ekte, uprosesserte råvarer av høy kvalitet.</p>
+    <div class="pillars">
+      <div class="pillar">
+        <div class="pillar-icon">🗺️</div>
+        <p class="pillar-text"><strong>Oppdage</strong> lokale gårder i sitt nærområde</p>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon">🌿</div>
+        <p class="pillar-text"><strong>Få tilgang</strong> til ekte, uprosesserte råvarer av høy kvalitet</p>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon">🍽️</div>
+        <p class="pillar-text"><strong>Lage</strong> mer hjemmelaget mat</p>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon">🤝</div>
+        <p class="pillar-text"><strong>Støtte</strong> de hardtarbeidende bøndene i norsk landbruk</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq-section" id="faq">
+  <div class="faq-inner">
+    <div class="faq-header">
+      <span class="section-label" style="justify-content:center; color:var(--earth);">Vanlige spørsmål</span>
+      <h2>Slik fungerer Gårdnavi</h2>
+    </div>
+    <div class="faq-grid">
+
+      <div class="faq-card" onclick="toggleFaq(this)">
+        <div class="faq-q">Hva er Handelhjelp Gårdnavi? <span class="faq-toggle">+</span></div>
+        <div class="faq-a">Vi bygger bro mellom norske gårder og ditt middagsbord. Vi gjør det enkelt å finne ekte, uprosessert mat og støtte lokale bønder som produserer rene råvarer.</div>
+      </div>
+
+      <div class="faq-card" onclick="toggleFaq(this)">
+        <div class="faq-q">Hvem er dette for? <span class="faq-toggle">+</span></div>
+        <div class="faq-a">For alle som vil spise sunnere, unngå ultraprosessert mat, og vite nøyaktig hvor maten kommer fra.</div>
+      </div>
+
+      <div class="faq-card" onclick="toggleFaq(this)">
+        <div class="faq-q">Er det bare gårder her? <span class="faq-toggle">+</span></div>
+        <div class="faq-a">Nei! Du finner også restauranter som bruker lokale råvarer, håndverksbakerier og sunne oppskrifter koblet direkte til råvarene.</div>
+      </div>
+
+      <div class="faq-card" onclick="toggleFaq(this)">
+        <div class="faq-q">Hvordan finner jeg mat i mitt nærområde? <span class="faq-toggle">+</span></div>
+        <div class="faq-a">Bruk kartet vårt! Du kan filtrere på din kommune eller velge kategorier som "Kjøtt", "Grønnsaker" eller "Meieriprodukter".</div>
+      </div>
+
+      <div class="faq-card" onclick="toggleFaq(this)">
+        <div class="faq-q">Hvordan kjøper jeg varene? <span class="faq-toggle">+</span></div>
+        <div class="faq-a">Vi viser vei! På hver profil finner du lenke til gårdens eget utsalg, nettbutikk eller deres lokale REKO-ring.</div>
+      </div>
+
+      <div class="faq-card" onclick="toggleFaq(this)">
+        <div class="faq-q">Hva er en "Bro-oppskrift"? <span class="faq-toggle">+</span></div>
+        <div class="faq-a">Det er oppskrifter koblet direkte til råvarene. Ser du en oppskrift du liker, viser vi deg med ett klikk hvilke gårder i nærheten som har ingrediensene.</div>
+      </div>
+
+      <div class="faq-card" onclick="toggleFaq(this)">
+        <div class="faq-q">Hva koster det å stå på kartet? <span class="faq-toggle">+</span></div>
+        <div class="faq-a">Vår misjon er å hjelpe norsk landbruk. Grunnleggende oppføring på Gårdnavi er gratis.</div>
+      </div>
+
+      <div class="faq-card" onclick="toggleFaq(this)">
+        <div class="faq-q">Kan restauranter også bli med? <span class="faq-toggle">+</span></div>
+        <div class="faq-a">Ja! Hvis din restaurant eller kafé prioriterer norske råvarer og lager mat fra bunnen av, vil vi gjerne ha deg med i oversikten.</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+  <h2>Vil du ha din gård, restaurant eller kafé på kartet?</h2>
+  <p>Det er enkelt å komme i gang. Send oss en melding, så legger vi deg inn i databasen slik at kunder i ditt område finner deg med en gang.</p>
+  <a href="mailto:hello@handelhjelp.com" class="btn-dark">Kontakt Oss</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">
+    <div class="footer-logo">Gård<span>navi</span></div>
+    <p class="footer-tagline">Vår visjon er et Norge hvor ethvert middagsbord er knyttet til en lokal gård — som sikrer en fremtid med god helse, åpenhet og levende lokalsamfunn gjennom ren, uprosessert mat.</p>
+  </div>
+  <div class="footer-col">
+    <h4>Navigasjon</h4>
+    <ul>
+      <li><a href="#">Hjem</a></li>
+      <li><a href="#">Gårder</a></li>
+      <li><a href="#">Restauranter</a></li>
+      <li><a href="#">Oppskrifter</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <h4>Kontakt</h4>
+    <p>
+      <a href="tel:621829017" style="color:rgba(245,240,232,0.65); text-decoration:none;">(62) 1829017</a><br/>
+      <a href="mailto:hello@handelhjelp.com" style="color:rgba(245,240,232,0.65); text-decoration:none;">hello@handelhjelp.com</a><br/>
+      Ulefoss, Norge
+    </p>
+  </div>
+</footer>
+<div class="footer-bottom">
+  <p>© 2025 Handelhjelp. Alle rettigheter forbeholdt.</p>
+  <p>Designet med ❤️ for norsk landbruk</p>
+</div>
+
+<script>
+  function toggleFaq(card) {
+    const isOpen = card.classList.contains('open');
+    document.querySelectorAll('.faq-card').forEach(c => c.classList.remove('open'));
+    if (!isOpen) card.classList.add('open');
+  }
+
+  // Nav shrink on scroll
+  window.addEventListener('scroll', () => {
+    const nav = document.querySelector('nav');
+    nav.style.padding = window.scrollY > 50 ? '0.8rem 4rem' : '1.2rem 4rem';
+  });
+</script>
+</body>
+</html>
