@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="no">
 <head>
@@ -5,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Gårdnavi | Finn lokal mat</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -490,6 +492,134 @@
       font-size: 0.82rem;
     }
 
+    /* ── MAP ── */
+    .map-section {
+      background: var(--warm-white);
+      padding: 6rem 4rem;
+    }
+
+    .map-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .map-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 3vw, 2.8rem);
+      color: var(--green-dark);
+      margin-top: 0.8rem;
+    }
+
+    .map-header p {
+      color: var(--text-mid);
+      margin-top: 0.8rem;
+      font-size: 1rem;
+    }
+
+    .map-filters {
+      display: flex;
+      justify-content: center;
+      gap: 0.8rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      padding: 0.5rem 1.4rem;
+      border: 1.5px solid var(--green-mid);
+      background: transparent;
+      color: var(--green-mid);
+      border-radius: 30px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .filter-btn:hover, .filter-btn.active {
+      background: var(--green-dark);
+      border-color: var(--green-dark);
+      color: var(--cream);
+    }
+
+    #map {
+      height: 550px;
+      border-radius: 8px;
+      border: 1px solid rgba(26,48,34,0.12);
+      z-index: 1;
+    }
+
+    .map-legend {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      margin-top: 1.2rem;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.88rem;
+      color: var(--text-mid);
+    }
+
+    .legend-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .legend-dot.farm { background: #2d5a3d; }
+    .legend-dot.restaurant { background: #c8692e; }
+
+    /* Leaflet popup custom style */
+    .custom-popup h3 {
+      font-family: 'Playfair Display', serif;
+      color: var(--green-dark);
+      font-size: 1rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .custom-popup p {
+      font-size: 0.82rem;
+      color: var(--text-mid);
+      margin: 0.2rem 0;
+    }
+
+    .custom-popup a {
+      color: var(--green-mid);
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .popup-tag {
+      display: inline-block;
+      background: rgba(45,90,61,0.1);
+      color: var(--green-mid);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.15em 0.6em;
+      border-radius: 20px;
+      margin-bottom: 0.4rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .popup-tag.restaurant {
+      background: rgba(200,105,46,0.1);
+      color: #c8692e;
+    }
+
+    @media (max-width: 900px) {
+      .map-section { padding: 4rem 1.5rem; }
+      #map { height: 400px; }
+    }
+
     /* ── ANIMATIONS ── */
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(30px); }
@@ -537,7 +667,7 @@
     <span class="hero-tag">Lokal mat · Ekte råvarer · Norge</span>
     <h1 class="hero-title">Finn <em>ekte mat</em> fra ditt nærområde</h1>
     <p class="hero-sub">Vi kobler norske familier med lokale gårder — slik at du vet nøyaktig hvor maten kommer fra.</p>
-    <a href="#" class="btn-primary">Se gårder nær deg →</a>
+    <a href="#kart" class="btn-primary">Se gårder nær deg →</a>
   </div>
   <div class="hero-right">
     <img src="https://cdn.prod.website-files.com/6994c2337d18cb8ef4a39450/6998c7791df82f9ac95184ca_foodiesfeed.com_organic-vegetables-in-a-garden.jpg" alt="Ferske grønnsaker fra hagen"/>
@@ -571,6 +701,28 @@
         <p class="pillar-text"><strong>Støtte</strong> de hardtarbeidende bøndene i norsk landbruk</p>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- MAP -->
+<section class="map-section" id="kart">
+  <div class="map-header">
+    <span class="section-label" style="justify-content:center;">GårdNavi Kart</span>
+    <h2>Finn lokal mat nær deg</h2>
+    <p>Klikk på en markør for å se info om gården eller restauranten</p>
+  </div>
+
+  <div class="map-filters">
+    <button class="filter-btn active" onclick="filterMap('all', this)">🗺️ Alle</button>
+    <button class="filter-btn" onclick="filterMap('farm', this)">🌾 Gårder</button>
+    <button class="filter-btn" onclick="filterMap('restaurant', this)">🍽️ Restauranter</button>
+  </div>
+
+  <div id="map"></div>
+
+  <div class="map-legend">
+    <div class="legend-item"><div class="legend-dot farm"></div> Gårder</div>
+    <div class="legend-item"><div class="legend-dot restaurant"></div> Restauranter</div>
   </div>
 </section>
 
@@ -631,7 +783,7 @@
 <section class="cta">
   <h2>Vil du ha din gård, restaurant eller kafé på kartet?</h2>
   <p>Det er enkelt å komme i gang. Send oss en melding, så legger vi deg inn i databasen slik at kunder i ditt område finner deg med en gang.</p>
-  <a href="mailto:hello@handelhjelp.com" class="btn-dark">Kontakt Oss</a>
+  <a href="/cdn-cgi/l/email-protection#b6ded3dadad9f6ded7d8d2d3dadedcd3dac698d5d9db" class="btn-dark">Kontakt Oss</a>
 </section>
 
 <!-- FOOTER -->
@@ -653,7 +805,7 @@
     <h4>Kontakt</h4>
     <p>
       <a href="tel:621829017" style="color:rgba(245,240,232,0.65); text-decoration:none;">(62) 1829017</a><br/>
-      <a href="mailto:hello@handelhjelp.com" style="color:rgba(245,240,232,0.65); text-decoration:none;">hello@handelhjelp.com</a><br/>
+      <a href="/cdn-cgi/l/email-protection#1a727f7676755a727b747e7f7672707f766a34797577" style="color:rgba(245,240,232,0.65); text-decoration:none;"><span class="__cf_email__" data-cfemail="1a727f7676755a727b747e7f7672707f766a34797577">[email&#160;protected]</span></a><br/>
       Ulefoss, Norge
     </p>
   </div>
@@ -663,18 +815,131 @@
   <p>Designet med ❤️ for norsk landbruk</p>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
+  // ── FAQ toggle ──
   function toggleFaq(card) {
     const isOpen = card.classList.contains('open');
     document.querySelectorAll('.faq-card').forEach(c => c.classList.remove('open'));
     if (!isOpen) card.classList.add('open');
   }
 
-  // Nav shrink on scroll
+  // ── Nav shrink on scroll ──
   window.addEventListener('scroll', () => {
     const nav = document.querySelector('nav');
     nav.style.padding = window.scrollY > 50 ? '0.8rem 4rem' : '1.2rem 4rem';
   });
+
+  // ── MAP ──
+  const map = L.map('map').setView([59.9, 10.7], 6);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+  }).addTo(map);
+
+  // Custom icons
+  const farmIcon = L.divIcon({
+    className: '',
+    html: `<div style="
+      background:#2d5a3d; color:white; border-radius:50%;
+      width:36px; height:36px; display:flex; align-items:center;
+      justify-content:center; font-size:16px; border:3px solid white;
+      box-shadow:0 2px 8px rgba(0,0,0,0.3);">🌾</div>`,
+    iconSize: [36, 36],
+    iconAnchor: [18, 18],
+    popupAnchor: [0, -20]
+  });
+
+  const restaurantIcon = L.divIcon({
+    className: '',
+    html: `<div style="
+      background:#c8692e; color:white; border-radius:50%;
+      width:36px; height:36px; display:flex; align-items:center;
+      justify-content:center; font-size:16px; border:3px solid white;
+      box-shadow:0 2px 8px rgba(0,0,0,0.3);">🍽️</div>`,
+    iconSize: [36, 36],
+    iconAnchor: [18, 18],
+    popupAnchor: [0, -20]
+  });
+
+  let allMarkers = [];
+  let currentFilter = 'all';
+
+  // Sample data — shown while API loads or as fallback
+  const sampleData = [
+    { type: 'farm', name: 'Telemark Gård', municipality: 'Nome', lat: 59.35, lng: 9.28, description: 'Ferske grønnsaker, egg og honning', website: '#' },
+    { type: 'farm', name: 'Hardanger Fruktgård', municipality: 'Ullensvang', lat: 60.32, lng: 6.65, description: 'Epler, pærer og kirsebær fra Hardanger', website: '#' },
+    { type: 'farm', name: 'Jæren Gård', municipality: 'Klepp', lat: 58.77, lng: 5.63, description: 'Kjøtt og meieriprodukter', website: '#' },
+    { type: 'restaurant', name: 'Maaemo', municipality: 'Oslo', lat: 59.91, lng: 10.76, description: 'Nordisk mat med lokale råvarer', website: '#' },
+    { type: 'restaurant', name: 'Lysverket', municipality: 'Bergen', lat: 60.39, lng: 5.32, description: 'Sjømat og lokale norske råvarer', website: '#' },
+  ];
+
+  function addMarkers(data) {
+    // Clear existing markers
+    allMarkers.forEach(m => map.removeLayer(m.marker));
+    allMarkers = [];
+
+    data.forEach(item => {
+      if (!item.lat || !item.lng) return;
+
+      const icon = item.type === 'farm' ? farmIcon : restaurantIcon;
+      const marker = L.marker([item.lat, item.lng], { icon });
+
+      const popupContent = `
+        <div class="custom-popup">
+          <span class="popup-tag ${item.type === 'restaurant' ? 'restaurant' : ''}">
+            ${item.type === 'farm' ? '🌾 Gård' : '🍽️ Restaurant'}
+          </span>
+          <h3>${item.name}</h3>
+          <p>📍 ${item.municipality || ''}</p>
+          <p>${item.description || ''}</p>
+          ${item.website && item.website !== '#' ? `<a href="${item.website}" target="_blank">Besøk nettside →</a>` : ''}
+        </div>
+      `;
+
+      marker.bindPopup(popupContent, { maxWidth: 220 });
+      marker.addTo(map);
+      allMarkers.push({ marker, type: item.type });
+    });
+  }
+
+  function filterMap(type, btn) {
+    currentFilter = type;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    allMarkers.forEach(({ marker, type: markerType }) => {
+      if (type === 'all' || type === markerType) {
+        marker.addTo(map);
+      } else {
+        map.removeLayer(marker);
+      }
+    });
+  }
+
+  // Load from API, fall back to sample data
+  async function loadMapData() {
+    try {
+      const API_URL = 'https://gardnavi-api-fecufjdrfbhyf2g6.westeurope-01.azurewebsites.net';
+      const [farmsRes, restaurantsRes] = await Promise.all([
+        fetch(`${API_URL}/api/GetFarms`),
+        fetch(`${API_URL}/api/GetRestaurants`)
+      ]);
+
+      const farms = farmsRes.ok ? await farmsRes.json() : [];
+      const restaurants = restaurantsRes.ok ? await restaurantsRes.json() : [];
+
+      const combined = [
+        ...farms.map(f => ({ ...f, type: 'farm' })),
+        ...restaurants.map(r => ({ ...r, type: 'restaurant' }))
+      ];
+
+      addMarkers(combined.length > 0 ? combined : sampleData);
+    } catch (e) {
+      // API not ready yet — show sample data
+      addMarkers(sampleData);
+    }
+  }
+
+  loadMapData();
 </script>
-</body>
-</html>
