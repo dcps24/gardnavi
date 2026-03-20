@@ -1,0 +1,251 @@
+
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Restauranter | Gårdnavi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--green-dark:#1a3022;--green-mid:#2d5a3d;--cream:#f5f0e8;--warm-white:#faf8f3;--earth:#c8a96e;--earth-light:#e8d5a3;--text-dark:#1a1a14;--text-mid:#3d3d2e;--orange:#c8692e;}
+    html{scroll-behavior:smooth;}body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--text-dark);}
+    nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:1rem 4rem;background:rgba(245,240,232,0.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(74,140,92,0.15);transition:padding 0.3s;}
+    .nav-logo{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;color:var(--green-dark);text-decoration:none;}
+    .nav-logo span{color:var(--earth);}
+    .nav-links{display:flex;gap:2rem;list-style:none;}
+    .nav-links a{text-decoration:none;color:var(--text-mid);font-weight:500;font-size:0.92rem;transition:color 0.2s;position:relative;}
+    .nav-links a::after{content:'';position:absolute;bottom:-3px;left:0;width:0;height:2px;background:var(--earth);transition:width 0.3s;}
+    .nav-links a:hover,.nav-links a.active{color:var(--green-dark);}
+    .nav-links a:hover::after,.nav-links a.active::after{width:100%;}
+    .nav-login-btn{padding:0.5rem 1.2rem;background:var(--green-dark);color:var(--cream);border-radius:4px;text-decoration:none;font-size:0.85rem;font-weight:700;transition:all 0.2s;}
+    .nav-login-btn:hover{background:var(--green-mid);}
+    .nav-user{display:flex;align-items:center;gap:0.8rem;}
+    #user-name{font-size:0.85rem;font-weight:600;color:var(--green-dark);}
+    .nav-logout-btn{font-size:0.82rem;color:var(--text-mid);text-decoration:none;}
+    .page-header{background:var(--orange);padding:7rem 4rem 3rem;position:relative;overflow:hidden;}
+    .page-header::before{content:'';position:absolute;top:-80px;right:-80px;width:350px;height:350px;background:rgba(255,255,255,0.1);border-radius:50%;}
+    .breadcrumb{font-size:0.82rem;color:rgba(255,255,255,0.6);margin-bottom:1rem;}
+    .breadcrumb a{color:white;text-decoration:none;opacity:0.8;}
+    .page-header h1{font-family:'Playfair Display',serif;font-size:clamp(2.5rem,4vw,3.5rem);color:white;margin-bottom:0.8rem;}
+    .page-header p{color:rgba(255,255,255,0.8);font-size:1.05rem;max-width:500px;}
+    .map-section{padding:3rem 4rem;background:var(--cream);}
+    .map-section h2{font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--green-dark);margin-bottom:0.5rem;}
+    .map-section p{color:var(--text-mid);font-size:0.92rem;margin-bottom:1.5rem;}
+    #rest-map{height:380px;border-radius:8px;border:1px solid rgba(26,48,34,0.12);}
+    .content-section{padding:3rem 4rem;}
+    .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem;}
+    .section-header h2{font-family:'Playfair Display',serif;font-size:2rem;color:var(--green-dark);}
+    .add-btn{padding:0.6rem 1.4rem;background:var(--orange);color:white;border:none;border-radius:4px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:0.85rem;cursor:pointer;transition:all 0.2s;display:none;}
+    .add-btn.visible{display:block;}
+    .add-btn:hover{opacity:0.85;}
+    .search-bar{display:flex;gap:1rem;margin-bottom:2rem;flex-wrap:wrap;}
+    .search-bar input{flex:1;min-width:200px;padding:0.7rem 1rem;border:1.5px solid rgba(26,48,34,0.15);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:0.92rem;background:var(--warm-white);}
+    .search-bar input:focus{outline:none;border-color:var(--orange);}
+    .filter-chips{display:flex;gap:0.5rem;flex-wrap:wrap;}
+    .chip{padding:0.35rem 0.9rem;border:1.5px solid rgba(26,48,34,0.15);border-radius:20px;font-size:0.82rem;font-weight:500;cursor:pointer;transition:all 0.2s;background:transparent;font-family:'DM Sans',sans-serif;color:var(--text-mid);}
+    .chip:hover{border-color:var(--orange);color:var(--orange);}
+    .chip.active{background:var(--orange);border-color:var(--orange);color:white;}
+    .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.5rem;}
+    .card{background:var(--warm-white);border-radius:8px;overflow:hidden;border:1px solid rgba(26,48,34,0.08);transition:all 0.25s;cursor:pointer;}
+    .card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(26,48,34,0.1);}
+    .card-img{height:140px;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:3rem;}
+    .card-body{padding:1.4rem;}
+    .card-tag{display:inline-block;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;font-weight:700;padding:0.2em 0.7em;border-radius:20px;margin-bottom:0.7rem;background:rgba(200,105,46,0.12);color:var(--orange);}
+    .card h3{font-family:'Playfair Display',serif;font-size:1.15rem;color:var(--green-dark);margin-bottom:0.4rem;}
+    .card p{font-size:0.88rem;color:var(--text-mid);line-height:1.6;margin-bottom:0.6rem;}
+    .card-meta{font-size:0.82rem;color:var(--orange);font-weight:600;}
+    .card a{color:var(--green-mid);text-decoration:none;font-size:0.85rem;font-weight:600;}
+    .empty-state{text-align:center;padding:4rem;grid-column:1/-1;color:var(--text-mid);}
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:2000;align-items:center;justify-content:center;padding:1rem;}
+    .modal-overlay.open{display:flex;}
+    .modal{background:var(--warm-white);border-radius:12px;max-width:560px;width:100%;max-height:90vh;overflow-y:auto;}
+    .modal-header{background:var(--orange);padding:1.8rem 2rem;border-radius:12px 12px 0 0;display:flex;justify-content:space-between;align-items:start;}
+    .modal-header h2{font-family:'Playfair Display',serif;font-size:1.5rem;color:white;}
+    .modal-header p{font-size:0.85rem;color:rgba(255,255,255,0.75);margin-top:0.2rem;}
+    .modal-close{background:none;border:none;color:white;font-size:1.5rem;cursor:pointer;opacity:0.7;line-height:1;}
+    .modal-close:hover{opacity:1;}
+    .modal-body{padding:2rem;}
+    .form-group{margin-bottom:1rem;}
+    .form-group label{display:block;font-size:0.78rem;font-weight:600;color:var(--text-mid);margin-bottom:0.35rem;letter-spacing:0.04em;text-transform:uppercase;}
+    .form-group input,.form-group textarea{width:100%;padding:0.7rem 1rem;border:1.5px solid rgba(26,48,34,0.15);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:0.93rem;background:var(--warm-white);color:var(--text-dark);transition:border-color 0.2s;}
+    .form-group input:focus,.form-group textarea:focus{outline:none;border-color:var(--orange);}
+    .form-group textarea{min-height:80px;resize:vertical;}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+    .modal-footer{padding:1.5rem 2rem;border-top:1px solid rgba(26,48,34,0.1);display:flex;gap:1rem;justify-content:flex-end;background:var(--cream);border-radius:0 0 12px 12px;}
+    .btn-cancel{padding:0.75rem 1.5rem;border:1.5px solid rgba(26,48,34,0.2);background:transparent;border-radius:4px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:0.9rem;cursor:pointer;color:var(--text-mid);transition:all 0.2s;}
+    .btn-save{padding:0.75rem 2rem;background:var(--orange);color:white;border:none;border-radius:4px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:0.9rem;cursor:pointer;transition:all 0.25s;}
+    .btn-save:hover{opacity:0.85;}
+    .btn-save:disabled{opacity:0.5;cursor:not-allowed;}
+    .save-status{display:none;padding:1rem 2rem;font-weight:600;font-size:0.9rem;text-align:center;}
+    .save-status.success{display:block;color:var(--green-mid);}
+    .save-status.error{display:block;color:#c03030;}
+    footer{background:var(--text-dark);padding:3rem 4rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;}
+    .footer-logo{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;color:var(--cream);}
+    .footer-logo span{color:var(--earth);}
+    footer p{color:rgba(245,240,232,0.4);font-size:0.85rem;}
+    .custom-popup h3{font-family:'Playfair Display',serif;color:var(--green-dark);font-size:1rem;margin-bottom:0.3rem;}
+    .custom-popup p{font-size:0.82rem;color:var(--text-mid);margin:0.2rem 0;}
+    @media(max-width:900px){nav{padding:0.8rem 1.5rem;}.page-header{padding:6rem 1.5rem 2.5rem;}.map-section,.content-section{padding:2rem 1.5rem;}.form-row{grid-template-columns:1fr;}footer{padding:2rem 1.5rem;flex-direction:column;}}
+  </style>
+</head>
+<body>
+<nav id="main-nav">
+  <a href="index.html" class="nav-logo">Gård<span>navi</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Hjem</a></li>
+    <li><a href="garder.html">Gårder</a></li>
+    <li><a href="restauranter.html" class="active">Restauranter</a></li>
+    <li><a href="oppskrifter.html">Oppskrifter</a></li>
+    <li><a href="kontakt.html">Kontakt</a></li>
+  </ul>
+  <div id="nav-auth">
+    <a href="/.auth/login/github?post_login_redirect_uri=/restauranter.html" class="nav-login-btn" id="login-btn">Logg inn</a>
+    <div class="nav-user" id="nav-user" style="display:none"><span id="user-name"></span><a href="/.auth/logout" class="nav-logout-btn">Logg ut</a></div>
+  </div>
+</nav>
+
+<section class="page-header">
+  <div class="breadcrumb"><a href="index.html">Hjem</a> / Restauranter</div>
+  <h1>Restauranter 🍽️</h1>
+  <p>Spisesteder som prioriterer norske, kortreiste råvarer og lager mat fra bunnen av</p>
+</section>
+
+<section class="map-section">
+  <h2>Kart over restauranter</h2>
+  <p>Finn restauranter nær deg som bruker lokale råvarer</p>
+  <div id="rest-map"></div>
+</section>
+
+<section class="content-section">
+  <div class="section-header">
+    <h2>Alle restauranter</h2>
+    <button class="add-btn" id="add-rest-btn" onclick="document.getElementById('add-modal').classList.add('open')">+ Legg til restaurant</button>
+  </div>
+  <div class="search-bar">
+    <input type="text" id="search-input" placeholder="Søk etter restaurant eller by..." oninput="applyFilters()"/>
+  </div>
+  <div class="filter-chips" style="margin-bottom:1.5rem;" id="muni-chips"></div>
+  <div class="cards-grid" id="rest-container">
+    <div class="empty-state">⏳ Laster restauranter...</div>
+  </div>
+</section>
+
+<footer><div class="footer-logo">Gård<span>navi</span></div><p>© 2025 Handelhjelp. Registrering er alltid gratis.</p></footer>
+
+<div class="modal-overlay" id="add-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div><h2>🍽️ Legg til restaurant</h2><p>Vi legger den til på kartet etter verifisering</p></div>
+      <button class="modal-close" onclick="document.getElementById('add-modal').classList.remove('open')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label>Restaurantnavn *</label><input type="text" id="r-name" required placeholder="f.eks. Maaemo"/></div>
+      <div class="form-group"><label>Beskrivelse</label><textarea id="r-desc" placeholder="Hva serverer dere? Hvilke lokale råvarer bruker dere?"></textarea></div>
+      <div class="form-row">
+        <div class="form-group"><label>Kommune *</label><input type="text" id="r-muni" required placeholder="f.eks. Oslo"/></div>
+        <div class="form-group"><label>Telefon</label><input type="tel" id="r-phone" placeholder="+47 123 45 678"/></div>
+      </div>
+      <div class="form-group"><label>Adresse</label><input type="text" id="r-address" placeholder="Gateadresse"/></div>
+      <div class="form-row">
+        <div class="form-group"><label>Breddegrad</label><input type="number" id="r-lat" step="0.0001" placeholder="59.9139"/></div>
+        <div class="form-group"><label>Lengdegrad</label><input type="number" id="r-lng" step="0.0001" placeholder="10.7522"/></div>
+      </div>
+      <div class="form-group"><label>Nettside</label><input type="url" id="r-website" placeholder="https://"/></div>
+    </div>
+    <div class="save-status" id="save-status"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="document.getElementById('add-modal').classList.remove('open')">Avbryt</button>
+      <button class="btn-save" id="save-btn" onclick="saveRestaurant()">💾 Send inn</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+const API='https://gardnavi-api-fecufjdrfbhyf2g6.westeurope-01.azurewebsites.net';
+let allRests=[],filtered=[];
+const sampleRests=[
+  {id:1,name:'Maaemo',municipality:'Oslo',address:'Schweigaards gate 15, Oslo',description:'Tre-stjerners Michelin-restaurant med fokus på norske, naturlige råvarer. En gastronomisk reise gjennom norsk natur.',lat:59.91,lng:10.76,website:'https://maaemo.no',phone:'+47 22 17 99 69'},
+  {id:2,name:'Lysverket',municipality:'Bergen',address:'Rasmus Meyers allé 9, Bergen',description:'Moderne norsk kjøkken i Kode-museene. Fokus på lokale sjømatråvarer og vestlandske produkter.',lat:60.39,lng:5.32,phone:'+47 55 60 31 00'},
+  {id:3,name:'Onda by Bocuse',municipality:'Oslo',address:'Tjuvholmen allé 5, Oslo',description:'Moderne europeisk restaurant med sterk vekt på norske råvarer og sesongbasert meny.',lat:59.90,lng:10.72,phone:'+47 22 33 32 32'},
+  {id:4,name:'Galt',municipality:'Oslo',address:'Vibes gate 11, Oslo',description:'Hyggelig bistro på Frogner med lokalt innkjøpt kjøtt og grønnsaker fra norske gårder.',lat:59.92,lng:10.71,phone:'+47 22 56 22 33'},
+  {id:5,name:'Bryggen Tracteursted',municipality:'Bergen',address:'Bryggen 2, Bergen',description:'Historisk restaurant i hjertet av Bryggen. Tradisjonell norsk mat med lokale råvarer.',lat:60.40,lng:5.32,phone:'+47 55 31 40 46'},
+];
+
+function initMap(){
+  const map=L.map('rest-map').setView([59.9,10.7],5);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(map);
+  const icon=L.divIcon({className:'',html:'<div style="background:#c8692e;color:white;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:16px;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3);">🍽️</div>',iconSize:[36,36],iconAnchor:[18,18],popupAnchor:[0,-20]});
+  return{map,icon};
+}
+
+async function loadRests(){
+  try{const r=await fetch(`${API}/api/GetRestaurants`);allRests=r.ok?(await r.json()):[];if(!allRests.length)allRests=sampleRests;}
+  catch(e){allRests=sampleRests;}
+  filtered=[...allRests];
+  buildMuniChips();
+  renderRests();
+  const{map,icon}=initMap();
+  allRests.forEach(r=>{
+    if(!r.lat||!r.lng)return;
+    L.marker([r.lat,r.lng],{icon}).bindPopup(`<div class="custom-popup"><h3>${r.name}</h3><p>📍 ${r.municipality||''}</p><p>${(r.description||'').slice(0,80)}...</p></div>`,{maxWidth:220}).addTo(map);
+  });
+}
+
+function buildMuniChips(){
+  const munis=[...new Set(allRests.map(r=>r.municipality).filter(Boolean))].sort();
+  document.getElementById('muni-chips').innerHTML=`<button class="chip active" onclick="filterMuni('all',this)">Alle</button>`+munis.map(m=>`<button class="chip" onclick="filterMuni('${m}',this)">${m}</button>`).join('');
+}
+
+function filterMuni(m,btn){
+  document.querySelectorAll('#muni-chips .chip').forEach(c=>c.classList.remove('active'));btn.classList.add('active');
+  const s=document.getElementById('search-input').value.toLowerCase();
+  filtered=allRests.filter(r=>(m==='all'||r.municipality===m)&&(!s||r.name.toLowerCase().includes(s)||(r.description||'').toLowerCase().includes(s)));
+  renderRests();
+}
+
+function applyFilters(){
+  const s=document.getElementById('search-input').value.toLowerCase();
+  const activeChip=document.querySelector('#muni-chips .chip.active');
+  const muni=activeChip?.textContent==='Alle'?'all':activeChip?.textContent||'all';
+  filtered=allRests.filter(r=>(muni==='all'||r.municipality===muni)&&(!s||r.name.toLowerCase().includes(s)||(r.description||'').toLowerCase().includes(s)||(r.municipality||'').toLowerCase().includes(s)));
+  renderRests();
+}
+
+function renderRests(){
+  const el=document.getElementById('rest-container');
+  if(!filtered.length){el.innerHTML='<div class="empty-state">Ingen restauranter funnet</div>';return;}
+  el.innerHTML=filtered.map(r=>`<div class="card">
+    <div class="card-img">🍽️</div>
+    <div class="card-body">
+      <span class="card-tag">Restaurant</span>
+      <h3>${r.name}</h3>
+      <p>${r.description||''}</p>
+      <p class="card-meta">📍 ${r.municipality||''}</p>
+      ${r.website?`<a href="${r.website}" target="_blank">Besøk nettside →</a>`:''}
+    </div></div>`).join('');
+}
+
+async function saveRestaurant(){
+  const name=document.getElementById('r-name').value.trim();
+  const muni=document.getElementById('r-muni').value.trim();
+  if(!name||!muni){const s=document.getElementById('save-status');s.className='save-status error';s.textContent='⚠️ Fyll inn navn og kommune';return;}
+  const data={name,municipality:muni,description:document.getElementById('r-desc').value,address:document.getElementById('r-address').value,phone:document.getElementById('r-phone').value,website:document.getElementById('r-website').value,latitude:parseFloat(document.getElementById('r-lat').value)||null,longitude:parseFloat(document.getElementById('r-lng').value)||null};
+  document.getElementById('save-btn').disabled=true;
+  try{await fetch(`${API}/api/AddRestaurant`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});}catch(e){}
+  const s=document.getElementById('save-status');s.className='save-status success';s.textContent=`✅ ${name} er sendt inn! Vi legger den til snart.`;
+  setTimeout(()=>{document.getElementById('add-modal').classList.remove('open');s.className='save-status';},2500);
+  document.getElementById('save-btn').disabled=false;
+}
+
+async function checkAuth(){
+  try{const r=await fetch('/.auth/me');const d=await r.json();if(d.clientPrincipal){document.getElementById('login-btn').style.display='none';document.getElementById('nav-user').style.display='flex';document.getElementById('user-name').textContent=d.clientPrincipal.userDetails;document.getElementById('add-rest-btn').classList.add('visible');}}catch(e){}
+}
+
+document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+window.addEventListener('scroll',()=>{document.getElementById('main-nav').style.padding=window.scrollY>50?'0.7rem 4rem':'1rem 4rem';});
+loadRests();checkAuth();
+</script>
+</body>
+</html>
