@@ -1,0 +1,215 @@
+
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gårdnavi | Finn lokal mat</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--green-dark:#1a3022;--green-mid:#2d5a3d;--cream:#f5f0e8;--warm-white:#faf8f3;--earth:#c8a96e;--earth-light:#e8d5a3;--text-dark:#1a1a14;--text-mid:#3d3d2e;}
+    html{scroll-behavior:smooth;}
+    body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--text-dark);overflow-x:hidden;}
+    nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:1.2rem 4rem;background:rgba(245,240,232,0.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(74,140,92,0.15);transition:padding 0.3s;}
+    .nav-logo{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;color:var(--green-dark);text-decoration:none;}
+    .nav-logo span{color:var(--earth);}
+    .nav-links{display:flex;gap:2rem;list-style:none;}
+    .nav-links a{text-decoration:none;color:var(--text-mid);font-weight:500;font-size:0.92rem;transition:color 0.2s;position:relative;}
+    .nav-links a::after{content:'';position:absolute;bottom:-3px;left:0;width:0;height:2px;background:var(--earth);transition:width 0.3s;}
+    .nav-links a:hover,.nav-links a.active{color:var(--green-dark);}
+    .nav-links a:hover::after,.nav-links a.active::after{width:100%;}
+    .nav-login-btn{padding:0.5rem 1.2rem;background:var(--green-dark);color:var(--cream);border-radius:4px;text-decoration:none;font-size:0.85rem;font-weight:700;transition:all 0.2s;}
+    .nav-login-btn:hover{background:var(--green-mid);}
+    .nav-user{display:flex;align-items:center;gap:0.8rem;}
+    #user-name{font-size:0.85rem;font-weight:600;color:var(--green-dark);}
+    .nav-logout-btn{font-size:0.82rem;color:var(--text-mid);text-decoration:none;}
+    .hero{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;padding-top:5rem;overflow:hidden;}
+    .hero-left{display:flex;flex-direction:column;justify-content:center;padding:6rem 4rem;background:var(--green-dark);position:relative;}
+    .hero-left::before{content:'';position:absolute;top:-100px;right:-60px;width:300px;height:300px;background:var(--earth);border-radius:50%;opacity:0.08;}
+    .hero-tag{font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--earth);font-weight:500;margin-bottom:1.5rem;}
+    .hero-title{font-family:'Playfair Display',serif;font-size:clamp(2.5rem,4vw,4rem);font-weight:900;line-height:1.1;color:var(--cream);margin-bottom:1.8rem;}
+    .hero-title em{font-style:italic;color:var(--earth);}
+    .hero-sub{font-size:1.05rem;color:rgba(245,240,232,0.7);line-height:1.7;margin-bottom:2.5rem;max-width:420px;}
+    .hero-btns{display:flex;gap:1rem;flex-wrap:wrap;}
+    .btn-primary{display:inline-block;padding:1rem 2rem;background:var(--earth);color:var(--green-dark);font-weight:700;font-size:0.92rem;letter-spacing:0.05em;text-transform:uppercase;text-decoration:none;border-radius:2px;transition:all 0.25s;}
+    .btn-primary:hover{background:var(--earth-light);transform:translateY(-2px);}
+    .btn-outline{display:inline-block;padding:1rem 2rem;border:2px solid rgba(245,240,232,0.3);color:var(--cream);font-weight:700;font-size:0.92rem;letter-spacing:0.05em;text-transform:uppercase;text-decoration:none;border-radius:2px;transition:all 0.25s;}
+    .btn-outline:hover{border-color:var(--earth);color:var(--earth);}
+    .hero-right{position:relative;overflow:hidden;}
+    .hero-right img{width:100%;height:100%;object-fit:cover;filter:saturate(0.85) brightness(0.9);}
+    .hero-right::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(26,48,34,0.3) 0%,transparent 60%);}
+    .features{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid rgba(26,48,34,0.08);}
+    .feature{padding:3rem 2.5rem;border-right:1px solid rgba(26,48,34,0.08);text-decoration:none;display:block;transition:all 0.25s;position:relative;overflow:hidden;}
+    .feature:last-child{border-right:none;}
+    .feature::before{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--earth);transform:scaleX(0);transition:transform 0.3s;}
+    .feature:hover{background:rgba(45,90,61,0.04);}
+    .feature:hover::before{transform:scaleX(1);}
+    .feature-icon{font-size:2.2rem;margin-bottom:1rem;display:block;}
+    .feature-title{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--green-dark);margin-bottom:0.5rem;font-weight:700;}
+    .feature-desc{font-size:0.88rem;color:var(--text-mid);line-height:1.6;}
+    .feature-arrow{display:inline-block;margin-top:1rem;color:var(--earth);font-size:0.85rem;font-weight:700;opacity:0;transition:opacity 0.2s;}
+    .feature:hover .feature-arrow{opacity:1;}
+    .about{display:grid;grid-template-columns:1fr 1fr;min-height:70vh;}
+    .about-img{position:relative;overflow:hidden;}
+    .about-img img{width:100%;height:100%;object-fit:cover;}
+    .about-content{padding:6rem 5rem;display:flex;flex-direction:column;justify-content:center;background:var(--cream);}
+    .section-label{font-size:0.72rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--earth);font-weight:600;margin-bottom:1.2rem;display:flex;align-items:center;gap:0.8rem;}
+    .section-label::before{content:'';display:block;width:2.5rem;height:1px;background:var(--earth);}
+    .about-content h2{font-family:'Playfair Display',serif;font-size:clamp(2rem,3vw,2.8rem);color:var(--green-dark);margin-bottom:1.2rem;line-height:1.2;}
+    .about-content p{color:var(--text-mid);line-height:1.75;margin-bottom:1.5rem;font-size:1rem;}
+    .about-stats{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:1rem;}
+    .stat{padding:1.2rem;background:var(--warm-white);border-radius:6px;border:1px solid rgba(26,48,34,0.08);}
+    .stat-num{font-family:'Playfair Display',serif;font-size:2rem;color:var(--earth);font-weight:900;}
+    .stat-label{font-size:0.82rem;color:var(--text-mid);margin-top:0.2rem;}
+    .how{background:var(--green-dark);padding:7rem 4rem;}
+    .how-inner{max-width:1000px;margin:0 auto;}
+    .how-header{text-align:center;margin-bottom:4rem;}
+    .how-header h2{font-family:'Playfair Display',serif;font-size:clamp(2rem,3vw,3rem);color:var(--cream);margin-top:1rem;}
+    .how-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;}
+    .how-step{text-align:center;padding:2rem;}
+    .step-num{width:3rem;height:3rem;background:var(--earth);color:var(--green-dark);font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.2rem;}
+    .how-step h3{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--cream);margin-bottom:0.6rem;}
+    .how-step p{font-size:0.9rem;color:rgba(245,240,232,0.65);line-height:1.7;}
+    .cta{background:var(--earth);padding:6rem 4rem;display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;overflow:hidden;}
+    .cta::before{content:'🌾';position:absolute;font-size:15rem;opacity:0.08;top:-2rem;right:-2rem;transform:rotate(-20deg);}
+    .cta h2{font-family:'Playfair Display',serif;font-size:clamp(2rem,4vw,3.5rem);color:var(--green-dark);max-width:700px;margin-bottom:1.5rem;line-height:1.2;}
+    .cta p{color:rgba(26,48,34,0.7);max-width:500px;margin-bottom:2.5rem;font-size:1.05rem;line-height:1.7;}
+    .btn-dark{display:inline-block;padding:1.1rem 2.5rem;background:var(--green-dark);color:var(--cream);font-weight:700;font-size:0.95rem;letter-spacing:0.05em;text-transform:uppercase;text-decoration:none;border-radius:2px;transition:all 0.25s;}
+    .btn-dark:hover{background:var(--green-mid);transform:translateY(-2px);}
+    footer{background:var(--text-dark);padding:4rem;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;}
+    .footer-logo{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;color:var(--cream);}
+    .footer-logo span{color:var(--earth);}
+    .footer-tagline{color:rgba(245,240,232,0.5);font-size:0.88rem;line-height:1.7;margin-top:0.8rem;max-width:260px;}
+    .footer-col h4{color:var(--earth);font-size:0.72rem;letter-spacing:0.18em;text-transform:uppercase;font-weight:700;margin-bottom:1rem;}
+    .footer-col ul{list-style:none;display:flex;flex-direction:column;gap:0.6rem;}
+    .footer-col a{color:rgba(245,240,232,0.6);text-decoration:none;font-size:0.9rem;transition:color 0.2s;}
+    .footer-col a:hover{color:var(--cream);}
+    .footer-col p{color:rgba(245,240,232,0.6);font-size:0.9rem;line-height:1.8;}
+    .footer-bottom{background:rgba(0,0,0,0.3);padding:1rem 4rem;display:flex;justify-content:space-between;}
+    .footer-bottom p{color:rgba(245,240,232,0.3);font-size:0.82rem;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
+    .hero-left>*{animation:fadeUp 0.8s ease both;}
+    .hero-tag{animation-delay:0.1s;}.hero-title{animation-delay:0.25s;}.hero-sub{animation-delay:0.4s;}.hero-btns{animation-delay:0.55s;}
+    @media(max-width:900px){
+      nav{padding:0.8rem 1.5rem;}.hero,.about{grid-template-columns:1fr;}.hero-right{height:50vh;}.about-img{height:40vh;order:-1;}.about-content{padding:4rem 2rem;}.features{grid-template-columns:1fr 1fr;}.feature{border-right:none;border-bottom:1px solid rgba(26,48,34,0.08);}.how-steps{grid-template-columns:1fr;}footer{grid-template-columns:1fr 1fr;gap:2rem;padding:2.5rem 1.5rem;}.footer-bottom{padding:1rem 1.5rem;flex-direction:column;gap:0.4rem;}.hero-left{padding:5rem 2rem 4rem;}.how,.cta{padding:4rem 1.5rem;}
+    }
+  </style>
+</head>
+<body>
+<nav id="main-nav">
+  <a href="index.html" class="nav-logo">Gård<span>navi</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html" class="active">Hjem</a></li>
+    <li><a href="garder.html">Gårder</a></li>
+    <li><a href="restauranter.html">Restauranter</a></li>
+    <li><a href="oppskrifter.html">Oppskrifter</a></li>
+    <li><a href="kontakt.html">Kontakt</a></li>
+  </ul>
+  <div id="nav-auth">
+    <a href="/.auth/login/github?post_login_redirect_uri=/" class="nav-login-btn" id="login-btn">Logg inn</a>
+    <div class="nav-user" id="nav-user" style="display:none">
+      <span id="user-name"></span>
+      <a href="/.auth/logout" class="nav-logout-btn">Logg ut</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-left">
+    <span class="hero-tag">Lokal mat · Ekte råvarer · Norge</span>
+    <h1 class="hero-title">Finn <em>ekte mat</em> fra ditt nærområde</h1>
+    <p class="hero-sub">Vi kobler norske familier med lokale gårder — slik at du vet nøyaktig hvor maten kommer fra.</p>
+    <div class="hero-btns">
+      <a href="garder.html" class="btn-primary">Se gårder nær deg →</a>
+      <a href="kontakt.html" class="btn-outline">Registrer din gård</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <img src="https://cdn.prod.website-files.com/6994c2337d18cb8ef4a39450/6998c7791df82f9ac95184ca_foodiesfeed.com_organic-vegetables-in-a-garden.jpg" alt="Ferske grønnsaker"/>
+  </div>
+</section>
+
+<section class="features">
+  <a href="garder.html" class="feature">
+    <span class="feature-icon">🌾</span>
+    <div class="feature-title">Gårder</div>
+    <p class="feature-desc">Finn lokale gårder nær deg med ekte, uprosesserte råvarer direkte fra bonden</p>
+    <span class="feature-arrow">Se alle gårder →</span>
+  </a>
+  <a href="restauranter.html" class="feature">
+    <span class="feature-icon">🍽️</span>
+    <div class="feature-title">Restauranter</div>
+    <p class="feature-desc">Spisesteder som prioriterer norske, kortreiste råvarer og lager mat fra bunnen av</p>
+    <span class="feature-arrow">Se alle restauranter →</span>
+  </a>
+  <a href="oppskrifter.html" class="feature">
+    <span class="feature-icon">📖</span>
+    <div class="feature-title">Oppskrifter</div>
+    <p class="feature-desc">Hjemmelaget mat basert på norske, sesongbaserte råvarer koblet til lokale gårder</p>
+    <span class="feature-arrow">Se alle oppskrifter →</span>
+  </a>
+  <a href="kontakt.html" class="feature">
+    <span class="feature-icon">🤝</span>
+    <div class="feature-title">Bli med</div>
+    <p class="feature-desc">Registrer din gård, restaurant eller kafé gratis og nå tusenvis av kunder</p>
+    <span class="feature-arrow">Kom i gang →</span>
+  </a>
+</section>
+
+<section class="about" id="om-oss">
+  <div class="about-img">
+    <img src="https://cdn.prod.website-files.com/6994c2337d18cb8ef4a39450/6998c84236f01aae375e7bb6_Gemini_Generated_Image_gb4qvbgb4qvbgb4q.png" alt="Norsk gård"/>
+  </div>
+  <div class="about-content">
+    <span class="section-label">Om oss</span>
+    <h2>Handelhjelp Gårdnavi</h2>
+    <p>Vi bygger bro mellom norske gårder og middagsbordet. I Norge stiger forbruket av ultraprosessert mat, mens lokale matprodusenter sliter med digital synlighet.</p>
+    <p>Gårdnavi gjør det enkelt å finne ekte råvarer og støtte norsk landbruk — direkte fra bonden til din familie.</p>
+    <div class="about-stats">
+      <div class="stat"><div class="stat-num">5+</div><div class="stat-label">Lokale gårder</div></div>
+      <div class="stat"><div class="stat-num">6</div><div class="stat-label">Produktkategorier</div></div>
+      <div class="stat"><div class="stat-num">100%</div><div class="stat-label">Gratis oppføring</div></div>
+      <div class="stat"><div class="stat-num">0</div><div class="stat-label">Ultraprosessert mat</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="how">
+  <div class="how-inner">
+    <div class="how-header">
+      <span class="section-label" style="justify-content:center;color:var(--earth);">Slik fungerer det</span>
+      <h2>Fra gård til middagsbord</h2>
+    </div>
+    <div class="how-steps">
+      <div class="how-step"><div class="step-num">1</div><h3>Finn din lokale gård</h3><p>Bruk kartet til å finne gårder nær deg. Filtrer på kategori, sesong og kommune.</p></div>
+      <div class="how-step"><div class="step-num">2</div><h3>Velg dine råvarer</h3><p>Se hva gården produserer og finn ut hvordan du kan handle — REKO-ring, nettbutikk eller direkte.</p></div>
+      <div class="how-step"><div class="step-num">3</div><h3>Lag hjemmelaget mat</h3><p>Bruk oppskrifter koblet direkte til lokale råvarer. Se hvilke gårder som har ingrediensene.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <h2>Vil du ha din gård eller restaurant på kartet?</h2>
+  <p>Grunnleggende oppføring på Gårdnavi er alltid gratis. Kom i gang på 2 minutter.</p>
+  <a href="kontakt.html" class="btn-dark">Registrer deg gratis →</a>
+</section>
+
+<footer>
+  <div>
+    <div class="footer-logo">Gård<span>navi</span></div>
+    <p class="footer-tagline">Et Norge hvor ethvert middagsbord er knyttet til en lokal gård — god helse, åpenhet og levende lokalsamfunn.</p>
+  </div>
+  <div class="footer-col"><h4>Utforsk</h4><ul><li><a href="garder.html">Gårder</a></li><li><a href="restauranter.html">Restauranter</a></li><li><a href="oppskrifter.html">Oppskrifter</a></li></ul></div>
+  <div class="footer-col"><h4>Om oss</h4><ul><li><a href="kontakt.html">Kontakt oss</a></li><li><a href="kontakt.html#faq">FAQ</a></li><li><a href="kontakt.html#registrer">Registrer gård</a></li></ul></div>
+  <div class="footer-col"><h4>Kontakt</h4><p><a href="tel:621829017">(62) 1829017</a><br/><a href="mailto:hello@handelhjelp.com">hello@handelhjelp.com</a><br/>Ulefoss, Norge</p></div>
+</footer>
+<div class="footer-bottom"><p>© 2025 Handelhjelp Gårdnavi. Alle rettigheter forbeholdt.</p><p>Designet med ❤️ for norsk landbruk</p></div>
+
+<script>
+window.addEventListener('scroll',()=>{document.getElementById('main-nav').style.padding=window.scrollY>50?'0.7rem 4rem':'1.2rem 4rem';});
+async function checkAuth(){try{const r=await fetch('/.auth/me');const d=await r.json();if(d.clientPrincipal){document.getElementById('login-btn').style.display='none';document.getElementById('nav-user').style.display='flex';document.getElementById('user-name').textContent=d.clientPrincipal.userDetails;}}catch(e){}}
+checkAuth();
+</script>
+</body>
+</html>
