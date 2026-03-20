@@ -4,654 +4,485 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Gårder | Gårdnavi</title>
+  <title>Gårdnavi | Finn lokal mat i Norge</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --green-dark: #1a3022; --green-mid: #2d5a3d; --green-light: #4a8c5c;
-      --cream: #f5f0e8; --warm-white: #faf8f3; --earth: #c8a96e;
-      --earth-light: #e8d5a3; --text-dark: #1a1a14; --text-mid: #3d3d2e;
-    }
-    html { scroll-behavior: smooth; }
-    body { font-family: 'DM Sans', sans-serif; background: var(--warm-white); color: var(--text-dark); }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--green-dark:#1a3022;--green-mid:#2d5a3d;--cream:#f5f0e8;--warm-white:#faf8f3;--earth:#c8a96e;--earth-light:#e8d5a3;--text-dark:#1a1a14;--text-mid:#3d3d2e;--orange:#c8692e;}
+    html{scroll-behavior:smooth;}
+    body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--text-dark);overflow-x:hidden;}
 
     /* NAV */
-    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; display: flex; align-items: center; justify-content: space-between; padding: 1rem 4rem; background: rgba(245,240,232,0.95); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(74,140,92,0.15); }
-    .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 900; color: var(--green-dark); text-decoration: none; }
-    .nav-logo span { color: var(--earth); }
-    .nav-links { display: flex; gap: 2rem; list-style: none; }
-    .nav-links a { text-decoration: none; color: var(--text-mid); font-weight: 500; font-size: 0.92rem; transition: color 0.2s; }
-    .nav-links a:hover, .nav-links a.active { color: var(--green-dark); font-weight: 700; }
-    .nav-add-btn { background: var(--green-dark); color: var(--cream); border: none; padding: 0.6rem 1.2rem; border-radius: 4px; font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
-    .nav-add-btn:hover { background: var(--green-mid); }
+    nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:1.2rem 4rem;background:rgba(245,240,232,0.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(74,140,92,0.15);transition:padding 0.3s;}
+    .nav-logo{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;color:var(--green-dark);text-decoration:none;}
+    .nav-logo span{color:var(--earth);}
+    .nav-links{display:flex;gap:2rem;list-style:none;}
+    .nav-links a{text-decoration:none;color:var(--text-mid);font-weight:500;font-size:0.92rem;transition:color 0.2s;position:relative;}
+    .nav-links a::after{content:'';position:absolute;bottom:-3px;left:0;width:0;height:2px;background:var(--earth);transition:width 0.3s;}
+    .nav-links a:hover,.nav-links a.active{color:var(--green-dark);}
+    .nav-links a:hover::after,.nav-links a.active::after{width:100%;}
+    .nav-login-btn{padding:0.5rem 1.2rem;background:var(--green-dark);color:var(--cream);border-radius:4px;text-decoration:none;font-size:0.85rem;font-weight:700;transition:all 0.2s;}
+    .nav-login-btn:hover{background:var(--green-mid);}
+    .nav-user{display:flex;align-items:center;gap:0.8rem;}
+    #user-name{font-size:0.85rem;font-weight:600;color:var(--green-dark);}
+    .nav-logout-btn{font-size:0.82rem;color:var(--text-mid);text-decoration:none;}
 
-    /* PAGE HEADER */
-    .page-header { background: var(--green-dark); padding: 7rem 4rem 3rem; position: relative; overflow: hidden; }
-    .page-header::before { content: ''; position: absolute; top: -80px; right: -80px; width: 350px; height: 350px; background: var(--earth); border-radius: 50%; opacity: 0.07; }
-    .breadcrumb { font-size: 0.82rem; color: rgba(245,240,232,0.5); margin-bottom: 1rem; }
-    .breadcrumb a { color: var(--earth); text-decoration: none; }
-    .breadcrumb a:hover { text-decoration: underline; }
-    .page-header h1 { font-family: 'Playfair Display', serif; font-size: clamp(2.5rem, 4vw, 3.5rem); color: var(--cream); margin-bottom: 0.8rem; }
-    .page-header p { color: rgba(245,240,232,0.7); font-size: 1.05rem; max-width: 500px; }
-    .header-stats { display: flex; gap: 2rem; margin-top: 2rem; }
-    .stat { display: flex; flex-direction: column; }
-    .stat-num { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--earth); font-weight: 700; }
-    .stat-label { font-size: 0.8rem; color: rgba(245,240,232,0.55); letter-spacing: 0.1em; text-transform: uppercase; }
+    /* HERO */
+    .hero{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;padding-top:5rem;overflow:hidden;}
+    .hero-left{display:flex;flex-direction:column;justify-content:center;padding:6rem 4rem;background:var(--green-dark);position:relative;}
+    .hero-left::before{content:'';position:absolute;top:-100px;right:-60px;width:300px;height:300px;background:var(--earth);border-radius:50%;opacity:0.08;}
+    .hero-tag{font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--earth);font-weight:500;margin-bottom:1.5rem;}
+    .hero-title{font-family:'Playfair Display',serif;font-size:clamp(2.5rem,4vw,4rem);font-weight:900;line-height:1.1;color:var(--cream);margin-bottom:1.8rem;}
+    .hero-title em{font-style:italic;color:var(--earth);}
+    .hero-sub{font-size:1.05rem;color:rgba(245,240,232,0.7);line-height:1.7;margin-bottom:2.5rem;max-width:420px;}
+    .hero-btns{display:flex;gap:1rem;flex-wrap:wrap;}
+    .btn-primary{display:inline-block;padding:1rem 2rem;background:var(--earth);color:var(--green-dark);font-weight:700;font-size:0.92rem;letter-spacing:0.05em;text-transform:uppercase;text-decoration:none;border-radius:2px;transition:all 0.25s;}
+    .btn-primary:hover{background:var(--earth-light);transform:translateY(-2px);}
+    .btn-outline{display:inline-block;padding:1rem 2rem;border:2px solid rgba(245,240,232,0.3);color:var(--cream);font-weight:700;font-size:0.92rem;letter-spacing:0.05em;text-transform:uppercase;text-decoration:none;border-radius:2px;transition:all 0.25s;}
+    .btn-outline:hover{border-color:var(--earth);color:var(--earth);}
+    .hero-right{position:relative;overflow:hidden;}
+    .hero-right img{width:100%;height:100%;object-fit:cover;filter:saturate(0.85) brightness(0.9);}
+    .hero-right::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(26,48,34,0.3) 0%,transparent 60%);}
 
-    /* MAIN LAYOUT */
-    .main-layout { display: grid; grid-template-columns: 280px 1fr; gap: 0; min-height: calc(100vh - 200px); }
+    /* SECTION LINKS (4 big boxes) */
+    .section-nav{display:grid;grid-template-columns:repeat(4,1fr);}
+    .section-link{text-decoration:none;display:flex;flex-direction:column;padding:3rem 2rem;border-right:1px solid rgba(26,48,34,0.08);transition:all 0.3s;position:relative;overflow:hidden;}
+    .section-link:last-child{border-right:none;}
+    .section-link::after{content:'';position:absolute;bottom:0;left:0;right:0;height:4px;transform:scaleX(0);transition:transform 0.3s;}
+    .section-link:nth-child(1){background:var(--cream);}
+    .section-link:nth-child(1)::after{background:var(--green-dark);}
+    .section-link:nth-child(2){background:#f0ede5;}
+    .section-link:nth-child(2)::after{background:var(--orange);}
+    .section-link:nth-child(3){background:#ece9e0;}
+    .section-link:nth-child(3)::after{background:var(--earth);}
+    .section-link:nth-child(4){background:#e8e5dc;}
+    .section-link:nth-child(4)::after{background:var(--green-mid);}
+    .section-link:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(26,48,34,0.1);}
+    .section-link:hover::after{transform:scaleX(1);}
+    .sl-icon{font-size:2.5rem;margin-bottom:1.2rem;}
+    .sl-title{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--green-dark);margin-bottom:0.5rem;}
+    .sl-desc{font-size:0.88rem;color:var(--text-mid);line-height:1.6;margin-bottom:1.5rem;flex:1;}
+    .sl-items{display:flex;flex-direction:column;gap:0.4rem;margin-bottom:1.5rem;}
+    .sl-item{font-size:0.82rem;color:var(--text-mid);display:flex;align-items:center;gap:0.5rem;}
+    .sl-item::before{content:'';width:4px;height:4px;background:var(--earth);border-radius:50%;flex-shrink:0;}
+    .sl-cta{font-size:0.85rem;font-weight:700;color:var(--green-dark);display:flex;align-items:center;gap:0.4rem;margin-top:auto;}
+    .sl-arrow{transition:transform 0.2s;}
+    .section-link:hover .sl-arrow{transform:translateX(4px);}
 
-    /* SIDEBAR */
-    .sidebar { background: var(--cream); padding: 2rem; border-right: 1px solid rgba(26,48,34,0.1); position: sticky; top: 60px; height: calc(100vh - 60px); overflow-y: auto; }
-    .search-box { position: relative; margin-bottom: 2rem; }
-    .search-box input { width: 100%; padding: 0.75rem 1rem 0.75rem 2.5rem; border: 1.5px solid rgba(26,48,34,0.15); border-radius: 6px; font-family: 'DM Sans', sans-serif; font-size: 0.93rem; background: var(--warm-white); transition: border-color 0.2s; }
-    .search-box input:focus { outline: none; border-color: var(--green-mid); }
-    .search-icon { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); font-size: 0.9rem; color: var(--text-mid); }
-    .filter-group { margin-bottom: 1.8rem; }
-    .filter-group h4 { font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--earth); font-weight: 700; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.5rem; }
-    .filter-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-    .chip { padding: 0.35rem 0.85rem; border: 1.5px solid rgba(26,48,34,0.18); border-radius: 20px; font-size: 0.82rem; font-weight: 500; cursor: pointer; transition: all 0.2s; background: transparent; font-family: 'DM Sans', sans-serif; color: var(--text-mid); }
-    .chip:hover { border-color: var(--green-mid); color: var(--green-mid); }
-    .chip.active { background: var(--green-dark); border-color: var(--green-dark); color: var(--cream); }
-    .clear-filters { width: 100%; padding: 0.6rem; border: 1.5px solid rgba(26,48,34,0.15); border-radius: 4px; background: transparent; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; color: var(--text-mid); cursor: pointer; margin-top: 0.5rem; transition: all 0.2s; }
-    .clear-filters:hover { border-color: var(--green-mid); color: var(--green-mid); }
+    /* ABOUT */
+    .about{display:grid;grid-template-columns:1fr 1fr;min-height:70vh;}
+    .about-img{position:relative;overflow:hidden;}
+    .about-img img{width:100%;height:100%;object-fit:cover;}
+    .about-content{padding:6rem 5rem;display:flex;flex-direction:column;justify-content:center;background:var(--green-dark);}
+    .section-label{font-size:0.72rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--earth);font-weight:600;margin-bottom:1.2rem;display:flex;align-items:center;gap:0.8rem;}
+    .section-label::before{content:'';display:block;width:2.5rem;height:1px;background:var(--earth);}
+    .about-content h2{font-family:'Playfair Display',serif;font-size:clamp(2rem,3vw,2.8rem);color:var(--cream);margin-bottom:1.2rem;line-height:1.2;}
+    .about-content p{color:rgba(245,240,232,0.7);line-height:1.75;margin-bottom:1.5rem;font-size:1rem;}
+    .about-stats{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem;}
+    .stat{padding:1.2rem;background:rgba(245,240,232,0.06);border-radius:6px;border:1px solid rgba(245,240,232,0.1);}
+    .stat-num{font-family:'Playfair Display',serif;font-size:2rem;color:var(--earth);font-weight:900;}
+    .stat-label{font-size:0.82rem;color:rgba(245,240,232,0.55);margin-top:0.2rem;}
 
-    /* CONTENT */
-    .content { padding: 2rem; }
-    .content-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
-    .results-count { font-size: 0.9rem; color: var(--text-mid); }
-    .results-count strong { color: var(--green-dark); }
-    .view-toggle { display: flex; gap: 0.4rem; }
-    .view-btn { padding: 0.4rem 0.7rem; border: 1px solid rgba(26,48,34,0.15); background: transparent; border-radius: 4px; cursor: pointer; font-size: 0.9rem; transition: all 0.2s; }
-    .view-btn.active { background: var(--green-dark); color: white; border-color: var(--green-dark); }
+    /* PREVIEW SECTIONS */
+    .preview-section{padding:5rem 4rem;}
+    .preview-section.dark{background:var(--green-dark);}
+    .preview-section.cream{background:var(--cream);}
+    .preview-section.warm{background:var(--warm-white);}
+    .preview-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:2.5rem;flex-wrap:wrap;gap:1rem;}
+    .preview-header h2{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,3vw,2.5rem);color:var(--green-dark);margin-top:0.5rem;}
+    .preview-header.light h2{color:var(--cream);}
+    .preview-header p{color:var(--text-mid);margin-top:0.3rem;font-size:0.95rem;}
+    .preview-header.light p{color:rgba(245,240,232,0.65);}
+    .see-all-btn{display:inline-flex;align-items:center;gap:0.5rem;padding:0.7rem 1.5rem;border:1.5px solid var(--green-dark);color:var(--green-dark);text-decoration:none;font-weight:700;font-size:0.85rem;border-radius:2px;transition:all 0.2s;white-space:nowrap;}
+    .see-all-btn:hover{background:var(--green-dark);color:var(--cream);}
+    .see-all-btn.light{border-color:var(--earth);color:var(--earth);}
+    .see-all-btn.light:hover{background:var(--earth);color:var(--green-dark);}
 
-    /* FARM CARDS */
-    .farms-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.2rem; }
-    .farms-list-view { display: flex; flex-direction: column; gap: 1rem; }
-    .farm-card { background: var(--warm-white); border-radius: 8px; overflow: hidden; border: 1px solid rgba(26,48,34,0.08); transition: all 0.25s; cursor: pointer; }
-    .farm-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(26,48,34,0.1); border-color: rgba(26,48,34,0.15); }
-    .farm-card-img { height: 140px; background: var(--green-mid); display: flex; align-items: center; justify-content: center; font-size: 3rem; position: relative; }
-    .farm-card-img .season-tag { position: absolute; top: 0.6rem; right: 0.6rem; background: var(--earth); color: var(--green-dark); font-size: 0.68rem; font-weight: 700; padding: 0.2em 0.6em; border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase; }
-    .farm-card-body { padding: 1.2rem; }
-    .farm-name { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--green-dark); margin-bottom: 0.3rem; }
-    .farm-address { font-size: 0.82rem; color: var(--text-mid); margin-bottom: 0.7rem; display: flex; align-items: center; gap: 0.3rem; }
-    .farm-categories { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-bottom: 0.8rem; }
-    .cat-tag { font-size: 0.7rem; font-weight: 600; padding: 0.15em 0.55em; border-radius: 20px; background: rgba(45,90,61,0.1); color: var(--green-mid); }
-    .farm-desc { font-size: 0.85rem; color: var(--text-mid); line-height: 1.5; margin-bottom: 0.8rem; }
-    .farm-card-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 0.8rem; border-top: 1px solid rgba(26,48,34,0.08); }
-    .farm-link { color: var(--green-mid); text-decoration: none; font-size: 0.82rem; font-weight: 700; }
-    .farm-link:hover { color: var(--green-dark); }
-    .farm-municipality { font-size: 0.78rem; color: var(--text-mid); background: rgba(26,48,34,0.06); padding: 0.2em 0.6em; border-radius: 20px; }
+    /* FARM CARDS PREVIEW */
+    .cards-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;}
+    .preview-card{background:var(--warm-white);border-radius:8px;overflow:hidden;border:1px solid rgba(26,48,34,0.08);text-decoration:none;display:block;transition:all 0.25s;}
+    .preview-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(26,48,34,0.1);}
+    .dark .preview-card{background:rgba(245,240,232,0.07);border-color:rgba(245,240,232,0.1);}
+    .card-thumb{height:130px;display:flex;align-items:center;justify-content:center;font-size:3.5rem;}
+    .card-thumb.green{background:var(--green-mid);}
+    .card-thumb.orange{background:var(--orange);}
+    .card-thumb.earth{background:var(--earth);}
+    .card-info{padding:1.2rem;}
+    .card-tag{display:inline-block;font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;font-weight:700;padding:0.2em 0.6em;border-radius:20px;margin-bottom:0.6rem;}
+    .tag-farm{background:rgba(45,90,61,0.1);color:var(--green-mid);}
+    .tag-rest{background:rgba(200,105,46,0.12);color:var(--orange);}
+    .tag-recipe{background:rgba(200,169,110,0.2);color:#7a5a1a;}
+    .card-info h3{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--green-dark);margin-bottom:0.3rem;}
+    .dark .card-info h3{color:var(--cream);}
+    .card-info p{font-size:0.83rem;color:var(--text-mid);line-height:1.5;}
+    .dark .card-info p{color:rgba(245,240,232,0.6);}
+    .card-meta{font-size:0.78rem;color:var(--green-mid);margin-top:0.5rem;font-weight:600;}
+    .dark .card-meta{color:var(--earth);}
 
-    /* LIST VIEW */
-    .farm-list-item { background: var(--warm-white); border-radius: 8px; border: 1px solid rgba(26,48,34,0.08); padding: 1.2rem 1.5rem; display: grid; grid-template-columns: 60px 1fr auto; gap: 1.2rem; align-items: center; transition: all 0.2s; cursor: pointer; }
-    .farm-list-item:hover { border-color: rgba(26,48,34,0.2); box-shadow: 0 4px 16px rgba(26,48,34,0.07); }
-    .farm-list-icon { width: 60px; height: 60px; background: var(--green-mid); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; flex-shrink: 0; }
-    .farm-list-info h3 { font-family: 'Playfair Display', serif; font-size: 1.05rem; color: var(--green-dark); margin-bottom: 0.2rem; }
-    .farm-list-info p { font-size: 0.85rem; color: var(--text-mid); }
-    .farm-list-meta { text-align: right; }
+    /* HOW IT WORKS */
+    .how{background:var(--green-mid);padding:6rem 4rem;}
+    .how-inner{max-width:1000px;margin:0 auto;}
+    .how-header{text-align:center;margin-bottom:4rem;}
+    .how-header h2{font-family:'Playfair Display',serif;font-size:clamp(2rem,3vw,3rem);color:var(--cream);margin-top:1rem;}
+    .how-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;}
+    .how-step{text-align:center;padding:2rem;background:rgba(245,240,232,0.06);border-radius:8px;border:1px solid rgba(245,240,232,0.1);}
+    .step-num{width:3rem;height:3rem;background:var(--earth);color:var(--green-dark);font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.2rem;}
+    .how-step h3{font-family:'Playfair Display',serif;font-size:1.15rem;color:var(--cream);margin-bottom:0.6rem;}
+    .how-step p{font-size:0.88rem;color:rgba(245,240,232,0.65);line-height:1.7;}
+    .how-step a{color:var(--earth);font-weight:700;text-decoration:none;}
 
-    /* EMPTY STATE */
-    .empty-state { text-align: center; padding: 4rem 2rem; grid-column: 1/-1; }
-    .empty-state h3 { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--green-dark); margin-bottom: 0.5rem; }
-    .empty-state p { color: var(--text-mid); font-size: 0.95rem; }
-
-    /* ADD FARM MODAL */
-    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2000; align-items: center; justify-content: center; padding: 1rem; }
-    .modal-overlay.open { display: flex; }
-    .modal { background: var(--warm-white); border-radius: 12px; padding: 0; max-width: 620px; width: 100%; max-height: 90vh; overflow-y: auto; }
-    .modal-header { background: var(--green-dark); padding: 1.8rem 2rem; border-radius: 12px 12px 0 0; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1; }
-    .modal-header h2 { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--cream); }
-    .modal-header p { font-size: 0.85rem; color: rgba(245,240,232,0.65); margin-top: 0.2rem; }
-    .modal-close { background: none; border: none; color: var(--cream); font-size: 1.5rem; cursor: pointer; opacity: 0.7; transition: opacity 0.2s; line-height: 1; }
-    .modal-close:hover { opacity: 1; }
-    .modal-body { padding: 2rem; }
-    .form-section-title { font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--earth); font-weight: 700; margin: 1.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(26,48,34,0.1); }
-    .form-section-title:first-child { margin-top: 0; }
-    .form-group { margin-bottom: 1rem; }
-    .form-group label { display: block; font-size: 0.78rem; font-weight: 600; color: var(--text-mid); margin-bottom: 0.35rem; letter-spacing: 0.04em; text-transform: uppercase; }
-    .form-group label span { color: #e25555; }
-    .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 0.7rem 1rem; border: 1.5px solid rgba(26,48,34,0.15); border-radius: 4px; font-family: 'DM Sans', sans-serif; font-size: 0.93rem; background: var(--warm-white); color: var(--text-dark); transition: border-color 0.2s; }
-    .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: var(--green-mid); box-shadow: 0 0 0 3px rgba(45,90,61,0.08); }
-    .form-group textarea { min-height: 80px; resize: vertical; }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-    .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
-    .checkbox-group { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-    .checkbox-item { display: flex; align-items: center; gap: 0.4rem; padding: 0.4rem 0.8rem; border: 1.5px solid rgba(26,48,34,0.15); border-radius: 20px; cursor: pointer; transition: all 0.2s; }
-    .checkbox-item:hover { border-color: var(--green-mid); }
-    .checkbox-item input { width: 14px; height: 14px; accent-color: var(--green-mid); }
-    .checkbox-item label { font-size: 0.85rem; color: var(--text-mid); cursor: pointer; }
-    .checkbox-item:has(input:checked) { background: rgba(45,90,61,0.1); border-color: var(--green-mid); }
-    .checkbox-item:has(input:checked) label { color: var(--green-mid); font-weight: 600; }
-    .modal-footer { padding: 1.5rem 2rem; border-top: 1px solid rgba(26,48,34,0.1); display: flex; gap: 1rem; justify-content: flex-end; background: var(--cream); border-radius: 0 0 12px 12px; position: sticky; bottom: 0; }
-    .btn-cancel { padding: 0.75rem 1.5rem; border: 1.5px solid rgba(26,48,34,0.2); background: transparent; border-radius: 4px; font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 0.92rem; cursor: pointer; color: var(--text-mid); transition: all 0.2s; }
-    .btn-cancel:hover { border-color: var(--green-mid); color: var(--green-mid); }
-    .btn-save { padding: 0.75rem 2rem; background: var(--green-dark); color: var(--cream); border: none; border-radius: 4px; font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.92rem; cursor: pointer; transition: all 0.25s; display: flex; align-items: center; gap: 0.5rem; }
-    .btn-save:hover { background: var(--green-mid); transform: translateY(-1px); }
-    .btn-save:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-    .save-status { display: none; padding: 1rem 1.5rem; border-radius: 6px; font-weight: 600; font-size: 0.92rem; margin: 0 2rem 1.5rem; text-align: center; }
-    .save-status.success { display: block; background: rgba(45,90,61,0.1); color: var(--green-mid); border: 1px solid rgba(45,90,61,0.2); }
-    .save-status.error { display: block; background: rgba(220,50,50,0.08); color: #c03030; border: 1px solid rgba(220,50,50,0.2); }
-
-    /* FARM DETAIL MODAL */
-    .detail-modal { background: var(--warm-white); border-radius: 12px; max-width: 560px; width: 100%; max-height: 90vh; overflow-y: auto; }
-    .detail-header { height: 180px; background: var(--green-mid); display: flex; align-items: center; justify-content: center; font-size: 5rem; position: relative; border-radius: 12px 12px 0 0; }
-    .detail-close { position: absolute; top: 1rem; right: 1rem; background: rgba(0,0,0,0.3); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-    .detail-body { padding: 2rem; }
-    .detail-body h2 { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--green-dark); margin-bottom: 0.5rem; }
-    .detail-meta { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-bottom: 1.2rem; }
-    .detail-meta span { font-size: 0.85rem; color: var(--text-mid); display: flex; align-items: center; gap: 0.3rem; }
-    .detail-desc { color: var(--text-mid); line-height: 1.7; margin-bottom: 1.5rem; }
-    .detail-cats { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.5rem; }
-    .detail-links { display: flex; flex-direction: column; gap: 0.6rem; }
-    .detail-link { display: flex; align-items: center; gap: 0.6rem; padding: 0.7rem 1rem; border-radius: 6px; background: rgba(45,90,61,0.06); text-decoration: none; color: var(--green-dark); font-weight: 600; font-size: 0.9rem; transition: all 0.2s; }
-    .detail-link:hover { background: rgba(45,90,61,0.12); }
-
-    /* LOADING */
-    .loading { display: flex; align-items: center; justify-content: center; padding: 4rem; grid-column: 1/-1; gap: 0.8rem; color: var(--text-mid); }
-    .spinner { width: 20px; height: 20px; border: 2px solid rgba(45,90,61,0.2); border-top-color: var(--green-mid); border-radius: 50%; animation: spin 0.8s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    /* CTA */
+    .cta{background:var(--earth);padding:6rem 4rem;display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;overflow:hidden;}
+    .cta::before{content:'🌾';position:absolute;font-size:15rem;opacity:0.08;top:-2rem;right:-2rem;transform:rotate(-20deg);}
+    .cta h2{font-family:'Playfair Display',serif;font-size:clamp(2rem,4vw,3.5rem);color:var(--green-dark);max-width:700px;margin-bottom:1.5rem;line-height:1.2;}
+    .cta p{color:rgba(26,48,34,0.7);max-width:500px;margin-bottom:2.5rem;font-size:1.05rem;line-height:1.7;}
+    .btn-dark{display:inline-block;padding:1.1rem 2.5rem;background:var(--green-dark);color:var(--cream);font-weight:700;font-size:0.95rem;letter-spacing:0.05em;text-transform:uppercase;text-decoration:none;border-radius:2px;transition:all 0.25s;}
+    .btn-dark:hover{background:var(--green-mid);transform:translateY(-2px);}
 
     /* FOOTER */
-    footer { background: var(--text-dark); padding: 3rem 4rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
-    .footer-logo { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 900; color: var(--cream); }
-    .footer-logo span { color: var(--earth); }
-    footer p { color: rgba(245,240,232,0.4); font-size: 0.85rem; }
+    footer{background:var(--text-dark);padding:4rem;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;}
+    .footer-logo{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;color:var(--cream);}
+    .footer-logo span{color:var(--earth);}
+    .footer-tagline{color:rgba(245,240,232,0.5);font-size:0.88rem;line-height:1.7;margin-top:0.8rem;max-width:260px;}
+    .footer-col h4{color:var(--earth);font-size:0.72rem;letter-spacing:0.18em;text-transform:uppercase;font-weight:700;margin-bottom:1rem;}
+    .footer-col ul{list-style:none;display:flex;flex-direction:column;gap:0.6rem;}
+    .footer-col a{color:rgba(245,240,232,0.6);text-decoration:none;font-size:0.9rem;transition:color 0.2s;}
+    .footer-col a:hover{color:var(--cream);}
+    .footer-col p{color:rgba(245,240,232,0.6);font-size:0.9rem;line-height:1.8;}
+    .footer-bottom{background:rgba(0,0,0,0.3);padding:1rem 4rem;display:flex;justify-content:space-between;}
+    .footer-bottom p{color:rgba(245,240,232,0.3);font-size:0.82rem;}
 
-    /* RESPONSIVE */
-    @media (max-width: 900px) {
-      nav { padding: 1rem 1.5rem; }
-      .page-header { padding: 6rem 1.5rem 2.5rem; }
-      .main-layout { grid-template-columns: 1fr; }
-      .sidebar { position: static; height: auto; border-right: none; border-bottom: 1px solid rgba(26,48,34,0.1); }
-      .content { padding: 1.5rem; }
-      .farms-grid { grid-template-columns: 1fr 1fr; }
-      .form-row, .form-row-3 { grid-template-columns: 1fr; }
-      footer { padding: 2rem 1.5rem; }
-    }
-    @media (max-width: 600px) {
-      .farms-grid { grid-template-columns: 1fr; }
-      .header-stats { gap: 1.2rem; }
+    @keyframes fadeUp{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
+    .hero-left>*{animation:fadeUp 0.8s ease both;}
+    .hero-tag{animation-delay:0.1s;}.hero-title{animation-delay:0.25s;}.hero-sub{animation-delay:0.4s;}.hero-btns{animation-delay:0.55s;}
+
+    @media(max-width:1100px){.section-nav{grid-template-columns:1fr 1fr;}.section-link{border-right:none;border-bottom:1px solid rgba(26,48,34,0.08);}}
+    @media(max-width:900px){
+      nav{padding:0.8rem 1.5rem;}.hero,.about{grid-template-columns:1fr;}.hero-right{height:50vh;}.about-img{height:40vh;order:-1;}.about-content{padding:4rem 2rem;}
+      .section-nav{grid-template-columns:1fr;}.cards-row{grid-template-columns:1fr;}.how-steps{grid-template-columns:1fr;}
+      footer{grid-template-columns:1fr 1fr;gap:2rem;padding:2.5rem 1.5rem;}.footer-bottom{padding:1rem 1.5rem;flex-direction:column;gap:0.4rem;}
+      .hero-left{padding:5rem 2rem 4rem;}.preview-section{padding:3rem 1.5rem;}.how,.cta{padding:4rem 1.5rem;}
     }
   </style>
 </head>
 <body>
 
 <!-- NAV -->
-<nav>
+<nav id="main-nav">
   <a href="index.html" class="nav-logo">Gård<span>navi</span></a>
   <ul class="nav-links">
-    <li><a href="index.html">Hjem</a></li>
-    <li><a href="garder.html" class="active">Gårder</a></li>
-    <li><a href="index.html#restauranter">Restauranter</a></li>
-    <li><a href="index.html#oppskrifter">Oppskrifter</a></li>
-    <li><a href="index.html#kontakt">Kontakt</a></li>
+    <li><a href="index.html" class="active">Hjem</a></li>
+    <li><a href="garder.html">Gårder</a></li>
+    <li><a href="restauranter.html">Restauranter</a></li>
+    <li><a href="oppskrifter.html">Oppskrifter</a></li>
+    <li><a href="kontakt.html">Kontakt</a></li>
   </ul>
-  <button class="nav-add-btn" onclick="openModal()">+ Legg til gård</button>
+  <div id="nav-auth">
+    <a href="/.auth/login/github?post_login_redirect_uri=/" class="nav-login-btn" id="login-btn">Logg inn</a>
+    <div class="nav-user" id="nav-user" style="display:none">
+      <span id="user-name"></span>
+      <a href="/.auth/logout" class="nav-logout-btn">Logg ut</a>
+    </div>
+  </div>
 </nav>
 
-<!-- PAGE HEADER -->
-<section class="page-header">
-  <div class="breadcrumb"><a href="index.html">Hjem</a> / Gårder</div>
-  <h1>Gårder i Norge 🌾</h1>
-  <p>Finn lokale gårder nær deg med ekte, uprosesserte råvarer direkte fra bonden</p>
-  <div class="header-stats">
-    <div class="stat"><span class="stat-num" id="total-count">0</span><span class="stat-label">Gårder</span></div>
-    <div class="stat"><span class="stat-num" id="municipality-count">0</span><span class="stat-label">Kommuner</span></div>
-    <div class="stat"><span class="stat-num" id="category-count">6</span><span class="stat-label">Kategorier</span></div>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <span class="hero-tag">Lokal mat · Ekte råvarer · Norge</span>
+    <h1 class="hero-title">Finn <em>ekte mat</em> fra ditt nærområde</h1>
+    <p class="hero-sub">Vi kobler norske familier med lokale gårder — slik at du vet nøyaktig hvor maten kommer fra.</p>
+    <div class="hero-btns">
+      <a href="garder.html" class="btn-primary">Se gårder nær deg →</a>
+      <a href="kontakt.html#registrer" class="btn-outline">Registrer din gård</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <img src="https://cdn.prod.website-files.com/6994c2337d18cb8ef4a39450/6998c7791df82f9ac95184ca_foodiesfeed.com_organic-vegetables-in-a-garden.jpg" alt="Ferske grønnsaker fra hagen"/>
   </div>
 </section>
 
-<!-- MAIN -->
-<div class="main-layout">
-
-  <!-- SIDEBAR FILTERS -->
-  <aside class="sidebar">
-    <div class="search-box">
-      <span class="search-icon">🔍</span>
-      <input type="text" id="search-input" placeholder="Søk etter gård..." oninput="applyFilters()"/>
+<!-- 4 SECTION NAVIGATION LINKS -->
+<section class="section-nav">
+  <a href="garder.html" class="section-link">
+    <span class="sl-icon">🌾</span>
+    <div class="sl-title">Gårder</div>
+    <p class="sl-desc">Finn lokale gårder nær deg med ekte, uprosesserte råvarer direkte fra bonden.</p>
+    <div class="sl-items">
+      <span class="sl-item">Interaktivt kart over gårder</span>
+      <span class="sl-item">Filtrer på kategori og kommune</span>
+      <span class="sl-item">REKO-ring lenker</span>
+      <span class="sl-item">Legg til din gård (innlogget)</span>
     </div>
-
-    <div class="filter-group">
-      <h4>🥩 Kategori</h4>
-      <div class="filter-chips">
-        <button class="chip" data-filter="category" data-value="Kjøtt" onclick="toggleChip(this)">Kjøtt</button>
-        <button class="chip" data-filter="category" data-value="Grønnsaker" onclick="toggleChip(this)">Grønnsaker</button>
-        <button class="chip" data-filter="category" data-value="Meieriprodukter" onclick="toggleChip(this)">Meieriprodukter</button>
-        <button class="chip" data-filter="category" data-value="Egg" onclick="toggleChip(this)">Egg</button>
-        <button class="chip" data-filter="category" data-value="Brød" onclick="toggleChip(this)">Brød</button>
-        <button class="chip" data-filter="category" data-value="Honning/Frukt" onclick="toggleChip(this)">Honning/Frukt</button>
-      </div>
+    <span class="sl-cta">Se alle gårder <span class="sl-arrow">→</span></span>
+  </a>
+  <a href="restauranter.html" class="section-link">
+    <span class="sl-icon">🍽️</span>
+    <div class="sl-title">Restauranter</div>
+    <p class="sl-desc">Spisesteder som prioriterer norske, kortreiste råvarer og lager mat fra bunnen av.</p>
+    <div class="sl-items">
+      <span class="sl-item">Kart over restauranter</span>
+      <span class="sl-item">Filtrer etter by og kommune</span>
+      <span class="sl-item">Besøk nettsider</span>
+      <span class="sl-item">Legg til restaurant (innlogget)</span>
     </div>
-
-    <div class="filter-group">
-      <h4>📍 Kommune</h4>
-      <div class="filter-chips" id="municipality-chips">
-        <!-- Dynamically generated -->
-      </div>
+    <span class="sl-cta">Se alle restauranter <span class="sl-arrow">→</span></span>
+  </a>
+  <a href="oppskrifter.html" class="section-link">
+    <span class="sl-icon">📖</span>
+    <div class="sl-title">Oppskrifter</div>
+    <p class="sl-desc">Hjemmelaget mat basert på norske, sesongbaserte råvarer koblet til lokale gårder.</p>
+    <div class="sl-items">
+      <span class="sl-item">Kjøtt, grønnsaker, fisk, dessert</span>
+      <span class="sl-item">Koblet til lokale råvarer</span>
+      <span class="sl-item">Sesongbaserte oppskrifter</span>
+      <span class="sl-item">Del din oppskrift (innlogget)</span>
     </div>
-
-    <div class="filter-group">
-      <h4>🌿 Sesong</h4>
-      <div class="filter-chips">
-        <button class="chip" data-filter="season" data-value="Vinter" onclick="toggleChip(this)">❄️ Vinter</button>
-        <button class="chip" data-filter="season" data-value="Vår" onclick="toggleChip(this)">🌱 Vår</button>
-        <button class="chip" data-filter="season" data-value="Sommer" onclick="toggleChip(this)">☀️ Sommer</button>
-        <button class="chip" data-filter="season" data-value="Høst" onclick="toggleChip(this)">🍂 Høst</button>
-      </div>
+    <span class="sl-cta">Se alle oppskrifter <span class="sl-arrow">→</span></span>
+  </a>
+  <a href="kontakt.html" class="section-link">
+    <span class="sl-icon">🤝</span>
+    <div class="sl-title">Bli med</div>
+    <p class="sl-desc">Registrer din gård, restaurant eller kafé gratis og nå tusenvis av kunder.</p>
+    <div class="sl-items">
+      <span class="sl-item">Gratis gårdsregistrering</span>
+      <span class="sl-item">Kontaktskjema</span>
+      <span class="sl-item">Vanlige spørsmål (FAQ)</span>
+      <span class="sl-item">Kontaktinfo og åpningstider</span>
     </div>
+    <span class="sl-cta">Kom i gang gratis <span class="sl-arrow">→</span></span>
+  </a>
+</section>
 
-    <button class="clear-filters" onclick="clearFilters()">✕ Nullstill filtre</button>
-  </aside>
-
-  <!-- CONTENT -->
-  <div class="content">
-    <div class="content-header">
-      <p class="results-count" id="results-count">Laster gårder...</p>
-      <div class="view-toggle">
-        <button class="view-btn active" id="grid-btn" onclick="setView('grid')" title="Rutenett">⊞</button>
-        <button class="view-btn" id="list-btn" onclick="setView('list')" title="Liste">☰</button>
-      </div>
-    </div>
-    <div class="farms-grid" id="farms-container">
-      <div class="loading"><div class="spinner"></div> Laster gårder fra databasen...</div>
+<!-- ABOUT -->
+<section class="about" id="om-oss">
+  <div class="about-img">
+    <img src="https://cdn.prod.website-files.com/6994c2337d18cb8ef4a39450/6998c84236f01aae375e7bb6_Gemini_Generated_Image_gb4qvbgb4qvbgb4q.png" alt="Norsk gård"/>
+  </div>
+  <div class="about-content">
+    <span class="section-label">Om oss</span>
+    <h2>Handelhjelp Gårdnavi</h2>
+    <p>Vi bygger bro mellom norske gårder og middagsbordet. I Norge stiger forbruket av ultraprosessert mat, mens lokale matprodusenter sliter med digital synlighet og markedsføring.</p>
+    <p>Gårdnavi gjør det enkelt å finne ekte råvarer og støtte norsk landbruk — direkte fra bonden til din familie. Og for bønder og restauranter: gratis digital synlighet som erstatter Facebook-kaoset.</p>
+    <div class="about-stats">
+      <div class="stat"><div class="stat-num">5+</div><div class="stat-label">Lokale gårder</div></div>
+      <div class="stat"><div class="stat-num">6</div><div class="stat-label">Produktkategorier</div></div>
+      <div class="stat"><div class="stat-num">100%</div><div class="stat-label">Gratis oppføring</div></div>
+      <div class="stat"><div class="stat-num">0</div><div class="stat-label">Ultraprosessert mat</div></div>
     </div>
   </div>
-</div>
+</section>
+
+<!-- FARMS PREVIEW -->
+<section class="preview-section cream" id="garder-preview">
+  <div class="preview-header">
+    <div>
+      <span class="section-label">Lokal mat</span>
+      <h2>Gårder i Norge</h2>
+      <p>Ekte råvarer direkte fra bonden til ditt bord</p>
+    </div>
+    <a href="garder.html" class="see-all-btn">Se alle gårder →</a>
+  </div>
+  <div class="cards-row">
+    <a href="garder.html?kommune=Nome" class="preview-card">
+      <div class="card-thumb green">🌾</div>
+      <div class="card-info">
+        <span class="card-tag tag-farm">Gård · Nome</span>
+        <h3>Fen gård</h3>
+        <p>Ferske grønnsaker og egg fra hjertet av Telemark. Leverer til REKO-ring i Nome.</p>
+        <div class="card-meta">📍 Fenvegen, 3830 Ulefoss</div>
+      </div>
+    </a>
+    <a href="garder.html?kommune=Nome" class="preview-card">
+      <div class="card-thumb green">🥩</div>
+      <div class="card-info">
+        <span class="card-tag tag-farm">Gård · Nome</span>
+        <h3>Svenseid gård</h3>
+        <p>Familiegård med lammekjøtt og meierivarer. Norsk landbruk på sitt beste.</p>
+        <div class="card-meta">📍 Svenseidvegen, 3825 Lunde</div>
+      </div>
+    </a>
+    <a href="garder.html?kommune=Nome" class="preview-card">
+      <div class="card-thumb green">🍯</div>
+      <div class="card-info">
+        <span class="card-tag tag-farm">Gård · Nome</span>
+        <h3>Helgen gård</h3>
+        <p>Gammel gård med moderne drift. Honning, frukt og bær av høy kvalitet.</p>
+        <div class="card-meta">📍 Helgenvegen, 3830 Ulefoss</div>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- RESTAURANTS PREVIEW -->
+<section class="preview-section dark" id="restauranter-preview">
+  <div class="preview-header light">
+    <div>
+      <span class="section-label" style="color:var(--earth);">Spiseopplevelser</span>
+      <h2>Restauranter med lokale råvarer</h2>
+      <p>Spisesteder som prioriterer norsk, kortreist mat</p>
+    </div>
+    <a href="restauranter.html" class="see-all-btn light">Se alle restauranter →</a>
+  </div>
+  <div class="cards-row">
+    <a href="restauranter.html" class="preview-card">
+      <div class="card-thumb orange">🍽️</div>
+      <div class="card-info">
+        <span class="card-tag tag-rest">Restaurant · Oslo</span>
+        <h3>Maaemo</h3>
+        <p>Tre-stjerners Michelin med fokus på norske, naturlige råvarer. En gastronomisk reise.</p>
+        <div class="card-meta">📍 Schweigaards gate 15, Oslo</div>
+      </div>
+    </a>
+    <a href="restauranter.html" class="preview-card">
+      <div class="card-thumb orange">🐟</div>
+      <div class="card-info">
+        <span class="card-tag tag-rest">Restaurant · Bergen</span>
+        <h3>Lysverket</h3>
+        <p>Moderne norsk kjøkken i Kode-museene. Fokus på lokale sjømatråvarer fra Vestlandet.</p>
+        <div class="card-meta">📍 Rasmus Meyers allé, Bergen</div>
+      </div>
+    </a>
+    <a href="restauranter.html" class="preview-card">
+      <div class="card-thumb orange">🥩</div>
+      <div class="card-info">
+        <span class="card-tag tag-rest">Restaurant · Oslo</span>
+        <h3>Galt</h3>
+        <p>Hyggelig bistro på Frogner med lokalt innkjøpt kjøtt og grønnsaker fra norske gårder.</p>
+        <div class="card-meta">📍 Vibes gate 11, Oslo</div>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- RECIPES PREVIEW -->
+<section class="preview-section warm" id="oppskrifter-preview">
+  <div class="preview-header">
+    <div>
+      <span class="section-label">Hjemmelaget mat</span>
+      <h2>Oppskrifter</h2>
+      <p>Laget med norske, sesongbaserte råvarer koblet til lokale gårder</p>
+    </div>
+    <a href="oppskrifter.html" class="see-all-btn">Se alle oppskrifter →</a>
+  </div>
+  <div class="cards-row">
+    <a href="oppskrifter.html" class="preview-card">
+      <div class="card-thumb earth">🍖</div>
+      <div class="card-info">
+        <span class="card-tag tag-recipe">Kjøtt · 90 min</span>
+        <h3>Lammefrikassé med rotgrønnsaker</h3>
+        <p>En klassisk norsk hverdagsrett med saftig lam og sesongens rotgrønnsaker.</p>
+        <div class="card-meta">Fra: Svenseid gård, Nome</div>
+      </div>
+    </a>
+    <a href="oppskrifter.html" class="preview-card">
+      <div class="card-thumb earth">🥕</div>
+      <div class="card-info">
+        <span class="card-tag tag-recipe">Grønnsaker · 45 min</span>
+        <h3>Ovnsbakte rotgrønnsaker med honning</h3>
+        <p>Enkel og smakfull oppskrift med sesonggrønnsaker glasert med lokal honning.</p>
+        <div class="card-meta">Fra: Fen gård & Helgen gård</div>
+      </div>
+    </a>
+    <a href="oppskrifter.html" class="preview-card">
+      <div class="card-thumb earth">🍎</div>
+      <div class="card-info">
+        <span class="card-tag tag-recipe">Dessert · 60 min</span>
+        <h3>Eple- og plommekake</h3>
+        <p>Saftig høstkake med lokale frukter fra Hardanger. En ekte norsk smaksopplevelse.</p>
+        <div class="card-meta">Fra: Hardanger Fruktgård</div>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how">
+  <div class="how-inner">
+    <div class="how-header">
+      <span class="section-label" style="justify-content:center;color:var(--earth);">Slik fungerer det</span>
+      <h2>Fra gård til middagsbord</h2>
+    </div>
+    <div class="how-steps">
+      <div class="how-step">
+        <div class="step-num">1</div>
+        <h3>Finn din lokale gård</h3>
+        <p>Bruk <a href="garder.html">kartet på Gårder-siden</a> til å finne gårder nær deg. Filtrer på kategori, sesong og kommune.</p>
+      </div>
+      <div class="how-step">
+        <div class="step-num">2</div>
+        <h3>Velg dine råvarer</h3>
+        <p>Se hva gården produserer og finn ut hvordan du kan handle — REKO-ring, nettbutikk eller direkte fra gården.</p>
+      </div>
+      <div class="how-step">
+        <div class="step-num">3</div>
+        <h3>Lag hjemmelaget mat</h3>
+        <p>Bruk våre <a href="oppskrifter.html">oppskrifter</a> koblet direkte til lokale råvarer. Se hvilke gårder som har ingrediensene.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+  <h2>Vil du ha din gård eller restaurant på kartet?</h2>
+  <p>Grunnleggende oppføring på Gårdnavi er alltid gratis. Kom i gang på 2 minutter — ingen tekniske kunnskaper nødvendig.</p>
+  <a href="kontakt.html#registrer" class="btn-dark">Registrer deg gratis →</a>
+</section>
 
 <!-- FOOTER -->
 <footer>
-  <div class="footer-logo">Gård<span>navi</span></div>
-  <p>© 2025 Handelhjelp. Grunnleggende oppføring er alltid gratis.</p>
+  <div>
+    <div class="footer-logo">Gård<span>navi</span></div>
+    <p class="footer-tagline">Et Norge hvor ethvert middagsbord er knyttet til en lokal gård — god helse, åpenhet og levende lokalsamfunn gjennom ren, uprosessert mat.</p>
+  </div>
+  <div class="footer-col">
+    <h4>Utforsk</h4>
+    <ul>
+      <li><a href="garder.html">🌾 Gårder</a></li>
+      <li><a href="restauranter.html">🍽️ Restauranter</a></li>
+      <li><a href="oppskrifter.html">📖 Oppskrifter</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <h4>Om oss</h4>
+    <ul>
+      <li><a href="kontakt.html">Kontakt oss</a></li>
+      <li><a href="kontakt.html#faq">Vanlige spørsmål</a></li>
+      <li><a href="kontakt.html#registrer">Registrer gård</a></li>
+      <li><a href="/.auth/login/github">Logg inn</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <h4>Kontakt</h4>
+    <p>
+      <a href="tel:621829017">(62) 1829017</a><br/>
+      <a href="mailto:hello@handelhjelp.com">hello@handelhjelp.com</a><br/>
+      Ulefoss, Nome<br/>Telemark, Norge
+    </p>
+  </div>
 </footer>
-
-<!-- ADD FARM MODAL -->
-<div class="modal-overlay" id="add-farm-modal">
-  <div class="modal">
-    <div class="modal-header">
-      <div>
-        <h2>🌾 Legg til gård</h2>
-        <p>Fyll inn informasjon om gården — oppføring er gratis</p>
-      </div>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
-    <div class="modal-body">
-
-      <div class="form-section-title">Grunnleggende info</div>
-      <div class="form-group">
-        <label>Gårdens navn <span>*</span></label>
-        <input type="text" id="f-name" required placeholder="f.eks. Fen gård"/>
-      </div>
-      <div class="form-group">
-        <label>Beskrivelse</label>
-        <textarea id="f-desc" placeholder="Fortell litt om gården, hva dere produserer og hva som gjør dere spesielle..."></textarea>
-      </div>
-
-      <div class="form-section-title">Lokasjon</div>
-      <div class="form-group">
-        <label>Adresse</label>
-        <input type="text" id="f-address" placeholder="f.eks. Fenvegen, 3830 Ulefoss"/>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Kommune <span>*</span></label>
-          <input type="text" id="f-municipality" required placeholder="f.eks. Nome"/>
-        </div>
-        <div class="form-group">
-          <label>Fylke</label>
-          <input type="text" id="f-region" placeholder="f.eks. Telemark"/>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Breddegrad (lat)</label>
-          <input type="number" id="f-lat" step="0.0001" placeholder="59.3500"/>
-        </div>
-        <div class="form-group">
-          <label>Lengdegrad (lng)</label>
-          <input type="number" id="f-lng" step="0.0001" placeholder="9.2800"/>
-        </div>
-      </div>
-      <p style="font-size:0.8rem;color:var(--text-mid);margin-top:-0.5rem;margin-bottom:1rem;">💡 Finn koordinater på <a href="https://maps.google.com" target="_blank" style="color:var(--green-mid)">Google Maps</a> — høyreklikk → "Hva er her?"</p>
-
-      <div class="form-section-title">Produkter og sesong</div>
-      <div class="form-group">
-        <label>Kategorier (velg alle som passer)</label>
-        <div class="checkbox-group">
-          <div class="checkbox-item"><input type="checkbox" id="cat-kjott" value="Kjøtt"/><label for="cat-kjott">🥩 Kjøtt</label></div>
-          <div class="checkbox-item"><input type="checkbox" id="cat-gront" value="Grønnsaker"/><label for="cat-gront">🥦 Grønnsaker</label></div>
-          <div class="checkbox-item"><input type="checkbox" id="cat-meieri" value="Meieriprodukter"/><label for="cat-meieri">🧀 Meieriprodukter</label></div>
-          <div class="checkbox-item"><input type="checkbox" id="cat-egg" value="Egg"/><label for="cat-egg">🥚 Egg</label></div>
-          <div class="checkbox-item"><input type="checkbox" id="cat-brod" value="Brød"/><label for="cat-brod">🍞 Brød</label></div>
-          <div class="checkbox-item"><input type="checkbox" id="cat-honning" value="Honning/Frukt"/><label for="cat-honning">🍯 Honning/Frukt</label></div>
-        </div>
-      </div>
-      <div class="form-group">
-        <label>Sesong</label>
-        <div class="checkbox-group">
-          <div class="checkbox-item"><input type="checkbox" id="s-vinter" value="Vinter"/><label for="s-vinter">❄️ Vinter</label></div>
-          <div class="checkbox-item"><input type="checkbox" id="s-var" value="Vår"/><label for="s-var">🌱 Vår</label></div>
-          <div class="checkbox-item"><input type="checkbox" id="s-sommer" value="Sommer"/><label for="s-sommer">☀️ Sommer</label></div>
-          <div class="checkbox-item"><input type="checkbox" id="s-host" value="Høst"/><label for="s-host">🍂 Høst</label></div>
-        </div>
-      </div>
-
-      <div class="form-section-title">Kontaktinfo</div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Telefon</label>
-          <input type="tel" id="f-phone" placeholder="+47 123 45 678"/>
-        </div>
-        <div class="form-group">
-          <label>E-post</label>
-          <input type="email" id="f-email" placeholder="din@gard.no"/>
-        </div>
-      </div>
-      <div class="form-group">
-        <label>Nettside</label>
-        <input type="url" id="f-website" placeholder="https://"/>
-      </div>
-      <div class="form-group">
-        <label>REKO-ring lenke</label>
-        <input type="url" id="f-reko" placeholder="https://facebook.com/groups/..."/>
-      </div>
-
-    </div>
-    <div class="save-status" id="save-status"></div>
-    <div class="modal-footer">
-      <button class="btn-cancel" onclick="closeModal()">Avbryt</button>
-      <button class="btn-save" id="save-btn" onclick="saveFarm()">
-        <span id="save-btn-text">💾 Lagre gård</span>
-      </button>
-    </div>
-  </div>
+<div class="footer-bottom">
+  <p>© 2025 Handelhjelp Gårdnavi. Alle rettigheter forbeholdt.</p>
+  <p>Designet med ❤️ for norsk landbruk</p>
 </div>
 
-<!-- FARM DETAIL MODAL -->
-<div class="modal-overlay" id="farm-detail-modal">
-  <div class="detail-modal">
-    <div class="detail-header" id="detail-header">🌾
-      <button class="detail-close" onclick="document.getElementById('farm-detail-modal').classList.remove('open')">×</button>
-    </div>
-    <div class="detail-body" id="detail-body"></div>
-  </div>
-</div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
-  const API_URL = 'https://gardnavi-api-fecufjdrfbhyf2g6.westeurope-01.azurewebsites.net';
-
-  // Sample data while API is being set up
-  const sampleFarms = [
-    { id:1, name:'Fen gård', address:'Fenvegen, 3830 Ulefoss', municipality:'Nome', region:'Telemark', description:'Tradisjonell norsk gård med ferske grønnsaker og egg. Leverer til REKO-ring i Nome.', categories:'Grønnsaker,Egg', season:'Sommer,Høst', lat:59.35, lng:9.28, website:'#', phone:'+47 350 12345' },
-    { id:2, name:'Svenseid gård', address:'Svenseidvegen, 3825 Lunde', municipality:'Nome', region:'Telemark', description:'Familiegård med kjøttproduksjon og meierivarer. Spesialiserer seg på lammekjøtt.', categories:'Kjøtt,Meieriprodukter', season:'Vår,Sommer,Høst', lat:59.28, lng:9.24, website:'#', phone:'+47 350 23456' },
-    { id:3, name:'Helgen gård', address:'Helgenvegen, 3830 Ulefoss', municipality:'Nome', region:'Telemark', description:'Gammel gård med moderne drift. Produserer honning, frukt og bær av høy kvalitet.', categories:'Honning/Frukt', season:'Sommer,Høst', lat:59.37, lng:9.31, website:'#', phone:'+47 350 34567' },
-    { id:4, name:'Susås gård', address:'Eidsbygdavegen 90, 3825 Lunde', municipality:'Nome', region:'Telemark', description:'Økoloigsk gård med fri-range høner og grønnsaker dyrket uten sprøytemidler.', categories:'Egg,Grønnsaker', season:'Vår,Sommer,Høst,Vinter', lat:59.26, lng:9.22, website:'#', phone:'+47 350 45678' },
-    { id:5, name:'Moen gård', address:'Vinsåsvegen 25, 3830 Ulefoss', municipality:'Nome', region:'Telemark', description:'Tradisjonsrik gård med kornproduksjon og eget bakeri. Kjent for sitt surdeigsbrød.', categories:'Brød', season:'Høst,Vinter', lat:59.33, lng:9.26, website:'#', phone:'+47 350 56789' },
-    { id:6, name:'Hardanger Fruktgård', address:'Lofthus, 5781 Ullensvang', municipality:'Ullensvang', region:'Vestland', description:'Spektakulær frukthave ved Hardangerfjorden. Epler, pærer, plommer og kirsebær.', categories:'Honning/Frukt', season:'Sommer,Høst', lat:60.32, lng:6.65, website:'#', phone:'+47 533 12345' },
-    { id:7, name:'Jæren Melkegård', address:'Klepp Stasjon, 4352 Klepp', municipality:'Klepp', region:'Rogaland', description:'Moderne melkegård på Jæren med høy dyrevelferd. Leverer fersk melk og ost.', categories:'Meieriprodukter,Kjøtt', season:'Vår,Sommer,Høst,Vinter', lat:58.77, lng:5.63, website:'#', phone:'+47 511 23456' },
-  ];
-
-  let allFarms = [];
-  let filteredFarms = [];
-  let currentView = 'grid';
-  let activeFilters = { category: [], municipality: [], season: [] };
-
-  // Load farms
-  async function loadFarms() {
-    try {
-      const res = await fetch(`${API_URL}/api/GetFarms`);
-      if (res.ok) {
-        const data = await res.json();
-        allFarms = data.length > 0 ? data : sampleFarms;
-      } else {
-        allFarms = sampleFarms;
-      }
-    } catch(e) {
-      allFarms = sampleFarms;
+window.addEventListener('scroll',()=>{
+  document.getElementById('main-nav').style.padding=window.scrollY>50?'0.7rem 4rem':'1.2rem 4rem';
+});
+async function checkAuth(){
+  try{
+    const r=await fetch('/.auth/me');
+    const d=await r.json();
+    if(d.clientPrincipal){
+      document.getElementById('login-btn').style.display='none';
+      document.getElementById('nav-user').style.display='flex';
+      document.getElementById('user-name').textContent=d.clientPrincipal.userDetails;
     }
-    filteredFarms = [...allFarms];
-    updateStats();
-    buildMunicipalityChips();
-    renderFarms();
-  }
-
-  function updateStats() {
-    document.getElementById('total-count').textContent = allFarms.length;
-    const municipalities = new Set(allFarms.map(f => f.municipality).filter(Boolean));
-    document.getElementById('municipality-count').textContent = municipalities.size;
-  }
-
-  function buildMunicipalityChips() {
-    const municipalities = [...new Set(allFarms.map(f => f.municipality).filter(Boolean))].sort();
-    const container = document.getElementById('municipality-chips');
-    container.innerHTML = municipalities.map(m => `
-      <button class="chip" data-filter="municipality" data-value="${m}" onclick="toggleChip(this)">${m}</button>
-    `).join('');
-  }
-
-  function toggleChip(btn) {
-    const filter = btn.dataset.filter;
-    const value = btn.dataset.value;
-    btn.classList.toggle('active');
-    if (btn.classList.contains('active')) {
-      if (!activeFilters[filter].includes(value)) activeFilters[filter].push(value);
-    } else {
-      activeFilters[filter] = activeFilters[filter].filter(v => v !== value);
-    }
-    applyFilters();
-  }
-
-  function applyFilters() {
-    const search = document.getElementById('search-input').value.toLowerCase();
-    filteredFarms = allFarms.filter(farm => {
-      const cats = (farm.categories || '').split(',').map(c => c.trim());
-      const seasons = (farm.season || '').split(',').map(s => s.trim());
-      const matchSearch = !search ||
-        farm.name.toLowerCase().includes(search) ||
-        (farm.municipality||'').toLowerCase().includes(search) ||
-        (farm.description||'').toLowerCase().includes(search);
-      const matchCat = activeFilters.category.length === 0 ||
-        activeFilters.category.some(c => cats.includes(c));
-      const matchMun = activeFilters.municipality.length === 0 ||
-        activeFilters.municipality.includes(farm.municipality);
-      const matchSeason = activeFilters.season.length === 0 ||
-        activeFilters.season.some(s => seasons.includes(s));
-      return matchSearch && matchCat && matchMun && matchSeason;
-    });
-    renderFarms();
-  }
-
-  function clearFilters() {
-    document.getElementById('search-input').value = '';
-    document.querySelectorAll('.chip.active').forEach(c => c.classList.remove('active'));
-    activeFilters = { category: [], municipality: [], season: [] };
-    filteredFarms = [...allFarms];
-    renderFarms();
-  }
-
-  function setView(view) {
-    currentView = view;
-    document.getElementById('grid-btn').classList.toggle('active', view === 'grid');
-    document.getElementById('list-btn').classList.toggle('active', view === 'list');
-    const container = document.getElementById('farms-container');
-    container.className = view === 'grid' ? 'farms-grid' : 'farms-list-view';
-    renderFarms();
-  }
-
-  function getCategoryEmoji(cat) {
-    const map = { 'Kjøtt':'🥩', 'Grønnsaker':'🥦', 'Meieriprodukter':'🧀', 'Egg':'🥚', 'Brød':'🍞', 'Honning/Frukt':'🍯' };
-    return map[cat] || '🌾';
-  }
-
-  function getMainEmoji(categories) {
-    if (!categories) return '🌾';
-    const cats = categories.split(',').map(c => c.trim());
-    return getCategoryEmoji(cats[0]) || '🌾';
-  }
-
-  function renderFarms() {
-    const container = document.getElementById('farms-container');
-    const count = filteredFarms.length;
-    document.getElementById('results-count').innerHTML = `Viser <strong>${count}</strong> av <strong>${allFarms.length}</strong> gårder`;
-
-    if (count === 0) {
-      container.innerHTML = `<div class="empty-state"><h3>Ingen gårder funnet 🔍</h3><p>Prøv å endre søket eller fjern noen filtre</p></div>`;
-      return;
-    }
-
-    if (currentView === 'grid') {
-      container.innerHTML = filteredFarms.map(farm => {
-        const cats = (farm.categories||'').split(',').map(c=>c.trim()).filter(Boolean);
-        const emoji = getMainEmoji(farm.categories);
-        const season = (farm.season||'').split(',')[0]?.trim();
-        return `
-          <div class="farm-card" onclick="showDetail(${farm.id || filteredFarms.indexOf(farm)})">
-            <div class="farm-card-img">
-              ${emoji}
-              ${season ? `<span class="season-tag">${season}</span>` : ''}
-            </div>
-            <div class="farm-card-body">
-              <div class="farm-name">${farm.name}</div>
-              <div class="farm-address">📍 ${farm.address || farm.municipality || ''}</div>
-              <div class="farm-categories">
-                ${cats.slice(0,3).map(c=>`<span class="cat-tag">${getCategoryEmoji(c)} ${c}</span>`).join('')}
-              </div>
-              <div class="farm-desc">${(farm.description||'').slice(0,90)}${(farm.description||'').length>90?'...':''}</div>
-              <div class="farm-card-footer">
-                <span class="farm-municipality">${farm.municipality||''}</span>
-                <a class="farm-link" href="#" onclick="event.stopPropagation()">Se mer →</a>
-              </div>
-            </div>
-          </div>`;
-      }).join('');
-    } else {
-      container.innerHTML = filteredFarms.map((farm, i) => `
-        <div class="farm-list-item" onclick="showDetail(${farm.id || i})">
-          <div class="farm-list-icon">${getMainEmoji(farm.categories)}</div>
-          <div class="farm-list-info">
-            <h3>${farm.name}</h3>
-            <p>📍 ${farm.address || farm.municipality || ''} &nbsp;·&nbsp; ${(farm.categories||'').split(',').slice(0,2).join(', ')}</p>
-          </div>
-          <div class="farm-list-meta">
-            <span class="farm-municipality">${farm.municipality||''}</span>
-          </div>
-        </div>`).join('');
-    }
-  }
-
-  function showDetail(id) {
-    const farm = allFarms.find(f => f.id === id) || allFarms[id];
-    if (!farm) return;
-    const emoji = getMainEmoji(farm.categories);
-    const cats = (farm.categories||'').split(',').map(c=>c.trim()).filter(Boolean);
-    document.getElementById('detail-header').innerHTML = `${emoji}<button class="detail-close" onclick="document.getElementById('farm-detail-modal').classList.remove('open')">×</button>`;
-    document.getElementById('detail-body').innerHTML = `
-      <h2>${farm.name}</h2>
-      <div class="detail-meta">
-        <span>📍 ${farm.address || farm.municipality || ''}</span>
-        ${farm.phone ? `<span>📞 ${farm.phone}</span>` : ''}
-        ${farm.season ? `<span>🗓️ ${farm.season}</span>` : ''}
-      </div>
-      <p class="detail-desc">${farm.description || 'Ingen beskrivelse tilgjengelig.'}</p>
-      <div class="detail-cats">${cats.map(c=>`<span class="cat-tag">${getCategoryEmoji(c)} ${c}</span>`).join('')}</div>
-      <div class="detail-links">
-        ${farm.website && farm.website !== '#' ? `<a class="detail-link" href="${farm.website}" target="_blank">🌐 Besøk nettsiden</a>` : ''}
-        ${farm.reko_ring ? `<a class="detail-link" href="${farm.reko_ring}" target="_blank">📦 REKO-ring</a>` : ''}
-        ${farm.email ? `<a class="detail-link" href="mailto:${farm.email}">✉️ Send e-post</a>` : ''}
-      </div>`;
-    document.getElementById('farm-detail-modal').classList.add('open');
-  }
-
-  // Modal
-  function openModal() { document.getElementById('add-farm-modal').classList.add('open'); }
-  function closeModal() {
-    document.getElementById('add-farm-modal').classList.remove('open');
-    document.getElementById('save-status').className = 'save-status';
-    document.getElementById('save-status').textContent = '';
-  }
-
-  async function saveFarm() {
-    const name = document.getElementById('f-name').value.trim();
-    const municipality = document.getElementById('f-municipality').value.trim();
-    if (!name || !municipality) {
-      showStatus('error', '⚠️ Fyll inn gårdens navn og kommune');
-      return;
-    }
-
-    const categories = Array.from(document.querySelectorAll('[id^="cat-"]:checked')).map(c => c.value).join(',');
-    const season = Array.from(document.querySelectorAll('[id^="s-"]:checked')).map(s => s.value).join(',');
-
-    const farmData = {
-      name, municipality,
-      description: document.getElementById('f-desc').value,
-      address: document.getElementById('f-address').value,
-      region: document.getElementById('f-region').value,
-      latitude: parseFloat(document.getElementById('f-lat').value) || null,
-      longitude: parseFloat(document.getElementById('f-lng').value) || null,
-      phone: document.getElementById('f-phone').value,
-      email: document.getElementById('f-email').value,
-      website: document.getElementById('f-website').value,
-      reko_ring: document.getElementById('f-reko').value,
-      categories, season
-    };
-
-    const btn = document.getElementById('save-btn');
-    btn.disabled = true;
-    document.getElementById('save-btn-text').textContent = '⏳ Lagrer...';
-
-    try {
-      const res = await fetch(`${API_URL}/api/AddFarm`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(farmData)
-      });
-
-      if (res.ok) {
-        showStatus('success', `✅ ${name} er lagt til! Siden oppdateres...`);
-        setTimeout(() => { closeModal(); loadFarms(); }, 2000);
-      } else {
-        // API not ready yet — add to local list for demo
-        farmData.id = allFarms.length + 1;
-        allFarms.push(farmData);
-        filteredFarms = [...allFarms];
-        updateStats();
-        buildMunicipalityChips();
-        renderFarms();
-        showStatus('success', `✅ ${name} er lagt til!`);
-        setTimeout(closeModal, 2000);
-      }
-    } catch(e) {
-      // Offline mode — add locally
-      farmData.id = allFarms.length + 1;
-      allFarms.push(farmData);
-      filteredFarms = [...allFarms];
-      updateStats();
-      buildMunicipalityChips();
-      renderFarms();
-      showStatus('success', `✅ ${name} er lagt til!`);
-      setTimeout(closeModal, 2000);
-    }
-
-    btn.disabled = false;
-    document.getElementById('save-btn-text').textContent = '💾 Lagre gård';
-  }
-
-  function showStatus(type, msg) {
-    const el = document.getElementById('save-status');
-    el.className = `save-status ${type}`;
-    el.textContent = msg;
-  }
-
-  // Close modals on bg click
-  document.querySelectorAll('.modal-overlay').forEach(o => {
-    o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
-  });
-
-  // Init
-  loadFarms();
+  }catch(e){}
+}
+checkAuth();
 </script>
 </body>
 </html>
