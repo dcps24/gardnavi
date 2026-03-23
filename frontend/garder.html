@@ -2,14 +2,13 @@
 <!DOCTYPE html>
 <html lang="no">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Gårder | Gårdnavi</title>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Restauranter | Gårdnavi</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    :root{--green-dark:#1a3022;--green-mid:#2d5a3d;--cream:#f5f0e8;--warm-white:#faf8f3;--earth:#c8a96e;--earth-light:#e8d5a3;--text-dark:#1a1a14;--text-mid:#3d3d2e;}
+    :root{--green-dark:#1a3022;--green-mid:#2d5a3d;--cream:#f5f0e8;--warm-white:#faf8f3;--earth:#c8a96e;--earth-light:#e8d5a3;--text-dark:#1a1a14;--text-mid:#3d3d2e;--orange:#c8692e;}
     html{scroll-behavior:smooth;}body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--text-dark);}
     nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:1rem 4rem;background:rgba(245,240,232,0.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(74,140,92,0.15);transition:padding 0.3s;}
     .nav-logo{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;color:var(--green-dark);text-decoration:none;}
@@ -24,147 +23,70 @@
     .nav-user{display:flex;align-items:center;gap:0.8rem;}
     #user-name{font-size:0.85rem;font-weight:600;color:var(--green-dark);}
     .nav-logout-btn{font-size:0.82rem;color:var(--text-mid);text-decoration:none;}
-    .page-header{background:var(--green-dark);padding:7rem 4rem 3rem;position:relative;overflow:hidden;}
-    .page-header::before{content:'';position:absolute;top:-80px;right:-80px;width:350px;height:350px;background:var(--earth);border-radius:50%;opacity:0.07;}
-    .breadcrumb{font-size:0.82rem;color:rgba(245,240,232,0.5);margin-bottom:1rem;}
-    .breadcrumb a{color:var(--earth);text-decoration:none;}
-    .page-header h1{font-family:'Playfair Display',serif;font-size:clamp(2.5rem,4vw,3.5rem);color:var(--cream);margin-bottom:0.8rem;}
-    .page-header p{color:rgba(245,240,232,0.7);font-size:1.05rem;max-width:500px;}
-    .header-stats{display:flex;gap:2rem;margin-top:2rem;}
-    .stat-num{font-family:'Playfair Display',serif;font-size:2rem;color:var(--earth);font-weight:700;}
-    .stat-label{font-size:0.78rem;color:rgba(245,240,232,0.5);letter-spacing:0.1em;text-transform:uppercase;}
-
-    /* MAP SECTION */
-    .map-section{background:var(--cream);padding:3rem 4rem;}
+    .page-header{background:var(--orange);padding:7rem 4rem 3rem;position:relative;overflow:hidden;}
+    .page-header::before{content:'';position:absolute;top:-80px;right:-80px;width:350px;height:350px;background:rgba(255,255,255,0.1);border-radius:50%;}
+    .breadcrumb{font-size:0.82rem;color:rgba(255,255,255,0.6);margin-bottom:1rem;}
+    .breadcrumb a{color:white;text-decoration:none;opacity:0.8;}
+    .page-header h1{font-family:'Playfair Display',serif;font-size:clamp(2.5rem,4vw,3.5rem);color:white;margin-bottom:0.8rem;}
+    .page-header p{color:rgba(255,255,255,0.8);font-size:1.05rem;max-width:500px;}
+    .map-section{padding:3rem 4rem;background:var(--cream);}
     .map-section h2{font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--green-dark);margin-bottom:0.5rem;}
     .map-section p{color:var(--text-mid);font-size:0.92rem;margin-bottom:1.5rem;}
-    .map-filters{display:flex;gap:0.7rem;margin-bottom:1.2rem;flex-wrap:wrap;}
-    .filter-btn{padding:0.4rem 1.1rem;border:1.5px solid var(--green-mid);background:transparent;color:var(--green-mid);border-radius:20px;font-size:0.83rem;font-weight:600;cursor:pointer;transition:all 0.2s;font-family:'DM Sans',sans-serif;}
-    .filter-btn:hover,.filter-btn.active{background:var(--green-dark);border-color:var(--green-dark);color:var(--cream);}
-    #farm-map{height:420px;border-radius:8px;border:1px solid rgba(26,48,34,0.12);z-index:1;}
-    .map-legend{display:flex;gap:2rem;margin-top:0.8rem;flex-wrap:wrap;}
-    .legend-item{display:flex;align-items:center;gap:0.5rem;font-size:0.85rem;color:var(--text-mid);}
-    .legend-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
-    .legend-dot.farm{background:#2d5a3d;}.legend-dot.restaurant{background:#c8692e;}
-
-    /* MAIN LAYOUT */
-    .main-layout{display:grid;grid-template-columns:260px 1fr;min-height:60vh;}
-    .sidebar{background:var(--cream);padding:2rem;border-right:1px solid rgba(26,48,34,0.1);position:sticky;top:60px;height:calc(100vh - 60px);overflow-y:auto;}
-    .search-box{position:relative;margin-bottom:2rem;}
-    .search-box input{width:100%;padding:0.7rem 1rem 0.7rem 2.4rem;border:1.5px solid rgba(26,48,34,0.15);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--warm-white);}
-    .search-box input:focus{outline:none;border-color:var(--green-mid);}
-    .search-icon{position:absolute;left:0.75rem;top:50%;transform:translateY(-50%);font-size:0.9rem;color:var(--text-mid);}
-    .filter-group{margin-bottom:1.8rem;}
-    .filter-group h4{font-size:0.7rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--earth);font-weight:700;margin-bottom:0.8rem;}
-    .filter-chips{display:flex;flex-wrap:wrap;gap:0.5rem;}
-    .chip{padding:0.3rem 0.8rem;border:1.5px solid rgba(26,48,34,0.15);border-radius:20px;font-size:0.8rem;font-weight:500;cursor:pointer;transition:all 0.2s;background:transparent;font-family:'DM Sans',sans-serif;color:var(--text-mid);}
-    .chip:hover{border-color:var(--green-mid);color:var(--green-mid);}
-    .chip.active{background:var(--green-dark);border-color:var(--green-dark);color:var(--cream);}
-    .clear-btn{width:100%;padding:0.6rem;border:1.5px solid rgba(26,48,34,0.15);border-radius:4px;background:transparent;font-family:'DM Sans',sans-serif;font-size:0.85rem;color:var(--text-mid);cursor:pointer;margin-top:0.5rem;transition:all 0.2s;}
-    .clear-btn:hover{border-color:var(--green-mid);color:var(--green-mid);}
-    .content{padding:2rem;}
-    .content-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;}
-    .results-count{font-size:0.9rem;color:var(--text-mid);}
-    .results-count strong{color:var(--green-dark);}
-    .view-toggle{display:flex;gap:0.4rem;}
-    .view-btn{padding:0.4rem 0.7rem;border:1px solid rgba(26,48,34,0.15);background:transparent;border-radius:4px;cursor:pointer;font-size:0.9rem;transition:all 0.2s;}
-    .view-btn.active{background:var(--green-dark);color:white;border-color:var(--green-dark);}
-    .add-farm-btn{padding:0.55rem 1.2rem;background:var(--earth);color:var(--green-dark);border:none;border-radius:4px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:0.85rem;cursor:pointer;transition:all 0.2s;display:none;}
-    .add-farm-btn.visible{display:block;}
-    .add-farm-btn:hover{background:var(--earth-light);}
-    .farms-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.2rem;}
-    .farms-list{display:flex;flex-direction:column;gap:1rem;}
-    .farm-card{background:var(--warm-white);border-radius:8px;overflow:hidden;border:1px solid rgba(26,48,34,0.08);transition:all 0.25s;cursor:pointer;}
-    .farm-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(26,48,34,0.1);}
-    .card-img{height:130px;background:var(--green-mid);display:flex;align-items:center;justify-content:center;font-size:3rem;position:relative;}
-    .season-tag{position:absolute;top:0.6rem;right:0.6rem;background:var(--earth);color:var(--green-dark);font-size:0.68rem;font-weight:700;padding:0.2em 0.6em;border-radius:20px;text-transform:uppercase;}
-    .card-body{padding:1.2rem;}
-    .farm-name{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--green-dark);margin-bottom:0.3rem;}
-    .farm-address{font-size:0.82rem;color:var(--text-mid);margin-bottom:0.6rem;}
-    .farm-cats{display:flex;flex-wrap:wrap;gap:0.3rem;margin-bottom:0.6rem;}
-    .cat-tag{font-size:0.7rem;font-weight:600;padding:0.15em 0.55em;border-radius:20px;background:rgba(45,90,61,0.1);color:var(--green-mid);}
-    .farm-desc{font-size:0.84rem;color:var(--text-mid);line-height:1.5;margin-bottom:0.8rem;}
-    .card-footer{display:flex;justify-content:space-between;align-items:center;padding-top:0.7rem;border-top:1px solid rgba(26,48,34,0.08);}
-    .muni-tag{font-size:0.76rem;color:var(--text-mid);background:rgba(26,48,34,0.06);padding:0.2em 0.6em;border-radius:20px;}
-    .see-more{color:var(--green-mid);text-decoration:none;font-size:0.82rem;font-weight:700;}
-    .farm-list-item{background:var(--warm-white);border-radius:8px;border:1px solid rgba(26,48,34,0.08);padding:1.2rem 1.5rem;display:grid;grid-template-columns:56px 1fr auto;gap:1.2rem;align-items:center;transition:all 0.2s;cursor:pointer;}
-    .farm-list-item:hover{border-color:rgba(26,48,34,0.2);box-shadow:0 4px 16px rgba(26,48,34,0.07);}
-    .list-icon{width:56px;height:56px;background:var(--green-mid);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0;}
-    .list-info h3{font-family:'Playfair Display',serif;font-size:1rem;color:var(--green-dark);margin-bottom:0.2rem;}
-    .list-info p{font-size:0.84rem;color:var(--text-mid);}
-    .empty-state{text-align:center;padding:4rem 2rem;grid-column:1/-1;}
-    .empty-state h3{font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--green-dark);margin-bottom:0.5rem;}
-    .empty-state p{color:var(--text-mid);}
-    .loading{display:flex;align-items:center;justify-content:center;padding:4rem;grid-column:1/-1;gap:0.8rem;color:var(--text-mid);}
-    .spinner{width:20px;height:20px;border:2px solid rgba(45,90,61,0.2);border-top-color:var(--green-mid);border-radius:50%;animation:spin 0.8s linear infinite;}
-    @keyframes spin{to{transform:rotate(360deg);}}
-
-    /* ADD FARM MODAL */
+    #rest-map{height:380px;border-radius:8px;border:1px solid rgba(26,48,34,0.12);}
+    .content-section{padding:3rem 4rem;}
+    .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem;}
+    .section-header h2{font-family:'Playfair Display',serif;font-size:2rem;color:var(--green-dark);}
+    .add-btn{padding:0.6rem 1.4rem;background:var(--orange);color:white;border:none;border-radius:4px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:0.85rem;cursor:pointer;transition:all 0.2s;display:none;}
+    .add-btn.visible{display:block;}
+    .add-btn:hover{opacity:0.85;}
+    .search-bar{display:flex;gap:1rem;margin-bottom:2rem;flex-wrap:wrap;}
+    .search-bar input{flex:1;min-width:200px;padding:0.7rem 1rem;border:1.5px solid rgba(26,48,34,0.15);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:0.92rem;background:var(--warm-white);}
+    .search-bar input:focus{outline:none;border-color:var(--orange);}
+    .filter-chips{display:flex;gap:0.5rem;flex-wrap:wrap;}
+    .chip{padding:0.35rem 0.9rem;border:1.5px solid rgba(26,48,34,0.15);border-radius:20px;font-size:0.82rem;font-weight:500;cursor:pointer;transition:all 0.2s;background:transparent;font-family:'DM Sans',sans-serif;color:var(--text-mid);}
+    .chip:hover{border-color:var(--orange);color:var(--orange);}
+    .chip.active{background:var(--orange);border-color:var(--orange);color:white;}
+    .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.5rem;}
+    .card{background:var(--warm-white);border-radius:8px;overflow:hidden;border:1px solid rgba(26,48,34,0.08);transition:all 0.25s;cursor:pointer;}
+    .card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(26,48,34,0.1);}
+    .card-img{height:140px;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:3rem;}
+    .card-body{padding:1.4rem;}
+    .card-tag{display:inline-block;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;font-weight:700;padding:0.2em 0.7em;border-radius:20px;margin-bottom:0.7rem;background:rgba(200,105,46,0.12);color:var(--orange);}
+    .card h3{font-family:'Playfair Display',serif;font-size:1.15rem;color:var(--green-dark);margin-bottom:0.4rem;}
+    .card p{font-size:0.88rem;color:var(--text-mid);line-height:1.6;margin-bottom:0.6rem;}
+    .card-meta{font-size:0.82rem;color:var(--orange);font-weight:600;}
+    .card a{color:var(--green-mid);text-decoration:none;font-size:0.85rem;font-weight:600;}
+    .empty-state{text-align:center;padding:4rem;grid-column:1/-1;color:var(--text-mid);}
     .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:2000;align-items:center;justify-content:center;padding:1rem;}
     .modal-overlay.open{display:flex;}
-    .modal{background:var(--warm-white);border-radius:12px;max-width:620px;width:100%;max-height:90vh;overflow-y:auto;}
-    .modal-header{background:var(--green-dark);padding:1.8rem 2rem;border-radius:12px 12px 0 0;display:flex;justify-content:space-between;align-items:start;position:sticky;top:0;z-index:1;}
-    .modal-header h2{font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--cream);}
-    .modal-header p{font-size:0.85rem;color:rgba(245,240,232,0.65);margin-top:0.2rem;}
-    .modal-close{background:none;border:none;color:var(--cream);font-size:1.5rem;cursor:pointer;opacity:0.7;line-height:1;}
+    .modal{background:var(--warm-white);border-radius:12px;max-width:560px;width:100%;max-height:90vh;overflow-y:auto;}
+    .modal-header{background:var(--orange);padding:1.8rem 2rem;border-radius:12px 12px 0 0;display:flex;justify-content:space-between;align-items:start;}
+    .modal-header h2{font-family:'Playfair Display',serif;font-size:1.5rem;color:white;}
+    .modal-header p{font-size:0.85rem;color:rgba(255,255,255,0.75);margin-top:0.2rem;}
+    .modal-close{background:none;border:none;color:white;font-size:1.5rem;cursor:pointer;opacity:0.7;line-height:1;}
     .modal-close:hover{opacity:1;}
     .modal-body{padding:2rem;}
-    .form-title{font-size:0.7rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--earth);font-weight:700;margin:1.5rem 0 1rem;padding-bottom:0.5rem;border-bottom:1px solid rgba(26,48,34,0.1);}
-    .form-title:first-child{margin-top:0;}
     .form-group{margin-bottom:1rem;}
     .form-group label{display:block;font-size:0.78rem;font-weight:600;color:var(--text-mid);margin-bottom:0.35rem;letter-spacing:0.04em;text-transform:uppercase;}
-    .form-group label span{color:#e25555;}
-    .form-group input,.form-group textarea,.form-group select{width:100%;padding:0.7rem 1rem;border:1.5px solid rgba(26,48,34,0.15);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:0.93rem;background:var(--warm-white);color:var(--text-dark);transition:border-color 0.2s;}
-    .form-group input:focus,.form-group textarea:focus,.form-group select:focus{outline:none;border-color:var(--green-mid);}
+    .form-group input,.form-group textarea{width:100%;padding:0.7rem 1rem;border:1.5px solid rgba(26,48,34,0.15);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:0.93rem;background:var(--warm-white);color:var(--text-dark);transition:border-color 0.2s;}
+    .form-group input:focus,.form-group textarea:focus{outline:none;border-color:var(--orange);}
     .form-group textarea{min-height:80px;resize:vertical;}
     .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
-    .checkbox-group{display:flex;flex-wrap:wrap;gap:0.5rem;}
-    .checkbox-item{display:flex;align-items:center;gap:0.4rem;padding:0.4rem 0.8rem;border:1.5px solid rgba(26,48,34,0.15);border-radius:20px;cursor:pointer;transition:all 0.2s;}
-    .checkbox-item input{width:14px;height:14px;accent-color:var(--green-mid);}
-    .checkbox-item label{font-size:0.83rem;color:var(--text-mid);cursor:pointer;}
-    .checkbox-item:has(input:checked){background:rgba(45,90,61,0.1);border-color:var(--green-mid);}
-    .checkbox-item:has(input:checked) label{color:var(--green-mid);font-weight:600;}
-    .modal-footer{padding:1.5rem 2rem;border-top:1px solid rgba(26,48,34,0.1);display:flex;gap:1rem;justify-content:flex-end;background:var(--cream);border-radius:0 0 12px 12px;position:sticky;bottom:0;}
+    .modal-footer{padding:1.5rem 2rem;border-top:1px solid rgba(26,48,34,0.1);display:flex;gap:1rem;justify-content:flex-end;background:var(--cream);border-radius:0 0 12px 12px;}
     .btn-cancel{padding:0.75rem 1.5rem;border:1.5px solid rgba(26,48,34,0.2);background:transparent;border-radius:4px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:0.9rem;cursor:pointer;color:var(--text-mid);transition:all 0.2s;}
-    .btn-cancel:hover{border-color:var(--green-mid);color:var(--green-mid);}
-    .btn-save{padding:0.75rem 2rem;background:var(--green-dark);color:var(--cream);border:none;border-radius:4px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:0.9rem;cursor:pointer;transition:all 0.25s;}
-    .btn-save:hover{background:var(--green-mid);}
-    .btn-save:disabled{opacity:0.6;cursor:not-allowed;}
+    .btn-save{padding:0.75rem 2rem;background:var(--orange);color:white;border:none;border-radius:4px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:0.9rem;cursor:pointer;transition:all 0.25s;}
+    .btn-save:hover{opacity:0.85;}
+    .btn-save:disabled{opacity:0.5;cursor:not-allowed;}
     .save-status{display:none;padding:1rem 2rem;font-weight:600;font-size:0.9rem;text-align:center;}
     .save-status.success{display:block;color:var(--green-mid);}
     .save-status.error{display:block;color:#c03030;}
-
-    /* DETAIL MODAL */
-    .detail-modal{background:var(--warm-white);border-radius:12px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;}
-    .detail-img{height:160px;background:var(--green-mid);display:flex;align-items:center;justify-content:center;font-size:5rem;position:relative;border-radius:12px 12px 0 0;}
-    .detail-close{position:absolute;top:1rem;right:1rem;background:rgba(0,0,0,0.3);border:none;color:white;width:32px;height:32px;border-radius:50%;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-    .detail-body{padding:2rem;}
-    .detail-body h2{font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--green-dark);margin-bottom:0.5rem;}
-    .detail-meta{display:flex;flex-wrap:wrap;gap:0.7rem;margin-bottom:1.2rem;}
-    .detail-meta span{font-size:0.85rem;color:var(--text-mid);}
-    .detail-desc{color:var(--text-mid);line-height:1.7;margin-bottom:1.5rem;}
-    .detail-cats{display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:1.5rem;}
-    .detail-links{display:flex;flex-direction:column;gap:0.6rem;}
-    .detail-link{display:flex;align-items:center;gap:0.6rem;padding:0.7rem 1rem;border-radius:6px;background:rgba(45,90,61,0.06);text-decoration:none;color:var(--green-dark);font-weight:600;font-size:0.9rem;transition:all 0.2s;}
-    .detail-link:hover{background:rgba(45,90,61,0.12);}
-
     footer{background:var(--text-dark);padding:3rem 4rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;}
     .footer-logo{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;color:var(--cream);}
     .footer-logo span{color:var(--earth);}
     footer p{color:rgba(245,240,232,0.4);font-size:0.85rem;}
-
-    /* POPUP map */
     .custom-popup h3{font-family:'Playfair Display',serif;color:var(--green-dark);font-size:1rem;margin-bottom:0.3rem;}
     .custom-popup p{font-size:0.82rem;color:var(--text-mid);margin:0.2rem 0;}
-    .custom-popup a{color:var(--green-mid);font-size:0.82rem;font-weight:600;text-decoration:none;}
-    .popup-tag{display:inline-block;font-size:0.7rem;font-weight:700;padding:0.15em 0.6em;border-radius:20px;margin-bottom:0.4rem;text-transform:uppercase;background:rgba(45,90,61,0.1);color:var(--green-mid);}
-    .filter-link{color:var(--earth);font-size:0.8rem;font-weight:700;text-decoration:none;display:block;margin-top:0.4rem;}
-    .filter-link:hover{text-decoration:underline;}
-
-    @media(max-width:900px){
-      nav{padding:0.8rem 1.5rem;}.page-header{padding:6rem 1.5rem 2.5rem;}.main-layout{grid-template-columns:1fr;}.sidebar{position:static;height:auto;border-right:none;border-bottom:1px solid rgba(26,48,34,0.1);}.content{padding:1.5rem;}.farms-grid{grid-template-columns:1fr 1fr;}.form-row{grid-template-columns:1fr;}footer{padding:2rem 1.5rem;flex-direction:column;}.map-section{padding:2rem 1.5rem;}#farm-map{height:300px;}
-    }
-    @media(max-width:600px){.farms-grid{grid-template-columns:1fr;}}
+    @media(max-width:900px){nav{padding:0.8rem 1.5rem;}.page-header{padding:6rem 1.5rem 2.5rem;}.map-section,.content-section{padding:2rem 1.5rem;}.form-row{grid-template-columns:1fr;}footer{padding:2rem 1.5rem;flex-direction:column;}}
   </style>
 </head>
 <body>
@@ -172,371 +94,158 @@
   <a href="index.html" class="nav-logo">Gård<span>navi</span></a>
   <ul class="nav-links">
     <li><a href="index.html">Hjem</a></li>
-    <li><a href="garder.html" class="active">Gårder</a></li>
-    <li><a href="restauranter.html">Restauranter</a></li>
+    <li><a href="garder.html">Gårder</a></li>
+    <li><a href="restauranter.html" class="active">Restauranter</a></li>
     <li><a href="oppskrifter.html">Oppskrifter</a></li>
     <li><a href="kontakt.html">Kontakt</a></li>
   </ul>
   <div id="nav-auth">
-    <a href="/.auth/login/github?post_login_redirect_uri=/garder.html" class="nav-login-btn" id="login-btn">Logg inn</a>
-    <div class="nav-user" id="nav-user" style="display:none">
-      <span id="user-name"></span>
-      <a href="/.auth/logout" class="nav-logout-btn">Logg ut</a>
-    </div>
+    <a href="/.auth/login/github?post_login_redirect_uri=/restauranter.html" class="nav-login-btn" id="login-btn">Logg inn</a>
+    <div class="nav-user" id="nav-user" style="display:none"><span id="user-name"></span><a href="/.auth/logout" class="nav-logout-btn">Logg ut</a></div>
   </div>
 </nav>
 
 <section class="page-header">
-  <div class="breadcrumb"><a href="index.html">Hjem</a> / Gårder</div>
-  <h1>Gårder i Norge 🌾</h1>
-  <p>Finn lokale gårder nær deg med ekte, uprosesserte råvarer direkte fra bonden</p>
-  <div class="header-stats">
-    <div><div class="stat-num" id="total-count">0</div><div class="stat-label">Gårder</div></div>
-    <div><div class="stat-num" id="muni-count">0</div><div class="stat-label">Kommuner</div></div>
-    <div><div class="stat-num">6</div><div class="stat-label">Kategorier</div></div>
+  <div class="breadcrumb"><a href="index.html">Hjem</a> / Restauranter</div>
+  <h1>Restauranter 🍽️</h1>
+  <p>Spisesteder som prioriterer norske, kortreiste råvarer og lager mat fra bunnen av</p>
+</section>
+
+<section class="map-section">
+  <h2>Kart over restauranter</h2>
+  <p>Finn restauranter nær deg som bruker lokale råvarer</p>
+  <div id="rest-map"></div>
+</section>
+
+<section class="content-section">
+  <div class="section-header">
+    <h2>Alle restauranter</h2>
+    <button class="add-btn" id="add-rest-btn" onclick="document.getElementById('add-modal').classList.add('open')">+ Legg til restaurant</button>
+  </div>
+  <div class="search-bar">
+    <input type="text" id="search-input" placeholder="Søk etter restaurant eller by..." oninput="applyFilters()"/>
+  </div>
+  <div class="filter-chips" style="margin-bottom:1.5rem;" id="muni-chips"></div>
+  <div class="cards-grid" id="rest-container">
+    <div class="empty-state">⏳ Laster restauranter...</div>
   </div>
 </section>
 
-<!-- MAP -->
-<section class="map-section" id="kart">
-  <h2>Kart over gårder</h2>
-  <p>Klikk en markør for å se info — klikk «Filtrer til denne kommunen» for å se bare gårder i det området</p>
-  <div class="map-filters">
-    <button class="filter-btn active" onclick="mapFilter('all',this)">🗺️ Alle</button>
-    <button class="filter-btn" onclick="mapFilter('farm',this)">🌾 Gårder</button>
-    <button class="filter-btn" onclick="mapFilter('restaurant',this)">🍽️ Restauranter</button>
-  </div>
-  <div id="farm-map"></div>
-  <div class="map-legend">
-    <div class="legend-item"><div class="legend-dot farm"></div> Gårder</div>
-    <div class="legend-item"><div class="legend-dot restaurant"></div> Restauranter</div>
-  </div>
-</section>
+<footer><div class="footer-logo">Gård<span>navi</span></div><p>© 2025 Handelhjelp. Registrering er alltid gratis.</p></footer>
 
-<!-- SIDEBAR + LIST -->
-<div class="main-layout" id="liste">
-  <aside class="sidebar">
-    <div class="search-box">
-      <span class="search-icon">🔍</span>
-      <input type="text" id="search-input" placeholder="Søk etter gård..." oninput="applyFilters()"/>
-    </div>
-    <div class="filter-group">
-      <h4>🥩 Kategori</h4>
-      <div class="filter-chips">
-        <button class="chip" data-filter="category" data-value="Kjøtt" onclick="toggleChip(this)">Kjøtt</button>
-        <button class="chip" data-filter="category" data-value="Grønnsaker" onclick="toggleChip(this)">Grønnsaker</button>
-        <button class="chip" data-filter="category" data-value="Meieriprodukter" onclick="toggleChip(this)">Meieriprodukter</button>
-        <button class="chip" data-filter="category" data-value="Egg" onclick="toggleChip(this)">Egg</button>
-        <button class="chip" data-filter="category" data-value="Brød" onclick="toggleChip(this)">Brød</button>
-        <button class="chip" data-filter="category" data-value="Honning/Frukt" onclick="toggleChip(this)">Honning/Frukt</button>
-      </div>
-    </div>
-    <div class="filter-group">
-      <h4>📍 Kommune</h4>
-      <div class="filter-chips" id="muni-chips"></div>
-    </div>
-    <div class="filter-group">
-      <h4>🌿 Sesong</h4>
-      <div class="filter-chips">
-        <button class="chip" data-filter="season" data-value="Vinter" onclick="toggleChip(this)">❄️ Vinter</button>
-        <button class="chip" data-filter="season" data-value="Vår" onclick="toggleChip(this)">🌱 Vår</button>
-        <button class="chip" data-filter="season" data-value="Sommer" onclick="toggleChip(this)">☀️ Sommer</button>
-        <button class="chip" data-filter="season" data-value="Høst" onclick="toggleChip(this)">🍂 Høst</button>
-      </div>
-    </div>
-    <button class="clear-btn" onclick="clearFilters()">✕ Nullstill filtre</button>
-  </aside>
-
-  <div class="content">
-    <div class="content-header">
-      <p class="results-count" id="results-count">Laster...</p>
-      <div style="display:flex;gap:0.8rem;align-items:center;">
-        <button class="add-farm-btn" id="add-farm-btn" onclick="openModal()">+ Legg til gård</button>
-        <div class="view-toggle">
-          <button class="view-btn active" id="grid-btn" onclick="setView('grid')" title="Rutenett">⊞</button>
-          <button class="view-btn" id="list-btn" onclick="setView('list')" title="Liste">☰</button>
-        </div>
-      </div>
-    </div>
-    <div class="farms-grid" id="farms-container">
-      <div class="loading"><div class="spinner"></div> Laster gårder...</div>
-    </div>
-  </div>
-</div>
-
-<footer>
-  <div class="footer-logo">Gård<span>navi</span></div>
-  <p>© 2025 Handelhjelp. Grunnleggende oppføring er alltid gratis.</p>
-</footer>
-
-<!-- ADD FARM MODAL -->
 <div class="modal-overlay" id="add-modal">
   <div class="modal">
     <div class="modal-header">
-      <div><h2>🌾 Legg til gård</h2><p>Gratis oppføring — synlig for alle besøkende</p></div>
-      <button class="modal-close" onclick="closeModal()">×</button>
+      <div><h2>🍽️ Legg til restaurant</h2><p>Vi legger den til på kartet etter verifisering</p></div>
+      <button class="modal-close" onclick="document.getElementById('add-modal').classList.remove('open')">×</button>
     </div>
     <div class="modal-body">
-      <div class="form-title">Grunnleggende info</div>
-      <div class="form-group"><label>Gårdens navn <span>*</span></label><input type="text" id="f-name" required placeholder="f.eks. Fen gård"/></div>
-      <div class="form-group"><label>Beskrivelse</label><textarea id="f-desc" placeholder="Fortell om gården og hva dere produserer..."></textarea></div>
-      <div class="form-title">Lokasjon</div>
-      <div class="form-group"><label>Adresse</label><input type="text" id="f-address" placeholder="f.eks. Fenvegen, 3830 Ulefoss"/></div>
+      <div class="form-group"><label>Restaurantnavn *</label><input type="text" id="r-name" required placeholder="f.eks. Maaemo"/></div>
+      <div class="form-group"><label>Beskrivelse</label><textarea id="r-desc" placeholder="Hva serverer dere? Hvilke lokale råvarer bruker dere?"></textarea></div>
       <div class="form-row">
-        <div class="form-group"><label>Kommune <span>*</span></label><input type="text" id="f-muni" required placeholder="f.eks. Nome"/></div>
-        <div class="form-group"><label>Fylke</label><input type="text" id="f-region" placeholder="f.eks. Telemark"/></div>
+        <div class="form-group"><label>Kommune *</label><input type="text" id="r-muni" required placeholder="f.eks. Oslo"/></div>
+        <div class="form-group"><label>Telefon</label><input type="tel" id="r-phone" placeholder="+47 123 45 678"/></div>
       </div>
+      <div class="form-group"><label>Adresse</label><input type="text" id="r-address" placeholder="Gateadresse"/></div>
       <div class="form-row">
-        <div class="form-group"><label>Breddegrad</label><input type="number" id="f-lat" step="0.0001" placeholder="59.3500"/></div>
-        <div class="form-group"><label>Lengdegrad</label><input type="number" id="f-lng" step="0.0001" placeholder="9.2800"/></div>
+        <div class="form-group"><label>Breddegrad</label><input type="number" id="r-lat" step="0.0001" placeholder="59.9139"/></div>
+        <div class="form-group"><label>Lengdegrad</label><input type="number" id="r-lng" step="0.0001" placeholder="10.7522"/></div>
       </div>
-      <p style="font-size:0.8rem;color:var(--text-mid);margin-bottom:1rem;">💡 Finn koordinater på <a href="https://maps.google.com" target="_blank" style="color:var(--green-mid)">Google Maps</a> — høyreklikk på eiendommen</p>
-      <div class="form-title">Produkter og sesong</div>
-      <div class="form-group"><label>Kategorier</label>
-        <div class="checkbox-group">
-          <div class="checkbox-item"><input type="checkbox" id="c-kjott" value="Kjøtt"/><label for="c-kjott">🥩 Kjøtt</label></div>
-          <div class="checkbox-item"><input type="checkbox" id="c-gront" value="Grønnsaker"/><label for="c-gront">🥦 Grønnsaker</label></div>
-          <div class="checkbox-item"><input type="checkbox" id="c-meieri" value="Meieriprodukter"/><label for="c-meieri">🧀 Meieriprodukter</label></div>
-          <div class="checkbox-item"><input type="checkbox" id="c-egg" value="Egg"/><label for="c-egg">🥚 Egg</label></div>
-          <div class="checkbox-item"><input type="checkbox" id="c-brod" value="Brød"/><label for="c-brod">🍞 Brød</label></div>
-          <div class="checkbox-item"><input type="checkbox" id="c-honning" value="Honning/Frukt"/><label for="c-honning">🍯 Honning/Frukt</label></div>
-        </div>
-      </div>
-      <div class="form-group"><label>Sesong</label>
-        <div class="checkbox-group">
-          <div class="checkbox-item"><input type="checkbox" id="s-vinter" value="Vinter"/><label for="s-vinter">❄️ Vinter</label></div>
-          <div class="checkbox-item"><input type="checkbox" id="s-var" value="Vår"/><label for="s-var">🌱 Vår</label></div>
-          <div class="checkbox-item"><input type="checkbox" id="s-sommer" value="Sommer"/><label for="s-sommer">☀️ Sommer</label></div>
-          <div class="checkbox-item"><input type="checkbox" id="s-host" value="Høst"/><label for="s-host">🍂 Høst</label></div>
-        </div>
-      </div>
-      <div class="form-title">Kontakt</div>
-      <div class="form-row">
-        <div class="form-group"><label>Telefon</label><input type="tel" id="f-phone" placeholder="+47 123 45 678"/></div>
-        <div class="form-group"><label>E-post</label><input type="email" id="f-email" placeholder="din@gard.no"/></div>
-      </div>
-      <div class="form-group"><label>Nettside</label><input type="url" id="f-website" placeholder="https://"/></div>
-      <div class="form-group"><label>REKO-ring lenke</label><input type="url" id="f-reko" placeholder="https://facebook.com/groups/..."/></div>
+      <div class="form-group"><label>Nettside</label><input type="url" id="r-website" placeholder="https://"/></div>
     </div>
     <div class="save-status" id="save-status"></div>
     <div class="modal-footer">
-      <button class="btn-cancel" onclick="closeModal()">Avbryt</button>
-      <button class="btn-save" id="save-btn" onclick="saveFarm()">💾 Lagre gård</button>
+      <button class="btn-cancel" onclick="document.getElementById('add-modal').classList.remove('open')">Avbryt</button>
+      <button class="btn-save" id="save-btn" onclick="saveRestaurant()">💾 Send inn</button>
     </div>
-  </div>
-</div>
-
-<!-- DETAIL MODAL -->
-<div class="modal-overlay" id="detail-modal">
-  <div class="detail-modal">
-    <div class="detail-img" id="detail-img">🌾
-      <button class="detail-close" onclick="document.getElementById('detail-modal').classList.remove('open')">×</button>
-    </div>
-    <div class="detail-body" id="detail-body"></div>
   </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 const API='https://gardnavi-api-fecufjdrfbhyf2g6.westeurope-01.azurewebsites.net';
-let allFarms=[],filtered=[],currentView='grid',activeFilters={category:[],municipality:[],season:[]};
-let mapInstance,allMarkers=[];
-
-const sampleFarms=[
-  {id:1,name:'Fen gård',address:'Fenvegen, 3830 Ulefoss',municipality:'Nome',region:'Telemark',description:'Tradisjonell norsk gård med ferske grønnsaker og egg. Leverer til REKO-ring i Nome.',categories:'Grønnsaker,Egg',season:'Sommer,Høst',lat:59.35,lng:9.28,phone:'+47 350 12345'},
-  {id:2,name:'Svenseid gård',address:'Svenseidvegen, 3825 Lunde',municipality:'Nome',region:'Telemark',description:'Familiegård med kjøttproduksjon og meierivarer. Spesialiserer seg på lammekjøtt.',categories:'Kjøtt,Meieriprodukter',season:'Vår,Sommer,Høst',lat:59.28,lng:9.24,phone:'+47 350 23456'},
-  {id:3,name:'Helgen gård',address:'Helgenvegen, 3830 Ulefoss',municipality:'Nome',region:'Telemark',description:'Gammel gård med moderne drift. Produserer honning, frukt og bær av høy kvalitet.',categories:'Honning/Frukt',season:'Sommer,Høst',lat:59.37,lng:9.31,phone:'+47 350 34567'},
-  {id:4,name:'Susås gård',address:'Eidsbygdavegen 90, 3825 Lunde',municipality:'Nome',region:'Telemark',description:'Økologisk gård med fri-range høner og grønnsaker dyrket uten sprøytemidler.',categories:'Egg,Grønnsaker',season:'Vår,Sommer,Høst,Vinter',lat:59.26,lng:9.22,phone:'+47 350 45678'},
-  {id:5,name:'Moen gård',address:'Vinsåsvegen 25, 3830 Ulefoss',municipality:'Nome',region:'Telemark',description:'Tradisjonsrik gård med kornproduksjon og eget bakeri. Kjent for sitt surdeigsbrød.',categories:'Brød',season:'Høst,Vinter',lat:59.33,lng:9.26,phone:'+47 350 56789'},
-  {id:6,name:'Hardanger Fruktgård',address:'Lofthus, 5781 Ullensvang',municipality:'Ullensvang',region:'Vestland',description:'Spektakulær frukthave ved Hardangerfjorden. Epler, pærer, plommer og kirsebær.',categories:'Honning/Frukt',season:'Sommer,Høst',lat:60.32,lng:6.65,phone:'+47 533 12345'},
-  {id:7,name:'Jæren Melkegård',address:'Klepp Stasjon, 4352 Klepp',municipality:'Klepp',region:'Rogaland',description:'Moderne melkegård på Jæren med høy dyrevelferd. Leverer fersk melk og ost.',categories:'Meieriprodukter,Kjøtt',season:'Vår,Sommer,Høst,Vinter',lat:58.77,lng:5.63,phone:'+47 511 23456'},
+let allRests=[],filtered=[];
+const sampleRests=[
+  {id:1,name:'Maaemo',municipality:'Oslo',address:'Schweigaards gate 15, Oslo',description:'Tre-stjerners Michelin-restaurant med fokus på norske, naturlige råvarer. En gastronomisk reise gjennom norsk natur.',lat:59.91,lng:10.76,website:'https://maaemo.no',phone:'+47 22 17 99 69'},
+  {id:2,name:'Lysverket',municipality:'Bergen',address:'Rasmus Meyers allé 9, Bergen',description:'Moderne norsk kjøkken i Kode-museene. Fokus på lokale sjømatråvarer og vestlandske produkter.',lat:60.39,lng:5.32,phone:'+47 55 60 31 00'},
+  {id:3,name:'Onda by Bocuse',municipality:'Oslo',address:'Tjuvholmen allé 5, Oslo',description:'Moderne europeisk restaurant med sterk vekt på norske råvarer og sesongbasert meny.',lat:59.90,lng:10.72,phone:'+47 22 33 32 32'},
+  {id:4,name:'Galt',municipality:'Oslo',address:'Vibes gate 11, Oslo',description:'Hyggelig bistro på Frogner med lokalt innkjøpt kjøtt og grønnsaker fra norske gårder.',lat:59.92,lng:10.71,phone:'+47 22 56 22 33'},
+  {id:5,name:'Bryggen Tracteursted',municipality:'Bergen',address:'Bryggen 2, Bergen',description:'Historisk restaurant i hjertet av Bryggen. Tradisjonell norsk mat med lokale råvarer.',lat:60.40,lng:5.32,phone:'+47 55 31 40 46'},
 ];
 
-const catEmoji={Kjøtt:'🥩',Grønnsaker:'🥦',Meieriprodukter:'🧀',Egg:'🥚',Brød:'🍞','Honning/Frukt':'🍯'};
-function getEmoji(cats){if(!cats)return'🌾';const c=cats.split(',')[0].trim();return catEmoji[c]||'🌾';}
-
-// MAP
 function initMap(){
-  mapInstance=L.map('farm-map').setView([59.9,10.7],5);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(mapInstance);
+  const map=L.map('rest-map').setView([59.9,10.7],5);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(map);
+  const icon=L.divIcon({className:'',html:'<div style="background:#c8692e;color:white;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:16px;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3);">🍽️</div>',iconSize:[36,36],iconAnchor:[18,18],popupAnchor:[0,-20]});
+  return{map,icon};
 }
-function mkIcon(bg,emoji){return L.divIcon({className:'',html:`<div style="background:${bg};color:white;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:16px;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3);">${emoji}</div>`,iconSize:[36,36],iconAnchor:[18,18],popupAnchor:[0,-20]});}
-const farmIcon=mkIcon('#2d5a3d','🌾');
-const restIcon=mkIcon('#c8692e','🍽️');
 
-function placeMarkers(data){
-  allMarkers.forEach(m=>mapInstance.removeLayer(m.marker));
-  allMarkers=[];
-  data.forEach(item=>{
-    if(!item.lat||!item.lng)return;
-    const marker=L.marker([item.lat,item.lng],{icon:item.type==='restaurant'?restIcon:farmIcon});
-    marker.bindPopup(`<div class="custom-popup"><span class="popup-tag">${item.type==='restaurant'?'🍽️ Restaurant':'🌾 Gård'}</span><h3>${item.name}</h3><p>📍 ${item.municipality||''}</p><p>${(item.description||'').slice(0,80)}...</p><a class="filter-link" href="#liste" onclick="filterByMuni('${item.municipality}')">Filtrer til ${item.municipality} →</a></div>`,{maxWidth:220});
-    marker.addTo(mapInstance);
-    allMarkers.push({marker,type:item.type||'farm'});
+async function loadRests(){
+  try{const r=await fetch(`${API}/api/GetRestaurants`);allRests=r.ok?(await r.json()):[];if(!allRests.length)allRests=sampleRests;}
+  catch(e){allRests=sampleRests;}
+  filtered=[...allRests];
+  buildMuniChips();
+  renderRests();
+  const{map,icon}=initMap();
+  allRests.forEach(r=>{
+    if(!r.lat||!r.lng)return;
+    L.marker([r.lat,r.lng],{icon}).bindPopup(`<div class="custom-popup"><h3>${r.name}</h3><p>📍 ${r.municipality||''}</p><p>${(r.description||'').slice(0,80)}...</p></div>`,{maxWidth:220}).addTo(map);
   });
 }
 
-function mapFilter(type,btn){
-  document.querySelectorAll('.map-filters .filter-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  allMarkers.forEach(({marker,type:t})=>type==='all'||type===t?marker.addTo(mapInstance):mapInstance.removeLayer(marker));
-}
-
-function filterByMuni(muni){
-  document.querySelectorAll('.chip').forEach(c=>{if(c.dataset.filter==='municipality'&&c.dataset.value===muni){c.classList.add('active');if(!activeFilters.municipality.includes(muni))activeFilters.municipality.push(muni);}});
-  applyFilters();
-  document.getElementById('liste').scrollIntoView({behavior:'smooth'});
-}
-
-// DATA
-async function loadFarms(){
-  try{const r=await fetch(`${API}/api/GetFarms`);allFarms=r.ok?(await r.json()):[]; if(!allFarms.length)allFarms=sampleFarms;}
-  catch(e){allFarms=sampleFarms;}
-  filtered=[...allFarms];
-  buildMuniChips();
-  updateStats();
-  placeMarkers(allFarms.map(f=>({...f,type:'farm'})));
-  renderFarms();
-}
-
 function buildMuniChips(){
-  const munis=[...new Set(allFarms.map(f=>f.municipality).filter(Boolean))].sort();
-  document.getElementById('muni-chips').innerHTML=munis.map(m=>`<button class="chip" data-filter="municipality" data-value="${m}" onclick="toggleChip(this)">${m}</button>`).join('');
+  const munis=[...new Set(allRests.map(r=>r.municipality).filter(Boolean))].sort();
+  document.getElementById('muni-chips').innerHTML=`<button class="chip active" onclick="filterMuni('all',this)">Alle</button>`+munis.map(m=>`<button class="chip" onclick="filterMuni('${m}',this)">${m}</button>`).join('');
 }
 
-function updateStats(){
-  document.getElementById('total-count').textContent=allFarms.length;
-  document.getElementById('muni-count').textContent=new Set(allFarms.map(f=>f.municipality).filter(Boolean)).size;
-}
-
-function toggleChip(btn){
-  const f=btn.dataset.filter,v=btn.dataset.value;
-  btn.classList.toggle('active');
-  if(btn.classList.contains('active')){if(!activeFilters[f].includes(v))activeFilters[f].push(v);}
-  else{activeFilters[f]=activeFilters[f].filter(x=>x!==v);}
-  applyFilters();
+function filterMuni(m,btn){
+  document.querySelectorAll('#muni-chips .chip').forEach(c=>c.classList.remove('active'));btn.classList.add('active');
+  const s=document.getElementById('search-input').value.toLowerCase();
+  filtered=allRests.filter(r=>(m==='all'||r.municipality===m)&&(!s||r.name.toLowerCase().includes(s)||(r.description||'').toLowerCase().includes(s)));
+  renderRests();
 }
 
 function applyFilters(){
   const s=document.getElementById('search-input').value.toLowerCase();
-  filtered=allFarms.filter(farm=>{
-    const cats=(farm.categories||'').split(',').map(c=>c.trim());
-    const seasons=(farm.season||'').split(',').map(s=>s.trim());
-    return (!s||farm.name.toLowerCase().includes(s)||(farm.municipality||'').toLowerCase().includes(s)||(farm.description||'').toLowerCase().includes(s))
-      &&(activeFilters.category.length===0||activeFilters.category.some(c=>cats.includes(c)))
-      &&(activeFilters.municipality.length===0||activeFilters.municipality.includes(farm.municipality))
-      &&(activeFilters.season.length===0||activeFilters.season.some(se=>seasons.includes(se)));
-  });
-  renderFarms();
+  const activeChip=document.querySelector('#muni-chips .chip.active');
+  const muni=activeChip?.textContent==='Alle'?'all':activeChip?.textContent||'all';
+  filtered=allRests.filter(r=>(muni==='all'||r.municipality===muni)&&(!s||r.name.toLowerCase().includes(s)||(r.description||'').toLowerCase().includes(s)||(r.municipality||'').toLowerCase().includes(s)));
+  renderRests();
 }
 
-function clearFilters(){
-  document.getElementById('search-input').value='';
-  document.querySelectorAll('.chip.active').forEach(c=>c.classList.remove('active'));
-  activeFilters={category:[],municipality:[],season:[]};
-  filtered=[...allFarms];
-  renderFarms();
+function renderRests(){
+  const el=document.getElementById('rest-container');
+  if(!filtered.length){el.innerHTML='<div class="empty-state">Ingen restauranter funnet</div>';return;}
+  el.innerHTML=filtered.map(r=>`<div class="card">
+    <div class="card-img">🍽️</div>
+    <div class="card-body">
+      <span class="card-tag">Restaurant</span>
+      <h3>${r.name}</h3>
+      <p>${r.description||''}</p>
+      <p class="card-meta">📍 ${r.municipality||''}</p>
+      ${r.website?`<a href="${r.website}" target="_blank">Besøk nettside →</a>`:''}
+    </div></div>`).join('');
 }
 
-function setView(v){
-  currentView=v;
-  document.getElementById('grid-btn').classList.toggle('active',v==='grid');
-  document.getElementById('list-btn').classList.toggle('active',v==='list');
-  document.getElementById('farms-container').className=v==='grid'?'farms-grid':'farms-list';
-  renderFarms();
-}
-
-function renderFarms(){
-  const el=document.getElementById('farms-container');
-  document.getElementById('results-count').innerHTML=`Viser <strong>${filtered.length}</strong> av <strong>${allFarms.length}</strong> gårder`;
-  if(!filtered.length){el.innerHTML='<div class="empty-state"><h3>Ingen gårder funnet 🔍</h3><p>Prøv å endre søket eller fjern filtre</p></div>';return;}
-  if(currentView==='grid'){
-    el.innerHTML=filtered.map(f=>{
-      const cats=(f.categories||'').split(',').map(c=>c.trim()).filter(Boolean);
-      const emoji=getEmoji(f.categories);
-      const season=(f.season||'').split(',')[0]?.trim();
-      return`<div class="farm-card" onclick="showDetail(${f.id||allFarms.indexOf(f)})">
-        <div class="card-img">${emoji}${season?`<span class="season-tag">${season}</span>`:''}</div>
-        <div class="card-body">
-          <div class="farm-name">${f.name}</div>
-          <div class="farm-address">📍 ${f.address||f.municipality||''}</div>
-          <div class="farm-cats">${cats.slice(0,3).map(c=>`<span class="cat-tag">${catEmoji[c]||''} ${c}</span>`).join('')}</div>
-          <div class="farm-desc">${(f.description||'').slice(0,85)}${(f.description||'').length>85?'...':''}</div>
-          <div class="card-footer"><span class="muni-tag">${f.municipality||''}</span><a class="see-more" href="#" onclick="event.stopPropagation()">Se mer →</a></div>
-        </div></div>`;
-    }).join('');
-  } else {
-    el.innerHTML=filtered.map((f,i)=>`<div class="farm-list-item" onclick="showDetail(${f.id||i})">
-      <div class="list-icon">${getEmoji(f.categories)}</div>
-      <div class="list-info"><h3>${f.name}</h3><p>📍 ${f.address||f.municipality||''} · ${(f.categories||'').split(',').slice(0,2).join(', ')}</p></div>
-      <span class="muni-tag">${f.municipality||''}</span></div>`).join('');
-  }
-}
-
-function showDetail(id){
-  const f=allFarms.find(x=>x.id===id)||allFarms[id];
-  if(!f)return;
-  const emoji=getEmoji(f.categories);
-  const cats=(f.categories||'').split(',').map(c=>c.trim()).filter(Boolean);
-  document.getElementById('detail-img').innerHTML=`${emoji}<button class="detail-close" onclick="document.getElementById('detail-modal').classList.remove('open')">×</button>`;
-  document.getElementById('detail-body').innerHTML=`
-    <h2>${f.name}</h2>
-    <div class="detail-meta"><span>📍 ${f.address||f.municipality||''}</span>${f.phone?`<span>📞 ${f.phone}</span>`:''}</div>
-    <p class="detail-desc">${f.description||'Ingen beskrivelse tilgjengelig.'}</p>
-    <div class="detail-cats">${cats.map(c=>`<span class="cat-tag">${catEmoji[c]||''} ${c}</span>`).join('')}</div>
-    <div class="detail-links">
-      ${f.website&&f.website!=='#'?`<a class="detail-link" href="${f.website}" target="_blank">🌐 Besøk nettsiden</a>`:''}
-      ${f.reko_ring?`<a class="detail-link" href="${f.reko_ring}" target="_blank">📦 REKO-ring</a>`:''}
-      ${f.email?`<a class="detail-link" href="mailto:${f.email}">✉️ Send e-post</a>`:''}
-      <a class="detail-link" href="#" onclick="event.preventDefault();filterByMuni('${f.municipality}');document.getElementById('detail-modal').classList.remove('open')">🔍 Se alle gårder i ${f.municipality}</a>
-    </div>`;
-  document.getElementById('detail-modal').classList.add('open');
-}
-
-// MODAL
-function openModal(){document.getElementById('add-modal').classList.add('open');}
-function closeModal(){document.getElementById('add-modal').classList.remove('open');document.getElementById('save-status').className='save-status';}
-
-async function saveFarm(){
-  const name=document.getElementById('f-name').value.trim();
-  const muni=document.getElementById('f-muni').value.trim();
-  if(!name||!muni){showStatus('error','⚠️ Fyll inn gårdens navn og kommune');return;}
-  const categories=Array.from(document.querySelectorAll('[id^="c-"]:checked')).map(c=>c.value).join(',');
-  const season=Array.from(document.querySelectorAll('[id^="s-"]:checked')).map(s=>s.value).join(',');
-  const data={name,municipality:muni,description:document.getElementById('f-desc').value,address:document.getElementById('f-address').value,region:document.getElementById('f-region').value,latitude:parseFloat(document.getElementById('f-lat').value)||null,longitude:parseFloat(document.getElementById('f-lng').value)||null,phone:document.getElementById('f-phone').value,email:document.getElementById('f-email').value,website:document.getElementById('f-website').value,reko_ring:document.getElementById('f-reko').value,categories,season};
+async function saveRestaurant(){
+  const name=document.getElementById('r-name').value.trim();
+  const muni=document.getElementById('r-muni').value.trim();
+  if(!name||!muni){const s=document.getElementById('save-status');s.className='save-status error';s.textContent='⚠️ Fyll inn navn og kommune';return;}
+  const data={name,municipality:muni,description:document.getElementById('r-desc').value,address:document.getElementById('r-address').value,phone:document.getElementById('r-phone').value,website:document.getElementById('r-website').value,latitude:parseFloat(document.getElementById('r-lat').value)||null,longitude:parseFloat(document.getElementById('r-lng').value)||null};
   document.getElementById('save-btn').disabled=true;
-  try{
-    const r=await fetch(`${API}/api/AddFarm`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
-    if(r.ok){showStatus('success',`✅ ${name} er lagt til!`);setTimeout(()=>{closeModal();loadFarms();},2000);}
-    else{data.id=allFarms.length+1;allFarms.push(data);filtered=[...allFarms];buildMuniChips();updateStats();placeMarkers(allFarms.map(f=>({...f,type:'farm'})));renderFarms();showStatus('success',`✅ ${name} er lagt til!`);setTimeout(closeModal,2000);}
-  }catch(e){data.id=allFarms.length+1;allFarms.push(data);filtered=[...allFarms];buildMuniChips();updateStats();placeMarkers(allFarms.map(f=>({...f,type:'farm'})));renderFarms();showStatus('success',`✅ ${name} er lagt til!`);setTimeout(closeModal,2000);}
+  try{await fetch(`${API}/api/AddRestaurant`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});}catch(e){}
+  const s=document.getElementById('save-status');s.className='save-status success';s.textContent=`✅ ${name} er sendt inn! Vi legger den til snart.`;
+  setTimeout(()=>{document.getElementById('add-modal').classList.remove('open');s.className='save-status';},2500);
   document.getElementById('save-btn').disabled=false;
 }
 
-function showStatus(type,msg){const el=document.getElementById('save-status');el.className=`save-status ${type}`;el.textContent=msg;}
-
-// AUTH
 async function checkAuth(){
-  try{const r=await fetch('/.auth/me');const d=await r.json();
-    if(d.clientPrincipal){document.getElementById('login-btn').style.display='none';document.getElementById('nav-user').style.display='flex';document.getElementById('user-name').textContent=d.clientPrincipal.userDetails;document.getElementById('add-farm-btn').classList.add('visible');}
-  }catch(e){}
-}
-
-// URL param to pre-filter
-function checkUrlFilters(){
-  const p=new URLSearchParams(window.location.search);
-  const muni=p.get('kommune');const cat=p.get('kategori');
-  if(muni)filterByMuni(muni);
-  if(cat){const c=document.querySelector(`.chip[data-value="${cat}"]`);if(c)toggleChip(c);}
+  try{const r=await fetch('/.auth/me');const d=await r.json();if(d.clientPrincipal){document.getElementById('login-btn').style.display='none';document.getElementById('nav-user').style.display='flex';document.getElementById('user-name').textContent=d.clientPrincipal.userDetails;document.getElementById('add-rest-btn').classList.add('visible');}}catch(e){}
 }
 
 document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
 window.addEventListener('scroll',()=>{document.getElementById('main-nav').style.padding=window.scrollY>50?'0.7rem 4rem':'1rem 4rem';});
-
-initMap();
-loadFarms();
-checkAuth();
-checkUrlFilters();
+loadRests();checkAuth();
 </script>
 </body>
 </html>
