@@ -1,87 +1,203 @@
+
 <!DOCTYPE html>
 <html lang="no">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oppskrift Detaljer | Gårdnavi</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
-    <style>
-        :root { --green-dark: #1a3022; --earth: #c8a96e; --warm-white: #faf8f3; }
-        body { font-family: 'DM Sans', sans-serif; background: var(--warm-white); padding: 2rem; color: var(--green-dark); line-height: 1.6; }
-        .container { max-width: 800px; margin: 2rem auto; background: white; padding: 3rem; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-        h1 { font-family: 'Playfair Display', serif; font-size: 2.5rem; margin-bottom: 0.5rem; }
-        .category { text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px; color: var(--earth); font-weight: 700; margin-bottom: 2rem; display: block; }
-        .section-title { border-bottom: 2px solid #f5f0e8; padding-bottom: 0.5rem; margin-top: 2rem; margin-bottom: 1rem; color: #2d5a3d; font-family: 'Playfair Display', serif; }
-        .back-link { display: inline-block; margin-bottom: 2rem; text-decoration: none; color: var(--green-dark); font-weight: 600; font-size: 0.9rem; }
-        .back-link:hover { color: var(--earth); }
-        pre { white-space: pre-wrap; word-wrap: break-word; font-family: 'DM Sans', sans-serif; font-size: 1rem; color: #3d3d2e; }
-        .loading { text-align: center; padding: 5rem; font-style: italic; color: var(--earth); }
-    </style>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Oppskrifter | Gårdnavi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--green-dark:#1a3022;--green-mid:#2d5a3d;--cream:#f5f0e8;--warm-white:#faf8f3;--earth:#c8a96e;--earth-light:#e8d5a3;--text-dark:#1a1a14;--text-mid:#3d3d2e;}
+    html{scroll-behavior:smooth;}body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--text-dark);}
+    nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:1rem 4rem;background:rgba(245,240,232,0.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(74,140,92,0.15);transition:padding 0.3s;}
+    .nav-logo{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;color:var(--green-dark);text-decoration:none;}.nav-logo span{color:var(--earth);}
+    .nav-links{display:flex;gap:2rem;list-style:none;}
+    .nav-links a{text-decoration:none;color:var(--text-mid);font-weight:500;font-size:0.92rem;transition:color 0.2s;position:relative;}
+    .nav-links a::after{content:'';position:absolute;bottom:-3px;left:0;width:0;height:2px;background:var(--earth);transition:width 0.3s;}
+    .nav-links a:hover,.nav-links a.active{color:var(--green-dark);}.nav-links a:hover::after,.nav-links a.active::after{width:100%;}
+    .nav-login-btn{padding:0.5rem 1.2rem;background:var(--green-dark);color:var(--cream);border-radius:4px;text-decoration:none;font-size:0.85rem;font-weight:700;transition:all 0.2s;}.nav-login-btn:hover{background:var(--green-mid);}
+    .nav-user{display:flex;align-items:center;gap:0.8rem;}#user-name{font-size:0.85rem;font-weight:600;color:var(--green-dark);}.nav-logout-btn{font-size:0.82rem;color:var(--text-mid);text-decoration:none;}
+    .page-header{background:var(--earth);padding:7rem 4rem 3rem;position:relative;overflow:hidden;}
+    .page-header::before{content:'';position:absolute;top:-80px;right:-80px;width:350px;height:350px;background:rgba(255,255,255,0.12);border-radius:50%;}
+    .breadcrumb{font-size:0.82rem;color:rgba(26,48,34,0.6);margin-bottom:1rem;}.breadcrumb a{color:var(--green-dark);text-decoration:none;opacity:0.7;}
+    .page-header h1{font-family:'Playfair Display',serif;font-size:clamp(2.5rem,4vw,3.5rem);color:var(--green-dark);margin-bottom:0.8rem;}
+    .page-header p{color:rgba(26,48,34,0.7);font-size:1.05rem;max-width:500px;}
+    .content-section{padding:3rem 4rem;}
+    .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem;}
+    .section-header h2{font-family:'Playfair Display',serif;font-size:2rem;color:var(--green-dark);}
+    .add-btn{padding:0.6rem 1.4rem;background:var(--earth);color:var(--green-dark);border:none;border-radius:4px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:0.85rem;cursor:pointer;transition:all 0.2s;display:none;}
+    .add-btn.visible{display:block;}.add-btn:hover{background:var(--earth-light);}
+    .filter-row{display:flex;gap:0.8rem;margin-bottom:2rem;flex-wrap:wrap;}
+    .search-input{flex:1;min-width:200px;padding:0.7rem 1rem;border:1.5px solid rgba(26,48,34,0.15);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:0.92rem;background:var(--warm-white);}
+    .search-input:focus{outline:none;border-color:var(--earth);}
+    .chip{padding:0.35rem 0.9rem;border:1.5px solid rgba(26,48,34,0.15);border-radius:20px;font-size:0.82rem;font-weight:500;cursor:pointer;transition:all 0.2s;background:transparent;font-family:'DM Sans',sans-serif;color:var(--text-mid);}
+    .chip:hover{border-color:var(--earth);color:var(--earth);}.chip.active{background:var(--earth);border-color:var(--earth);color:var(--green-dark);}
+    .recipes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;}
+    .recipe-card{background:var(--warm-white);border-radius:8px;overflow:hidden;border:1px solid rgba(26,48,34,0.08);transition:all 0.25s;cursor:pointer;}
+    .recipe-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(26,48,34,0.1);}
+    .recipe-img{height:160px;background:linear-gradient(135deg,var(--earth) 0%,#a07840 100%);display:flex;align-items:center;justify-content:center;font-size:4rem;}
+    .recipe-body{padding:1.5rem;}
+    .recipe-tag{display:inline-block;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;font-weight:700;padding:0.2em 0.7em;border-radius:20px;margin-bottom:0.7rem;background:rgba(200,169,110,0.2);color:#7a5a1a;}
+    .recipe-body h3{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--green-dark);margin-bottom:0.5rem;}
+    .recipe-body p{font-size:0.88rem;color:var(--text-mid);line-height:1.6;margin-bottom:0.8rem;}
+    .recipe-meta{display:flex;gap:1rem;font-size:0.8rem;color:var(--text-mid);}
+    .empty-state{text-align:center;padding:4rem;grid-column:1/-1;color:var(--text-mid);}
+    .empty-state h3{font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--green-dark);margin-bottom:0.5rem;}
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:2000;align-items:center;justify-content:center;padding:1rem;}
+    .modal-overlay.open{display:flex;}
+    .modal{background:var(--warm-white);border-radius:12px;max-width:580px;width:100%;max-height:90vh;overflow-y:auto;}
+    .modal-header{background:var(--earth);padding:1.8rem 2rem;border-radius:12px 12px 0 0;display:flex;justify-content:space-between;align-items:start;}
+    .modal-header h2{font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--green-dark);}
+    .modal-header p{font-size:0.85rem;color:rgba(26,48,34,0.65);margin-top:0.2rem;}
+    .modal-close{background:none;border:none;color:var(--green-dark);font-size:1.5rem;cursor:pointer;opacity:0.7;line-height:1;}.modal-close:hover{opacity:1;}
+    .modal-body{padding:2rem;}
+    .form-group{margin-bottom:1rem;}
+    .form-group label{display:block;font-size:0.78rem;font-weight:600;color:var(--text-mid);margin-bottom:0.35rem;letter-spacing:0.04em;text-transform:uppercase;}
+    .form-group input,.form-group textarea{width:100%;padding:0.7rem 1rem;border:1.5px solid rgba(26,48,34,0.15);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:0.93rem;background:var(--warm-white);color:var(--text-dark);transition:border-color 0.2s;}
+    .form-group input:focus,.form-group textarea:focus{outline:none;border-color:var(--earth);}
+    .form-group textarea{min-height:100px;resize:vertical;}
+    .modal-footer{padding:1.5rem 2rem;border-top:1px solid rgba(26,48,34,0.1);display:flex;gap:1rem;justify-content:flex-end;background:var(--cream);border-radius:0 0 12px 12px;}
+    .btn-cancel{padding:0.75rem 1.5rem;border:1.5px solid rgba(26,48,34,0.2);background:transparent;border-radius:4px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:0.9rem;cursor:pointer;color:var(--text-mid);transition:all 0.2s;}
+    .btn-save{padding:0.75rem 2rem;background:var(--green-dark);color:var(--cream);border:none;border-radius:4px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:0.9rem;cursor:pointer;transition:all 0.25s;}
+    .btn-save:hover{background:var(--green-mid);}
+    .save-status{display:none;padding:1rem 2rem;font-weight:600;font-size:0.9rem;text-align:center;}
+    .save-status.success{display:block;color:var(--green-mid);}.save-status.error{display:block;color:#c03030;}
+    footer{background:var(--text-dark);padding:3rem 4rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;}
+    .footer-logo{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;color:var(--cream);}.footer-logo span{color:var(--earth);}
+    footer p{color:rgba(245,240,232,0.4);font-size:0.85rem;}
+    @media(max-width:900px){nav{padding:0.8rem 1.5rem;}.page-header,.content-section{padding:6rem 1.5rem 2.5rem;}.content-section{padding-top:2rem;}footer{padding:2rem 1.5rem;flex-direction:column;}}
+  </style>
 </head>
 <body>
-    <div class="container">
-        <a href="oppskrifter.html" class="back-link">← Tilbake til alle oppskrifter</a>
-        
-        <div id="loader" class="loading">Henter godbiten fra gården...</div>
-        
-        <div id="recipe-content" style="display:none;">
-            <span class="category" id="cat-display">Kategori</span>
-            <h1 id="title-display">Oppskrift Tittel</h1>
-            
-            <h3 class="section-title">Om retten</h3>
-            <p id="desc-display"></p>
+<nav id="main-nav">
+  <a href="index.html" class="nav-logo">Gård<span>navi</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Hjem</a></li>
+    <li><a href="garder.html">Gårder</a></li>
+    <li><a href="restauranter.html">Restauranter</a></li>
+    <li><a href="oppskrifter.html" class="active">Oppskrifter</a></li>
+    <li><a href="kontakt.html">Kontakt</a></li>
+  </ul>
+  <div id="nav-auth">
+    <a href="/.auth/login/github?post_login_redirect_uri=/oppskrifter.html" class="nav-login-btn" id="login-btn">Logg inn</a>
+    <div class="nav-user" id="nav-user" style="display:none"><span id="user-name"></span><a href="/.auth/logout" class="nav-logout-btn">Logg ut</a></div>
+  </div>
+</nav>
 
-            <h3 class="section-title">Ingredienser</h3>
-            <pre id="ing-display"></pre>
+<section class="page-header">
+  <div class="breadcrumb"><a href="index.html">Hjem</a> / Oppskrifter</div>
+  <h1>Oppskrifter 📖</h1>
+  <p>Hjemmelaget mat basert på norske, sesongbaserte råvarer koblet til lokale gårder</p>
+</section>
 
-            <h3 class="section-title">Slik gjør du</h3>
-            <pre id="steps-display"></pre>
-        </div>
+<section class="content-section">
+  <div class="section-header">
+    <h2>Alle oppskrifter</h2>
+    <button class="add-btn" id="add-recipe-btn" onclick="document.getElementById('add-modal').classList.add('open')">+ Legg til oppskrift</button>
+  </div>
+  <div class="filter-row">
+    <input type="text" class="search-input" id="search-input" placeholder="Søk etter oppskrift..." oninput="applyFilters()"/>
+    <button class="chip active" onclick="filterCat('all',this)">Alle</button>
+    <button class="chip" onclick="filterCat('Kjøtt',this)">🥩 Kjøtt</button>
+    <button class="chip" onclick="filterCat('Grønnsaker',this)">🥦 Grønnsaker</button>
+    <button class="chip" onclick="filterCat('Fisk',this)">🐟 Fisk</button>
+    <button class="chip" onclick="filterCat('Dessert',this)">🍰 Dessert</button>
+  </div>
+  <div class="recipes-grid" id="recipes-container">
+    <div class="empty-state">⏳ Laster oppskrifter...</div>
+  </div>
+</section>
+
+<footer><div class="footer-logo">Gård<span>navi</span></div><p>© 2025 Handelhjelp. Del dine favorittoppskrifter!</p></footer>
+
+<div class="modal-overlay" id="add-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div><h2>📖 Legg til oppskrift</h2><p>Del en oppskrift basert på lokale norske råvarer</p></div>
+      <button class="modal-close" onclick="document.getElementById('add-modal').classList.remove('open')">×</button>
     </div>
+    <div class="modal-body">
+      <div class="form-group"><label>Tittel *</label><input type="text" id="rec-title" required placeholder="f.eks. Lammefrikassé med rotgrønnsaker"/></div>
+      <div class="form-group"><label>Beskrivelse</label><textarea id="rec-desc" placeholder="Kort beskrivelse av retten..." style="min-height:70px;"></textarea></div>
+      <div class="form-group"><label>Ingredienser</label><textarea id="rec-ing" placeholder="1 kg lammekjøtt&#10;3 gulrøtter&#10;2 persillerøtter&#10;..."></textarea></div>
+      <div class="form-group"><label>Fremgangsmåte</label><textarea id="rec-steps" placeholder="Trinn 1: ...&#10;Trinn 2: ..."></textarea></div>
+      <div class="form-group"><label>Kategori</label>
+        <select id="rec-cat" style="width:100%;padding:0.7rem 1rem;border:1.5px solid rgba(26,48,34,0.15);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:0.93rem;background:var(--warm-white);">
+          <option value="">Velg kategori</option><option>Kjøtt</option><option>Grønnsaker</option><option>Fisk</option><option>Dessert</option><option>Annet</option>
+        </select>
+      </div>
+    </div>
+    <div class="save-status" id="save-status"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="document.getElementById('add-modal').classList.remove('open')">Avbryt</button>
+      <button class="btn-save" id="save-btn" onclick="saveRecipe()">💾 Send inn oppskrift</button>
+    </div>
+  </div>
+</div>
 
-    <script>
-        // Updated to Norway East
-        const API = 'https://gardnavi-api-fecufjdrfbhyf2g6.norwayeast-01.azurewebsites.net';
-        
-        // Get the ID from the URL (e.g., oppskrift.html?id=5)
-        const params = new URLSearchParams(window.location.search);
-        const recipeId = params.get('id');
+<script>
+const API='https://gardnavi-api-fecufjdrfbhyf2g6.norwayeast-01.azurewebsites.net';
+let allRecipes=[],filtered=[];
+const sampleRecipes=[
+  {id:1,title:'Lammefrikassé med rotgrønnsaker',description:'En klassisk norsk hverdagsrett med saftig lam og sesongens rotgrønnsaker. Perfekt for kalde høstdager.',ingredients:'1 kg lammekjøtt, 3 gulrøtter, 2 persillerøtter, 1 kålrot, 1 purre',steps:'Brun lammekjøttet. Tilsett vann og kok i 45 min. Tilsett grønnsaker og kok videre.',category:'Kjøtt',time:'90 min',icon:'🍖'},
+  {id:2,title:'Ovnsbakte rotgrønnsaker med honning',description:'Enkel og smakfull oppskrift med sesonggrønnsaker fra lokale gårder. Glasert med lokal honning.',ingredients:'Ulike rotgrønnsaker, 3 ss honning, 2 ss olivenolje, friske urter',steps:'Kutt grønnsaker. Bland med honning og olje. Bak ved 200 grader i 35 min.',category:'Grønnsaker',time:'45 min',icon:'🥕'},
+  {id:3,title:'Røykt laks med rømme og dill',description:'Norsk klassiker med lokal laks. Enkel forrett eller lunsj med frisk smak.',ingredients:'400g røykt laks, 2 dl rømme, frisk dill, sitron, rugbrød',steps:'Legg laks på tallerken. Bland rømme med dill. Server med sitron og rugbrød.',category:'Fisk',time:'10 min',icon:'🐟'},
+  {id:4,title:'Eple- og plommekake',description:'Saftig høstkake med lokale frukter fra Hardanger. En ekte norsk smaksopplevelse.',ingredients:'4 epler, 6 plommer, 3 egg, 200g sukker, 200g mel, 100g smør',steps:'Lag røren. Skjær frukt og legg i form. Hell over røren. Bak 175 grader i 40 min.',category:'Dessert',time:'60 min',icon:'🍎'},
+  {id:5,title:'Jordskokk-suppe med sprø bacon',description:'Kremet suppe av jordskokk fra Jæren. Toppes med sprø bacon og friske urter.',ingredients:'600g jordskokk, 1 løk, 1 l kyllingkraft, 1 dl fløte, 100g bacon',steps:'Surr løk og jordskokk. Tilsett kraft og kok i 20 min. Miks til jevn suppe. Server med bacon.',category:'Grønnsaker',time:'40 min',icon:'🥣'},
+];
 
-        async function fetchRecipeDetails() {
-            if (!recipeId) {
-                document.getElementById('loader').textContent = "Ingen oppskrift valgt.";
-                return;
-            }
+async function loadRecipes(){
+  try{const r=await fetch(`${API}/api/GetRecipes`);allRecipes=r.ok?(await r.json()):[];if(!allRecipes.length)allRecipes=sampleRecipes;}
+  catch(e){allRecipes=sampleRecipes;}
+  filtered=[...allRecipes];renderRecipes();
+}
 
-            try {
-                // Fetch specific recipe by ID from your API
-                const response = await fetch(`${API}/api/recipes/${recipeId}`);
-                
-                if (!response.ok) throw new Error("Oppskrift ikke funnet i databasen.");
-                
-                const r = await response.json();
-                
-                // Fill the page with SQL data
-                document.getElementById('title-display').textContent = r.title;
-                document.getElementById('cat-display').textContent = r.category || 'Oppskrift';
-                document.getElementById('desc-display').textContent = r.description || '';
-                document.getElementById('ing-display').textContent = r.ingredients || 'Ingen ingredienser listet.';
-                document.getElementById('steps-display').textContent = r.steps || 'Fremgangsmåte mangler.';
-                
-                // Show content, hide loader
-                document.getElementById('recipe-content').style.display = 'block';
-                document.getElementById('loader').style.display = 'none';
+function filterCat(cat,btn){
+  document.querySelectorAll('.filter-row .chip').forEach(c=>c.classList.remove('active'));btn.classList.add('active');
+  const s=document.getElementById('search-input').value.toLowerCase();
+  filtered=allRecipes.filter(r=>(cat==='all'||(r.category||'')=== cat)&&(!s||r.title.toLowerCase().includes(s)||(r.description||'').toLowerCase().includes(s)));
+  renderRecipes();
+}
 
-            } catch (e) {
-                console.error(e);
-                document.getElementById('loader').innerHTML = `
-                    <h3>Beklager!</h3>
-                    <p>Vi fant ikke denne oppskriften i Azure SQL. Sjekk at ID #${recipeId} eksisterer.</p>
-                `;
-            }
-        }
+function applyFilters(){
+  const s=document.getElementById('search-input').value.toLowerCase();
+  const activeChip=document.querySelector('.filter-row .chip.active');
+  const cat=activeChip?.textContent==='Alle'?'all':activeChip?.textContent||'all';
+  filtered=allRecipes.filter(r=>(cat==='all'||(r.category||'')===cat)&&(!s||r.title.toLowerCase().includes(s)||(r.description||'').toLowerCase().includes(s)));
+  renderRecipes();
+}
 
-        fetchRecipeDetails();
-    </script>
+function renderRecipes(){
+  const el=document.getElementById('recipes-container');
+  if(!filtered.length){el.innerHTML='<div class="empty-state"><h3>Ingen oppskrifter funnet</h3><p>Prøv å søke etter noe annet</p></div>';return;}
+  el.innerHTML=filtered.map(r=>`<div class="recipe-card" onclick="window.location.href='oppskrift.html?id=${r.id}'">
+    <div class="recipe-img">${r.icon||'📖'}</div>
+    <div class="recipe-body">
+      <span class="recipe-tag">${r.category||'Oppskrift'}</span>
+      <h3>${r.title}</h3>
+      <p>${r.description||''}</p>
+      <div class="recipe-meta">${r.time?`<span>⏱️ ${r.time}</span>`:''}${r.servings?`<span>👥 ${r.servings}</span>`:''}</div>
+    </div></div>`).join('');
+}
+
+async function saveRecipe(){
+  const title=document.getElementById('rec-title').value.trim();
+  if(!title){const s=document.getElementById('save-status');s.className='save-status error';s.textContent='⚠️ Fyll inn tittel';return;}
+  const data={title,description:document.getElementById('rec-desc').value,steps:document.getElementById('rec-steps').value,category:document.getElementById('rec-cat').value};
+  document.getElementById('save-btn').disabled=true;
+  try{await fetch(`${API}/api/AddRecipe`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});}catch(e){}
+  const s=document.getElementById('save-status');s.className='save-status success';s.textContent=`✅ "${title}" er sendt inn! Takk!`;
+  setTimeout(()=>{document.getElementById('add-modal').classList.remove('open');s.className='save-status';},2500);
+  document.getElementById('save-btn').disabled=false;
+}
+
+async function checkAuth(){
+  try{const r=await fetch('/.auth/me');const d=await r.json();if(d.clientPrincipal){document.getElementById('login-btn').style.display='none';document.getElementById('nav-user').style.display='flex';document.getElementById('user-name').textContent=d.clientPrincipal.userDetails;document.getElementById('add-recipe-btn').classList.add('visible');}}catch(e){}
+}
+
+document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+window.addEventListener('scroll',()=>{document.getElementById('main-nav').style.padding=window.scrollY>50?'0.7rem 4rem':'1rem 4rem';});
+loadRecipes();checkAuth();
+</script>
 </body>
 </html>
