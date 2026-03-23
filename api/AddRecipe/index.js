@@ -1,0 +1,49 @@
+const sql = require('mssql');
+
+module.exports = async function (context, req) {
+  const headers = {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type'
+  };
+
+  if (req.method === 'OPTIONS') {
+    context.res = { status: 200, headers, body: '' };
+    return;
+  }
+
+  try {
+    const body = req.body;
+    if (!body || !body.title) {
+      context.res = { status: 400, headers, body: JSON.stringify({ error: 'Title is required' }) };
+      return;
+    }
+
+    const pool = await sql.connect(process.env.SQL_CONNECTION_STRING);
+    const request = pool.request();
+
+    request.input('title', sql.NVarChar, body.title);
+    request.input('description', sql.NVarChar, body.description || '');
+    request.input('steps', sql.NVarChar, body.steps || '');
+    request.input('category', sql.NVarChar, body.category || '');
+
+    const result = await request.query(`
+      INSERT INTO Recipes (title, description, steps)
+      OUTPUT INSERTED.id
+      VALUES (@title, @description, @steps)
+    `);
+
+    context.res = {
+      status: 201,
+      headers,
+      body: JSON.stringify({ success: true, id: result.recordset[0].id, message: `${body.title} er lagt til!` })
+    };
+  } catch (err) {
+    context.res = {
+      status: 500,
+      headers,
+      body: JSON.stringify({ error: err.message })
+    };
+  }
+};
