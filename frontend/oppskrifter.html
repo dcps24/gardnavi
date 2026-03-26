@@ -304,6 +304,109 @@
     }
     .step-text { font-size: 0.93rem; color: var(--text-mid); line-height: 1.7; padding-top: 0.35rem; }
 
+    /* ===== FARM TAGS ===== */
+    .farm-tags-row { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 0.3rem; }
+    .farm-tag {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      background: rgba(26,48,34,0.07); color: var(--green-dark);
+      border: 1px solid rgba(26,48,34,0.14);
+      border-radius: 20px; font-size: 0.78rem; font-weight: 600;
+      padding: 0.28em 0.75em; cursor: default;
+      transition: all 0.2s;
+    }
+    .farm-tag .farm-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green-light); flex-shrink: 0; }
+    /* Clickable in detail */
+    a.farm-tag { text-decoration: none; cursor: pointer; }
+    a.farm-tag:hover { background: var(--green-dark); color: var(--cream); border-color: var(--green-dark); }
+
+    /* Farm section in detail */
+    .farm-section {
+      margin-top: 1.8rem;
+      background: linear-gradient(135deg, rgba(26,48,34,0.04), rgba(200,169,110,0.07));
+      border: 1px solid rgba(200,169,110,0.25);
+      border-radius: 14px; padding: 1.2rem 1.4rem;
+    }
+    .farm-section-header { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.9rem; }
+    .farm-section-header h4 { font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--earth-dark); font-weight: 700; }
+    .farm-section-header span { font-size: 1.1rem; }
+    .farm-card-mini {
+      display: flex; align-items: center; gap: 0.9rem;
+      padding: 0.7rem 0.9rem; border-radius: 10px;
+      background: white; border: 1px solid rgba(26,48,34,0.08);
+      margin-bottom: 0.6rem; text-decoration: none; color: inherit;
+      transition: all 0.2s;
+    }
+    .farm-card-mini:last-child { margin-bottom: 0; }
+    .farm-card-mini:hover { border-color: var(--green-light); box-shadow: 0 4px 12px rgba(26,48,34,0.08); transform: translateX(3px); }
+    .farm-card-mini-icon { font-size: 1.6rem; flex-shrink: 0; }
+    .farm-card-mini-info { flex: 1; min-width: 0; }
+    .farm-card-mini-name { font-weight: 700; font-size: 0.9rem; color: var(--green-dark); }
+    .farm-card-mini-meta { font-size: 0.78rem; color: var(--text-light); margin-top: 0.1rem; }
+    .farm-card-mini-products { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.4rem; }
+    .farm-product-pill {
+      font-size: 0.7rem; padding: 0.15em 0.55em;
+      background: rgba(200,169,110,0.18); color: var(--earth-dark);
+      border-radius: 10px; font-weight: 600;
+    }
+    .farm-card-mini-arrow { color: var(--text-light); font-size: 0.9rem; flex-shrink: 0; }
+
+    /* Card farm strip */
+    .card-farm-strip {
+      display: flex; align-items: center; gap: 0.4rem;
+      padding: 0 1.5rem 1rem; flex-wrap: wrap;
+    }
+    .card-farm-strip .mini-farm-pill {
+      font-size: 0.72rem; font-weight: 600;
+      background: rgba(26,48,34,0.07); color: var(--green-dark);
+      border: 1px solid rgba(26,48,34,0.12); border-radius: 12px;
+      padding: 0.2em 0.6em; display: flex; align-items: center; gap: 0.3rem;
+    }
+    .card-farm-strip .mini-farm-pill::before { content: '🌿'; font-size: 0.65rem; }
+
+    /* Farm picker in form */
+    .farm-picker { position: relative; }
+    .farm-search-input {
+      width: 100%; padding: 0.75rem 1rem 0.75rem 2.4rem;
+      border: 1.5px solid rgba(26,48,34,0.14); border-radius: 8px;
+      font-family: 'DM Sans', sans-serif; font-size: 0.93rem;
+      background: white; color: var(--text-dark);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .farm-search-input:focus { outline: none; border-color: var(--earth); box-shadow: 0 0 0 3px rgba(200,169,110,0.15); }
+    .farm-search-icon { position: absolute; left: 0.8rem; top: 50%; transform: translateY(-50%); font-size: 0.85rem; pointer-events: none; }
+    .farm-dropdown {
+      position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 100;
+      background: white; border: 1.5px solid rgba(200,169,110,0.4);
+      border-radius: 10px; box-shadow: 0 8px 24px rgba(26,48,34,0.12);
+      max-height: 200px; overflow-y: auto; display: none;
+    }
+    .farm-dropdown.open { display: block; }
+    .farm-option {
+      padding: 0.65rem 1rem; cursor: pointer;
+      display: flex; align-items: center; gap: 0.6rem;
+      font-size: 0.88rem; color: var(--text-dark);
+      border-bottom: 1px solid rgba(26,48,34,0.05);
+      transition: background 0.15s;
+    }
+    .farm-option:last-child { border-bottom: none; }
+    .farm-option:hover { background: rgba(200,169,110,0.1); }
+    .farm-option-icon { font-size: 1.1rem; }
+    .farm-option-meta { font-size: 0.74rem; color: var(--text-light); }
+    .selected-farms { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.7rem; }
+    .selected-farm-tag {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      background: rgba(26,48,34,0.08); color: var(--green-dark);
+      border: 1px solid rgba(26,48,34,0.15); border-radius: 20px;
+      font-size: 0.8rem; font-weight: 600; padding: 0.3em 0.5em 0.3em 0.8em;
+    }
+    .remove-farm-btn {
+      background: none; border: none; cursor: pointer;
+      color: var(--text-light); font-size: 0.8rem; padding: 0 0.2rem;
+      line-height: 1; transition: color 0.15s;
+    }
+    .remove-farm-btn:hover { color: #c03030; }
+    .farm-hint { font-size: 0.76rem; color: var(--text-light); margin-top: 0.4rem; }
+
     /* ===== ADD MODAL ===== */
     .modal-overlay {
       display: none; position: fixed; inset: 0;
@@ -556,8 +659,19 @@
         </div>
       </div>
 
+      <!-- Tilknyttede gårder -->
       <div class="form-group">
-        <label>Ingredienser <span>*</span></label>
+        <label>🌿 Tilknyttede gårder</label>
+        <div class="farm-picker">
+          <span class="farm-search-icon">🔍</span>
+          <input type="text" class="farm-search-input" id="farm-search" placeholder="Søk etter gård..." oninput="filterFarms()" onfocus="openFarmDropdown()" onblur="setTimeout(closeFarmDropdown,200)" autocomplete="off"/>
+          <div class="farm-dropdown" id="farm-dropdown"></div>
+        </div>
+        <div class="selected-farms" id="selected-farms"></div>
+        <p class="farm-hint">Tagg gårder som leverer ingredienser til denne oppskriften</p>
+      </div>
+
+
         <textarea id="rec-ing" placeholder="1 kg lammekjøtt&#10;3 gulrøtter&#10;2 persillerøtter&#10;1 liter kraft&#10;..."></textarea>
       </div>
 
@@ -595,6 +709,83 @@ const sampleRecipes = [
 let allRecipes = [], filtered = [], currentCat = 'all';
 let uploadedImages = []; // array of base64 strings
 let sliderIndex = 0, currentSliderImages = [];
+
+// ---- FARM DATA ----
+const allFarms = [
+  {id:1, name:'Helgen Gård', location:'Numedal, Viken', icon:'🏡', products:['Honning','Epler','Pærer']},
+  {id:2, name:'Jæren Grønt', location:'Jæren, Rogaland', icon:'🌾', products:['Jordskokk','Gulrøtter','Kålrot']},
+  {id:3, name:'Hardanger Frukt', location:'Hardanger, Vestland', icon:'🍎', products:['Epler','Plommer','Kirsebær']},
+  {id:4, name:'Lofoten Sjømat', location:'Lofoten, Nordland', icon:'🐟', products:['Laks','Torsk','Skrei']},
+  {id:5, name:'Valdres Ysteri', location:'Valdres, Innlandet', icon:'🧀', products:['Ost','Smør','Rømme']},
+  {id:6, name:'Telemark Urter', location:'Telemark', icon:'🌿', products:['Timian','Dill','Persille','Rosmarin']},
+  {id:7, name:'Trøndelag Kjøtt', location:'Trøndelag', icon:'🥩', products:['Lam','Storfe','Villsau']},
+  {id:8, name:'Vestfold Bær', location:'Vestfold', icon:'🍓', products:['Jordbær','Blåbær','Bringebær']},
+  {id:9, name:'Finnskogen Vilt', location:'Hedmark, Innlandet', icon:'🦌', products:['Elg','Rein','Rype']},
+  {id:10, name:'Mjøsa Grønnsaker', location:'Innlandet', icon:'🥦', products:['Kål','Brokkoli','Purre','Løk']},
+];
+
+// Update sample recipes with farms
+sampleRecipes[0].farms = [allFarms[6], allFarms[1]]; // Lammefrikassé
+sampleRecipes[1].farms = [allFarms[1], allFarms[0]]; // Rotgrønnsaker
+sampleRecipes[2].farms = [allFarms[3]];               // Laks
+sampleRecipes[3].farms = [allFarms[2]];               // Hardangerkake
+sampleRecipes[4].farms = [allFarms[1], allFarms[5]];  // Jordskokk
+
+let selectedFarms = [];
+
+function filterFarms() {
+  const q = document.getElementById('farm-search').value.toLowerCase();
+  openFarmDropdown(q);
+}
+
+function openFarmDropdown(q = '') {
+  const dd = document.getElementById('farm-dropdown');
+  const term = q || document.getElementById('farm-search').value.toLowerCase();
+  const available = allFarms.filter(f =>
+    !selectedFarms.find(s => s.id === f.id) &&
+    (f.name.toLowerCase().includes(term) || f.products.some(p => p.toLowerCase().includes(term)) || f.location.toLowerCase().includes(term))
+  );
+  if (!available.length) {
+    dd.innerHTML = `<div class="farm-option" style="color:var(--text-light);cursor:default">Ingen gårder funnet</div>`;
+  } else {
+    dd.innerHTML = available.map(f => `
+      <div class="farm-option" onmousedown="selectFarm(${f.id})">
+        <span class="farm-option-icon">${f.icon}</span>
+        <div>
+          <div>${f.name}</div>
+          <div class="farm-option-meta">📍 ${f.location} · ${f.products.slice(0,3).join(', ')}</div>
+        </div>
+      </div>`).join('');
+  }
+  dd.classList.add('open');
+}
+
+function closeFarmDropdown() {
+  document.getElementById('farm-dropdown').classList.remove('open');
+}
+
+function selectFarm(id) {
+  const farm = allFarms.find(f => f.id === id);
+  if (farm && !selectedFarms.find(f => f.id === id)) {
+    selectedFarms.push(farm);
+    renderSelectedFarms();
+    document.getElementById('farm-search').value = '';
+  }
+}
+
+function removeFarm(id) {
+  selectedFarms = selectedFarms.filter(f => f.id !== id);
+  renderSelectedFarms();
+}
+
+function renderSelectedFarms() {
+  const el = document.getElementById('selected-farms');
+  el.innerHTML = selectedFarms.map(f => `
+    <span class="selected-farm-tag">
+      ${f.icon} ${f.name}
+      <button class="remove-farm-btn" onclick="removeFarm(${f.id})" title="Fjern">✕</button>
+    </span>`).join('');
+}
 
 // ---- LOAD ----
 async function loadRecipes() {
@@ -664,6 +855,11 @@ function renderRecipes() {
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </button>
       </div>
+      ${r.farms && r.farms.length > 0 ? `
+      <div class="card-farm-strip">
+        ${r.farms.slice(0,3).map(f=>`<span class="mini-farm-pill">${f.name}</span>`).join('')}
+        ${r.farms.length > 3 ? `<span style="font-size:0.72rem;color:var(--text-light)">+${r.farms.length-3} gårder</span>` : ''}
+      </div>` : ''}
     </div>`;
   }).join('');
 }
@@ -729,6 +925,25 @@ function showDetail(id) {
         return `<div class="step-item"><div class="step-num">${i+1}</div><div class="step-text">${text}</div></div>`;
       }).join('')}
     </ol>` : ''}
+
+    ${r.farms && r.farms.length > 0 ? `
+    <div class="farm-section">
+      <div class="farm-section-header">
+        <span>🌿</span>
+        <h4>Råvarer fra lokale gårder</h4>
+      </div>
+      ${r.farms.map(f => `
+        <a class="farm-card-mini" href="garder.html?id=${f.id}" target="_blank">
+          <div class="farm-card-mini-icon">${f.icon || '🏡'}</div>
+          <div class="farm-card-mini-info">
+            <div class="farm-card-mini-name">${f.name}</div>
+            <div class="farm-card-mini-meta">📍 ${f.location || 'Norge'}</div>
+            ${f.products && f.products.length > 0 ? `<div class="farm-card-mini-products">${f.products.map(p=>`<span class="farm-product-pill">${p}</span>`).join('')}</div>` : ''}
+          </div>
+          <div class="farm-card-mini-arrow">→</div>
+        </a>
+      `).join('')}
+    </div>` : ''}
   `;
 
   document.getElementById('detail-overlay').classList.add('open');
@@ -764,6 +979,9 @@ function openAddModal() {
 function closeAddModal() {
   document.getElementById('add-modal').classList.remove('open');
   document.body.style.overflow = '';
+  selectedFarms = [];
+  document.getElementById('selected-farms').innerHTML = '';
+  document.getElementById('farm-search').value = '';
   uploadedImages = [];
   document.getElementById('img-previews').innerHTML = '';
   document.getElementById('img-count-hint').textContent = '';
@@ -822,6 +1040,7 @@ async function saveRecipe() {
     category: document.getElementById('rec-cat').value,
     cuisine: document.getElementById('rec-cuisine').value,
     images: uploadedImages,
+    farms: selectedFarms,
   };
 
   document.getElementById('save-btn').disabled = true;
