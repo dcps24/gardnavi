@@ -1,105 +1,438 @@
 <!DOCTYPE html>
 <html lang="no">
 <head>
-  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Oppskrifter | Gårdnavi</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
   <style>
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    :root{--green-dark:#1a3022;--green-mid:#2d5a3d;--cream:#f5f0e8;--warm-white:#faf8f3;--earth:#c8a96e;--earth-light:#e8d5a3;--text-dark:#1a1a14;--text-mid:#3d3d2e;}
-    html{scroll-behavior:smooth;}body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--text-dark);}
-    nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:1rem 4rem;background:rgba(245,240,232,0.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(74,140,92,0.15);transition:padding 0.3s;}
-    .nav-logo{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;color:var(--green-dark);text-decoration:none;}.nav-logo span{color:var(--earth);}
-    .nav-links{display:flex;gap:2rem;list-style:none;}
-    .nav-links a{text-decoration:none;color:var(--text-mid);font-weight:500;font-size:0.92rem;transition:color 0.2s;position:relative;}
-    .nav-links a::after{content:'';position:absolute;bottom:-3px;left:0;width:0;height:2px;background:var(--earth);transition:width 0.3s;}
-    .nav-links a:hover,.nav-links a.active{color:var(--green-dark);}.nav-links a:hover::after,.nav-links a.active::after{width:100%;}
-    .nav-login-btn{padding:0.5rem 1.2rem;background:var(--green-dark);color:var(--cream);border-radius:4px;text-decoration:none;font-size:0.85rem;font-weight:700;transition:all 0.2s;}.nav-login-btn:hover{background:var(--green-mid);}
-    .nav-user{display:flex;align-items:center;gap:0.8rem;}#user-name{font-size:0.85rem;font-weight:600;color:var(--green-dark);}.nav-logout-btn{font-size:0.82rem;color:var(--text-mid);text-decoration:none;}
-    .page-header{background:var(--earth);padding:7rem 4rem 3rem;position:relative;overflow:hidden;}
-    .page-header::before{content:'';position:absolute;top:-80px;right:-80px;width:350px;height:350px;background:rgba(255,255,255,0.12);border-radius:50%;}
-    .breadcrumb{font-size:0.82rem;color:rgba(26,48,34,0.6);margin-bottom:1rem;}.breadcrumb a{color:var(--green-dark);text-decoration:none;opacity:0.7;}
-    .page-header h1{font-family:'Playfair Display',serif;font-size:clamp(2.5rem,4vw,3.5rem);color:var(--green-dark);margin-bottom:0.8rem;}
-    .page-header p{color:rgba(26,48,34,0.7);font-size:1.05rem;max-width:500px;}
-    .content-section{padding:3rem 4rem;}
-    .toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem;}
-    .toolbar h2{font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--green-dark);}
-    .add-btn{padding:0.6rem 1.4rem;background:var(--earth);color:var(--green-dark);border:none;border-radius:4px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:0.85rem;cursor:pointer;transition:all 0.2s;display:none;}
-    .add-btn.visible{display:block;}.add-btn:hover{background:var(--earth-light);}
-    .filter-row{display:flex;gap:0.8rem;margin-bottom:2rem;flex-wrap:wrap;align-items:center;}
-    .search-input{flex:1;min-width:200px;padding:0.7rem 1rem 0.7rem 2.5rem;border:1.5px solid rgba(26,48,34,0.15);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:0.92rem;background:var(--warm-white);color:var(--text-dark);}
-    .search-input:focus{outline:none;border-color:var(--earth);}
-    .search-wrap{position:relative;flex:1;min-width:200px;}
-    .search-wrap::before{content:'🔍';position:absolute;left:0.75rem;top:50%;transform:translateY(-50%);font-size:0.85rem;}
-    .chip{padding:0.35rem 0.9rem;border:1.5px solid rgba(26,48,34,0.15);border-radius:20px;font-size:0.82rem;font-weight:500;cursor:pointer;transition:all 0.2s;background:transparent;font-family:'DM Sans',sans-serif;color:var(--text-mid);}
-    .chip:hover{border-color:var(--earth);color:var(--earth);}.chip.active{background:var(--earth);border-color:var(--earth);color:var(--green-dark);}
-    .results-count{font-size:0.88rem;color:var(--text-mid);margin-bottom:1.5rem;}
-    .results-count strong{color:var(--green-dark);}
-    .recipes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;}
-    .recipe-card{background:var(--warm-white);border-radius:8px;overflow:hidden;border:1px solid rgba(26,48,34,0.08);transition:all 0.25s;cursor:pointer;text-decoration:none;display:block;}
-    .recipe-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(26,48,34,0.1);}
-    .recipe-img{height:160px;display:flex;align-items:center;justify-content:center;font-size:4rem;position:relative;}
-    .recipe-img.kjott{background:linear-gradient(135deg,#5a2d0c,#8b4513);}
-    .recipe-img.gront{background:linear-gradient(135deg,#1a3022,#2d5a3d);}
-    .recipe-img.fisk{background:linear-gradient(135deg,#0c2a4a,#1a4a7a);}
-    .recipe-img.dessert{background:linear-gradient(135deg,#7a3020,#c8692e);}
-    .recipe-img.annet{background:linear-gradient(135deg,#3d3020,#c8a96e);}
-    .recipe-body{padding:1.5rem;}
-    .recipe-tag{display:inline-block;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;font-weight:700;padding:0.2em 0.7em;border-radius:20px;margin-bottom:0.7rem;background:rgba(200,169,110,0.2);color:#7a5a1a;}
-    .recipe-body h3{font-family:'Playfair Display',serif;font-size:1.15rem;color:var(--green-dark);margin-bottom:0.5rem;line-height:1.3;}
-    .recipe-body p{font-size:0.88rem;color:var(--text-mid);line-height:1.6;margin-bottom:0.8rem;}
-    .recipe-meta{display:flex;gap:1rem;font-size:0.8rem;color:var(--text-mid);flex-wrap:wrap;}
-    .empty-state{text-align:center;padding:5rem 2rem;grid-column:1/-1;}
-    .empty-state h3{font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--green-dark);margin-bottom:0.5rem;}
-    .empty-state p{color:var(--text-mid);margin-bottom:1.5rem;}
-    .loading{display:flex;align-items:center;justify-content:center;padding:5rem;grid-column:1/-1;gap:0.8rem;color:var(--text-mid);}
-    .spinner{width:22px;height:22px;border:2px solid rgba(45,90,61,0.2);border-top-color:var(--green-mid);border-radius:50%;animation:spin 0.8s linear infinite;}
-    @keyframes spin{to{transform:rotate(360deg);}}
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* MODAL */
-    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:2000;align-items:center;justify-content:center;padding:1rem;}
-    .modal-overlay.open{display:flex;}
-    .modal{background:var(--warm-white);border-radius:12px;max-width:580px;width:100%;max-height:90vh;overflow-y:auto;}
-    .modal-header{background:var(--earth);padding:1.8rem 2rem;border-radius:12px 12px 0 0;display:flex;justify-content:space-between;align-items:start;position:sticky;top:0;}
-    .modal-header h2{font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--green-dark);}
-    .modal-header p{font-size:0.85rem;color:rgba(26,48,34,0.65);margin-top:0.2rem;}
-    .modal-close{background:none;border:none;color:var(--green-dark);font-size:1.5rem;cursor:pointer;opacity:0.7;line-height:1;}.modal-close:hover{opacity:1;}
-    .modal-body{padding:2rem;}
-    .form-group{margin-bottom:1rem;}
-    .form-group label{display:block;font-size:0.78rem;font-weight:600;color:var(--text-mid);margin-bottom:0.35rem;letter-spacing:0.04em;text-transform:uppercase;}
-    .form-group label span{color:#e25555;}
-    .form-group input,.form-group textarea,.form-group select{width:100%;padding:0.7rem 1rem;border:1.5px solid rgba(26,48,34,0.15);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:0.93rem;background:var(--warm-white);color:var(--text-dark);transition:border-color 0.2s;}
-    .form-group input:focus,.form-group textarea:focus,.form-group select:focus{outline:none;border-color:var(--earth);}
-    .form-group textarea{min-height:100px;resize:vertical;}
-    .modal-footer{padding:1.5rem 2rem;border-top:1px solid rgba(26,48,34,0.1);display:flex;gap:1rem;justify-content:flex-end;background:var(--cream);border-radius:0 0 12px 12px;position:sticky;bottom:0;}
-    .btn-cancel{padding:0.75rem 1.5rem;border:1.5px solid rgba(26,48,34,0.2);background:transparent;border-radius:4px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:0.9rem;cursor:pointer;color:var(--text-mid);transition:all 0.2s;}
-    .btn-cancel:hover{border-color:var(--earth);color:var(--earth);}
-    .btn-save{padding:0.75rem 2rem;background:var(--green-dark);color:var(--cream);border:none;border-radius:4px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:0.9rem;cursor:pointer;transition:all 0.25s;}
-    .btn-save:hover{background:var(--green-mid);}
-    .btn-save:disabled{opacity:0.5;cursor:not-allowed;}
-    .save-status{display:none;padding:1rem 2rem;font-weight:600;font-size:0.9rem;text-align:center;}
-    .save-status.success{display:block;color:var(--green-mid);}
-    .save-status.error{display:block;color:#c03030;}
+    :root {
+      --green-dark: #1a3022;
+      --green-mid: #2d5a3d;
+      --green-light: #4a8c5c;
+      --cream: #f5f0e8;
+      --warm-white: #faf8f3;
+      --earth: #c8a96e;
+      --earth-light: #e8d5a3;
+      --earth-dark: #a07840;
+      --text-dark: #1a1a14;
+      --text-mid: #3d3d2e;
+      --text-light: #7a7a60;
+      --card-shadow: 0 4px 24px rgba(26,48,34,0.09);
+      --card-shadow-hover: 0 16px 48px rgba(26,48,34,0.18);
+    }
 
-    /* DETAIL MODAL */
-    .detail-modal{background:var(--warm-white);border-radius:12px;max-width:600px;width:100%;max-height:90vh;overflow-y:auto;}
-    .detail-img{height:180px;display:flex;align-items:center;justify-content:center;font-size:5rem;border-radius:12px 12px 0 0;position:relative;}
-    .detail-close{position:absolute;top:1rem;right:1rem;background:rgba(0,0,0,0.3);border:none;color:white;width:32px;height:32px;border-radius:50%;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-    .detail-body{padding:2rem;}
-    .detail-body h2{font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--green-dark);margin-bottom:0.5rem;}
-    .detail-section{margin-top:1.5rem;}
-    .detail-section h4{font-size:0.72rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--earth);font-weight:700;margin-bottom:0.8rem;display:flex;align-items:center;gap:0.5rem;}
-    .detail-section h4::after{content:'';flex:1;height:1px;background:rgba(200,169,110,0.3);}
-    .detail-section p{color:var(--text-mid);line-height:1.75;font-size:0.95rem;white-space:pre-line;}
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--warm-white); color: var(--text-dark); min-height: 100vh; }
 
-    footer{background:var(--text-dark);padding:3rem 4rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;}
-    .footer-logo{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;color:var(--cream);}.footer-logo span{color:var(--earth);}
-    footer p{color:rgba(245,240,232,0.4);font-size:0.85rem;}
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 4rem;
+      background: rgba(245,240,232,0.96);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(200,169,110,0.18);
+      transition: padding 0.3s, box-shadow 0.3s;
+    }
+    nav.scrolled { padding: 0.65rem 4rem; box-shadow: 0 2px 20px rgba(26,48,34,0.08); }
+    .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 900; color: var(--green-dark); text-decoration: none; }
+    .nav-logo span { color: var(--earth); }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a { text-decoration: none; color: var(--text-mid); font-weight: 500; font-size: 0.92rem; transition: color 0.2s; position: relative; }
+    .nav-links a::after { content: ''; position: absolute; bottom: -3px; left: 0; width: 0; height: 2px; background: var(--earth); transition: width 0.3s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--green-dark); }
+    .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+    .nav-login-btn { padding: 0.5rem 1.2rem; background: var(--green-dark); color: var(--cream); border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 700; transition: all 0.2s; }
+    .nav-login-btn:hover { background: var(--green-mid); }
+    .nav-user { display: flex; align-items: center; gap: 0.8rem; }
+    #user-name { font-size: 0.85rem; font-weight: 600; color: var(--green-dark); }
+    .nav-logout-btn { font-size: 0.82rem; color: var(--text-mid); text-decoration: none; }
 
-    @media(max-width:900px){nav{padding:0.8rem 1.5rem;}.page-header,.content-section{padding:6rem 1.5rem 2.5rem;}.content-section{padding-top:2rem;}footer{padding:2rem 1.5rem;flex-direction:column;}.filter-row{flex-direction:column;align-items:stretch;}}
+    /* PAGE HEADER */
+    .page-header {
+      background: linear-gradient(135deg, var(--green-dark) 0%, var(--green-mid) 60%, #4a7a5c 100%);
+      padding: 8rem 4rem 4rem;
+      position: relative; overflow: hidden;
+    }
+    .page-header::before {
+      content: ''; position: absolute; top: -100px; right: -100px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(200,169,110,0.18) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .page-header::after {
+      content: ''; position: absolute; bottom: -60px; left: 10%;
+      width: 280px; height: 280px;
+      background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .breadcrumb { font-size: 0.82rem; color: rgba(245,240,232,0.55); margin-bottom: 1rem; }
+    .breadcrumb a { color: var(--earth-light); text-decoration: none; opacity: 0.8; }
+    .page-header h1 { font-family: 'Playfair Display', serif; font-size: clamp(2.5rem, 4vw, 3.8rem); color: var(--cream); margin-bottom: 0.8rem; position: relative; z-index: 1; }
+    .page-header p { color: rgba(245,240,232,0.72); font-size: 1.05rem; max-width: 520px; position: relative; z-index: 1; }
+
+    /* CONTENT */
+    .content-section { padding: 3rem 4rem; }
+
+    .toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+    .toolbar h2 { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--green-dark); }
+
+    .add-btn {
+      padding: 0.65rem 1.5rem;
+      background: var(--earth); color: var(--green-dark);
+      border: none; border-radius: 8px;
+      font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.88rem;
+      cursor: pointer; transition: all 0.2s;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .add-btn:hover { background: var(--earth-dark); color: white; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(200,169,110,0.4); }
+
+    .filter-row { display: flex; gap: 0.8rem; margin-bottom: 2rem; flex-wrap: wrap; align-items: center; }
+    .search-wrap { position: relative; flex: 1; min-width: 220px; }
+    .search-wrap::before { content: '🔍'; position: absolute; left: 0.9rem; top: 50%; transform: translateY(-50%); font-size: 0.85rem; }
+    .search-input {
+      width: 100%; padding: 0.75rem 1rem 0.75rem 2.6rem;
+      border: 1.5px solid rgba(26,48,34,0.12); border-radius: 8px;
+      font-family: 'DM Sans', sans-serif; font-size: 0.92rem;
+      background: white; color: var(--text-dark);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .search-input:focus { outline: none; border-color: var(--earth); box-shadow: 0 0 0 3px rgba(200,169,110,0.15); }
+
+    .chip {
+      padding: 0.45rem 1rem; border: 1.5px solid rgba(26,48,34,0.12);
+      border-radius: 24px; font-size: 0.83rem; font-weight: 500;
+      cursor: pointer; transition: all 0.2s; background: white;
+      font-family: 'DM Sans', sans-serif; color: var(--text-mid);
+    }
+    .chip:hover { border-color: var(--earth); color: var(--earth-dark); }
+    .chip.active { background: var(--green-dark); border-color: var(--green-dark); color: var(--cream); }
+
+    .results-count { font-size: 0.88rem; color: var(--text-light); margin-bottom: 1.5rem; }
+    .results-count strong { color: var(--green-dark); }
+
+    /* RECIPE CARDS GRID */
+    .recipes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.8rem; }
+
+    .recipe-card {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--card-shadow);
+      transition: transform 0.28s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.28s ease;
+      cursor: pointer;
+      display: flex; flex-direction: column;
+      border: 1px solid rgba(26,48,34,0.06);
+      animation: cardIn 0.4s ease both;
+    }
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .recipe-card:hover { transform: translateY(-6px) scale(1.01); box-shadow: var(--card-shadow-hover); }
+
+    .recipe-img-wrap {
+      position: relative; height: 200px; overflow: hidden; flex-shrink: 0;
+    }
+    .recipe-img-wrap img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+    .recipe-card:hover .recipe-img-wrap img { transform: scale(1.06); }
+    .recipe-img-placeholder {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 4rem;
+    }
+    .recipe-img-placeholder.kjott { background: linear-gradient(135deg,#5a2d0c,#8b4513); }
+    .recipe-img-placeholder.gront { background: linear-gradient(135deg,#1a3022,#2d5a3d); }
+    .recipe-img-placeholder.fisk { background: linear-gradient(135deg,#0c2a4a,#1a4a7a); }
+    .recipe-img-placeholder.dessert { background: linear-gradient(135deg,#7a3020,#c8692e); }
+    .recipe-img-placeholder.annet { background: linear-gradient(135deg,#3d3020,#c8a96e); }
+
+    .card-cuisine-badge {
+      position: absolute; top: 12px; left: 12px;
+      background: rgba(26,48,34,0.82); color: var(--cream);
+      backdrop-filter: blur(8px);
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 0.3em 0.75em; border-radius: 20px;
+    }
+    .card-cat-badge {
+      position: absolute; top: 12px; right: 12px;
+      background: rgba(200,169,110,0.92); color: var(--green-dark);
+      font-size: 0.75rem; font-weight: 700; padding: 0.3em 0.7em; border-radius: 20px;
+      backdrop-filter: blur(6px);
+    }
+
+    .recipe-body { padding: 1.4rem 1.5rem; flex: 1; display: flex; flex-direction: column; gap: 0.5rem; }
+    .recipe-body h3 { font-family: 'Playfair Display', serif; font-size: 1.15rem; color: var(--green-dark); line-height: 1.3; }
+    .recipe-body p { font-size: 0.87rem; color: var(--text-mid); line-height: 1.65; flex: 1; }
+    .recipe-meta { display: flex; gap: 0.8rem; font-size: 0.8rem; color: var(--text-light); margin-top: 0.3rem; flex-wrap: wrap; }
+    .recipe-meta span { display: flex; align-items: center; gap: 0.3rem; }
+
+    .card-footer {
+      padding: 0.9rem 1.5rem;
+      border-top: 1px solid rgba(26,48,34,0.06);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .card-view-btn {
+      font-size: 0.82rem; font-weight: 600; color: var(--earth-dark);
+      background: none; border: none; cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      display: flex; align-items: center; gap: 0.3rem;
+      transition: color 0.2s;
+    }
+    .card-view-btn:hover { color: var(--green-dark); }
+    .card-view-btn svg { transition: transform 0.2s; }
+    .recipe-card:hover .card-view-btn svg { transform: translateX(4px); }
+
+    /* EMPTY / LOADING */
+    .empty-state { text-align: center; padding: 5rem 2rem; grid-column: 1/-1; }
+    .empty-state h3 { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--green-dark); margin-bottom: 0.5rem; }
+    .empty-state p { color: var(--text-mid); }
+    .loading { display: flex; align-items: center; justify-content: center; padding: 5rem; grid-column: 1/-1; gap: 0.8rem; color: var(--text-mid); }
+    .spinner { width: 22px; height: 22px; border: 2px solid rgba(45,90,61,0.2); border-top-color: var(--green-mid); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ===== DETAIL OVERLAY ===== */
+    .overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(20,30,22,0.72);
+      backdrop-filter: blur(8px);
+      z-index: 3000;
+      align-items: center; justify-content: center;
+      padding: 1.5rem;
+      animation: overlayIn 0.25s ease;
+    }
+    @keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
+    .overlay.open { display: flex; }
+
+    .detail-panel {
+      background: var(--warm-white);
+      border-radius: 20px;
+      max-width: 680px; width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.28);
+      animation: panelUp 0.32s cubic-bezier(0.34,1.2,0.64,1);
+      position: relative;
+    }
+    @keyframes panelUp {
+      from { opacity: 0; transform: translateY(30px) scale(0.97); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* Image slider inside detail */
+    .detail-slider { position: relative; height: 260px; overflow: hidden; border-radius: 20px 20px 0 0; }
+    .detail-slider-track { display: flex; height: 100%; transition: transform 0.4s ease; }
+    .detail-slide {
+      min-width: 100%; height: 100%;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 6rem;
+    }
+    .detail-slide img { width: 100%; height: 100%; object-fit: cover; }
+    .detail-slide.placeholder.kjott { background: linear-gradient(135deg,#5a2d0c,#8b4513); }
+    .detail-slide.placeholder.gront { background: linear-gradient(135deg,#1a3022,#2d5a3d); }
+    .detail-slide.placeholder.fisk { background: linear-gradient(135deg,#0c2a4a,#1a4a7a); }
+    .detail-slide.placeholder.dessert { background: linear-gradient(135deg,#7a3020,#c8692e); }
+    .detail-slide.placeholder.annet { background: linear-gradient(135deg,#3d3020,#c8a96e); }
+
+    .slider-btn {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      background: rgba(255,255,255,0.85); border: none;
+      width: 36px; height: 36px; border-radius: 50%;
+      font-size: 1rem; cursor: pointer; color: var(--green-dark);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+      transition: all 0.2s;
+    }
+    .slider-btn:hover { background: white; transform: translateY(-50%) scale(1.08); }
+    .slider-btn.prev { left: 12px; }
+    .slider-btn.next { right: 12px; }
+    .slider-dots { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; }
+    .slider-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.5); border: none; cursor: pointer; transition: all 0.2s; padding: 0; }
+    .slider-dot.active { background: white; width: 20px; border-radius: 4px; }
+
+    .detail-close-btn {
+      position: absolute; top: 14px; right: 14px;
+      background: rgba(0,0,0,0.35); border: none; color: white;
+      width: 34px; height: 34px; border-radius: 50%;
+      font-size: 1.1rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      backdrop-filter: blur(4px);
+      transition: background 0.2s;
+    }
+    .detail-close-btn:hover { background: rgba(0,0,0,0.6); }
+
+    .detail-content { padding: 2rem 2.2rem 2.5rem; }
+    .detail-content h2 { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--green-dark); margin-bottom: 0.4rem; line-height: 1.2; }
+    .detail-badges { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .badge { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.74rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 0.3em 0.8em; border-radius: 20px; }
+    .badge-cat { background: rgba(200,169,110,0.2); color: var(--earth-dark); }
+    .badge-cuisine { background: rgba(26,48,34,0.1); color: var(--green-dark); }
+    .detail-desc { color: var(--text-mid); line-height: 1.75; font-size: 0.96rem; margin-bottom: 1.8rem; }
+
+    .detail-section-title {
+      font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--earth-dark); font-weight: 700;
+      margin-bottom: 1rem;
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    .detail-section-title::after { content: ''; flex: 1; height: 1px; background: rgba(200,169,110,0.3); }
+
+    .ingredients-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 2rem; }
+    .ingredients-list li {
+      display: flex; align-items: center; gap: 0.7rem;
+      font-size: 0.93rem; color: var(--text-dark);
+      padding: 0.5rem 0.8rem; border-radius: 8px;
+      background: rgba(26,48,34,0.03);
+      border-left: 3px solid var(--earth);
+    }
+    .ingredients-list li::before { content: '·'; color: var(--earth); font-weight: 900; font-size: 1.2rem; line-height: 1; }
+
+    .steps-list { list-style: none; display: flex; flex-direction: column; gap: 1rem; }
+    .step-item { display: flex; gap: 1rem; align-items: flex-start; }
+    .step-num {
+      min-width: 32px; height: 32px;
+      background: var(--green-dark); color: var(--cream);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem; font-weight: 700; flex-shrink: 0; margin-top: 1px;
+    }
+    .step-text { font-size: 0.93rem; color: var(--text-mid); line-height: 1.7; padding-top: 0.35rem; }
+
+    /* ===== ADD MODAL ===== */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(20,30,22,0.65);
+      backdrop-filter: blur(8px);
+      z-index: 4000;
+      align-items: center; justify-content: center;
+      padding: 1.5rem;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--warm-white);
+      border-radius: 20px;
+      max-width: 600px; width: 100%;
+      max-height: 92vh; overflow-y: auto;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.28);
+      animation: panelUp 0.32s cubic-bezier(0.34,1.2,0.64,1);
+    }
+
+    .modal-header {
+      background: linear-gradient(135deg, var(--green-dark), var(--green-mid));
+      padding: 1.8rem 2rem;
+      border-radius: 20px 20px 0 0;
+      display: flex; justify-content: space-between; align-items: flex-start;
+      position: sticky; top: 0; z-index: 1;
+    }
+    .modal-header h2 { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--cream); }
+    .modal-header p { font-size: 0.85rem; color: rgba(245,240,232,0.6); margin-top: 0.2rem; }
+    .modal-close { background: rgba(255,255,255,0.15); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+    .modal-close:hover { background: rgba(255,255,255,0.25); }
+
+    .modal-body { padding: 2rem; display: flex; flex-direction: column; gap: 1.2rem; }
+
+    .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+    .form-group label { font-size: 0.76rem; font-weight: 600; color: var(--text-mid); letter-spacing: 0.06em; text-transform: uppercase; }
+    .form-group label span { color: #e25555; }
+    .form-group input, .form-group textarea, .form-group select {
+      width: 100%; padding: 0.75rem 1rem;
+      border: 1.5px solid rgba(26,48,34,0.14); border-radius: 8px;
+      font-family: 'DM Sans', sans-serif; font-size: 0.93rem;
+      background: white; color: var(--text-dark);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+      outline: none; border-color: var(--earth); box-shadow: 0 0 0 3px rgba(200,169,110,0.15);
+    }
+    .form-group textarea { min-height: 100px; resize: vertical; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+    /* IMAGE UPLOAD */
+    .img-upload-label {
+      font-size: 0.76rem; font-weight: 600; color: var(--text-mid); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.5rem; display: block;
+    }
+    .img-upload-zone {
+      border: 2px dashed rgba(200,169,110,0.5); border-radius: 12px;
+      padding: 1.5rem; text-align: center;
+      background: rgba(200,169,110,0.04);
+      cursor: pointer; transition: all 0.2s;
+      position: relative;
+    }
+    .img-upload-zone:hover { border-color: var(--earth); background: rgba(200,169,110,0.08); }
+    .img-upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+    .img-upload-zone p { font-size: 0.88rem; color: var(--text-mid); margin-top: 0.4rem; }
+    .img-upload-zone .upload-icon { font-size: 2rem; margin-bottom: 0.3rem; }
+    .img-upload-zone small { color: var(--text-light); font-size: 0.78rem; }
+
+    .img-previews { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.8rem; }
+    .img-preview-item {
+      position: relative; width: 80px; height: 80px; border-radius: 10px; overflow: hidden;
+      border: 2px solid rgba(200,169,110,0.3);
+    }
+    .img-preview-item img { width: 100%; height: 100%; object-fit: cover; }
+    .img-preview-remove {
+      position: absolute; top: 2px; right: 2px;
+      background: rgba(180,30,30,0.85); color: white;
+      border: none; width: 20px; height: 20px; border-radius: 50%;
+      font-size: 0.7rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+    .img-count-hint { font-size: 0.78rem; color: var(--text-light); margin-top: 0.4rem; }
+
+    .modal-footer {
+      padding: 1.4rem 2rem;
+      border-top: 1px solid rgba(26,48,34,0.08);
+      display: flex; gap: 0.8rem; justify-content: flex-end;
+      background: var(--cream);
+      border-radius: 0 0 20px 20px;
+      position: sticky; bottom: 0;
+    }
+    .btn-cancel {
+      padding: 0.75rem 1.5rem; border: 1.5px solid rgba(26,48,34,0.18);
+      background: transparent; border-radius: 8px;
+      font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 0.9rem;
+      cursor: pointer; color: var(--text-mid); transition: all 0.2s;
+    }
+    .btn-cancel:hover { border-color: var(--earth); color: var(--earth-dark); }
+    .btn-save {
+      padding: 0.75rem 2rem; background: var(--green-dark); color: var(--cream);
+      border: none; border-radius: 8px;
+      font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.9rem;
+      cursor: pointer; transition: all 0.25s;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .btn-save:hover { background: var(--green-mid); transform: translateY(-1px); }
+    .btn-save:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .save-status { display: none; padding: 0.9rem 2rem; font-weight: 600; font-size: 0.9rem; text-align: center; }
+    .save-status.success { display: block; color: var(--green-mid); }
+    .save-status.error { display: block; color: #c03030; }
+
+    /* FOOTER */
+    footer { background: var(--text-dark); padding: 3rem 4rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-top: 3rem; }
+    .footer-logo { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 900; color: var(--cream); }
+    .footer-logo span { color: var(--earth); }
+    footer p { color: rgba(245,240,232,0.4); font-size: 0.85rem; }
+
+    @media (max-width: 900px) {
+      nav { padding: 0.8rem 1.5rem; }
+      .page-header, .content-section { padding: 6rem 1.5rem 2.5rem; }
+      .content-section { padding-top: 2rem; }
+      footer { padding: 2rem 1.5rem; flex-direction: column; }
+      .filter-row { flex-direction: column; align-items: stretch; }
+      .form-row { grid-template-columns: 1fr; }
+      .detail-content { padding: 1.5rem; }
+      .detail-content h2 { font-size: 1.6rem; }
+    }
   </style>
 </head>
 <body>
+
 <nav id="main-nav">
   <a href="index.html" class="nav-logo">Gård<span>navi</span></a>
   <ul class="nav-links">
@@ -127,7 +460,10 @@
 <section class="content-section">
   <div class="toolbar">
     <h2>Alle oppskrifter</h2>
-    <button class="add-btn" id="add-recipe-btn" onclick="document.getElementById('add-modal').classList.add('open')">+ Legg til oppskrift</button>
+    <button class="add-btn" id="add-recipe-btn" style="display:none" onclick="openAddModal()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Legg til oppskrift
+    </button>
   </div>
 
   <div class="filter-row">
@@ -139,6 +475,7 @@
     <button class="chip" onclick="filterCat('Grønnsaker',this)">🥦 Grønnsaker</button>
     <button class="chip" onclick="filterCat('Fisk',this)">🐟 Fisk</button>
     <button class="chip" onclick="filterCat('Dessert',this)">🍰 Dessert</button>
+    <button class="chip" onclick="filterCat('Annet',this)">🍽️ Annet</button>
   </div>
 
   <p class="results-count" id="results-count"></p>
@@ -152,87 +489,133 @@
   <p>© 2025 Handelhjelp. Del dine favorittoppskrifter!</p>
 </footer>
 
-<!-- ADD RECIPE MODAL -->
-<div class="modal-overlay" id="add-modal">
-  <div class="modal">
-    <div class="modal-header">
-      <div><h2>📖 Legg til oppskrift</h2><p>Del en oppskrift basert på lokale norske råvarer</p></div>
-      <button class="modal-close" onclick="document.getElementById('add-modal').classList.remove('open')">×</button>
+<!-- ===== DETAIL OVERLAY ===== -->
+<div class="overlay" id="detail-overlay" onclick="handleOverlayClick(event,'detail-overlay')">
+  <div class="detail-panel" id="detail-panel">
+    <div class="detail-slider" id="detail-slider">
+      <div class="detail-slider-track" id="slider-track"></div>
+      <button class="slider-btn prev" id="slider-prev" onclick="sliderPrev()" style="display:none">‹</button>
+      <button class="slider-btn next" id="slider-next" onclick="sliderNext()" style="display:none">›</button>
+      <div class="slider-dots" id="slider-dots"></div>
+      <button class="detail-close-btn" onclick="closeDetail()">✕</button>
     </div>
-    <div class="modal-body">
-      <div class="form-group"><label>Tittel <span>*</span></label><input type="text" id="rec-title" required placeholder="f.eks. Lammefrikassé med rotgrønnsaker"/></div>
-      <div class="form-group"><label>Beskrivelse</label><textarea id="rec-desc" placeholder="Kort beskrivelse av retten..." style="min-height:70px;"></textarea></div>
-      <div class="form-group">
-        <label>Kategori</label>
-        <select id="rec-cat">
-          <option value="">Velg kategori</option>
-          <option value="Kjøtt">🥩 Kjøtt</option>
-          <option value="Grønnsaker">🥦 Grønnsaker</option>
-          <option value="Fisk">🐟 Fisk</option>
-          <option value="Dessert">🍰 Dessert</option>
-          <option value="Annet">Annet</option>
-        </select>
-      </div>
-      <div class="form-group"><label>Ingredienser</label><textarea id="rec-ing" placeholder="1 kg lammekjøtt&#10;3 gulrøtter&#10;2 persillerøtter&#10;..."></textarea></div>
-      <div class="form-group"><label>Fremgangsmåte <span>*</span></label><textarea id="rec-steps" placeholder="Trinn 1: ...&#10;Trinn 2: ...&#10;Trinn 3: ..."></textarea></div>
-    </div>
-    <div class="save-status" id="save-status"></div>
-    <div class="modal-footer">
-      <button class="btn-cancel" onclick="document.getElementById('add-modal').classList.remove('open')">Avbryt</button>
-      <button class="btn-save" id="save-btn" onclick="saveRecipe()">💾 Send inn oppskrift</button>
-    </div>
+    <div class="detail-content" id="detail-content"></div>
   </div>
 </div>
 
-<!-- DETAIL MODAL -->
-<div class="modal-overlay" id="detail-modal">
-  <div class="detail-modal">
-    <div class="detail-img" id="detail-img">
-      <button class="detail-close" onclick="document.getElementById('detail-modal').classList.remove('open')">×</button>
+<!-- ===== ADD RECIPE MODAL ===== -->
+<div class="modal-overlay" id="add-modal" onclick="handleOverlayClick(event,'add-modal')">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h2>📖 Legg til oppskrift</h2>
+        <p>Del en oppskrift basert på lokale norske råvarer</p>
+      </div>
+      <button class="modal-close" onclick="closeAddModal()">✕</button>
     </div>
-    <div class="detail-body" id="detail-body"></div>
+    <div class="modal-body">
+
+      <!-- Bilder -->
+      <div>
+        <label class="img-upload-label">Bilder <small style="font-weight:400;text-transform:none;letter-spacing:0">(2–5 bilder)</small></label>
+        <div class="img-upload-zone" onclick="document.getElementById('img-input').click()">
+          <div class="upload-icon">📷</div>
+          <p>Klikk for å laste opp bilder</p>
+          <small>PNG, JPG, WEBP – maks 5 bilder</small>
+          <input type="file" id="img-input" accept="image/*" multiple style="display:none" onchange="handleImageUpload(event)"/>
+        </div>
+        <div class="img-previews" id="img-previews"></div>
+        <p class="img-count-hint" id="img-count-hint"></p>
+      </div>
+
+      <div class="form-group">
+        <label>Navn på oppskrift <span>*</span></label>
+        <input type="text" id="rec-title" placeholder="f.eks. Lammefrikassé med rotgrønnsaker"/>
+      </div>
+
+      <div class="form-group">
+        <label>Beskrivelse</label>
+        <textarea id="rec-desc" style="min-height:70px" placeholder="Kort beskrivelse av retten..."></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Kategori</label>
+          <select id="rec-cat">
+            <option value="">Velg kategori</option>
+            <option value="Kjøtt">🥩 Kjøtt</option>
+            <option value="Grønnsaker">🥦 Grønnsaker</option>
+            <option value="Fisk">🐟 Fisk</option>
+            <option value="Dessert">🍰 Dessert</option>
+            <option value="Annet">🍽️ Annet</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Kjøkken / Opprinnelse</label>
+          <input type="text" id="rec-cuisine" placeholder="f.eks. Norsk, Vestlandsk, Samisk"/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Ingredienser <span>*</span></label>
+        <textarea id="rec-ing" placeholder="1 kg lammekjøtt&#10;3 gulrøtter&#10;2 persillerøtter&#10;1 liter kraft&#10;..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Fremgangsmåte <span>*</span></label>
+        <textarea id="rec-steps" style="min-height:130px" placeholder="Trinn 1: Brun kjøttet i en varm panne...&#10;Trinn 2: Tilsett grønnsaker...&#10;Trinn 3: ..."></textarea>
+      </div>
+
+    </div>
+    <div class="save-status" id="save-status"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeAddModal()">Avbryt</button>
+      <button class="btn-save" id="save-btn" onclick="saveRecipe()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Send inn oppskrift
+      </button>
+    </div>
   </div>
 </div>
 
 <script>
 const API = 'https://gardnavi-api-fecufjdrfbhyf2g6.norwayeast-01.azurewebsites.net';
 
-const sampleRecipes = [
-  {id:1,title:'Lammefrikassé med rotgrønnsaker',description:'En klassisk norsk hverdagsrett med saftig lam og sesongens rotgrønnsaker. Perfekt for kalde høstdager.',steps:'Trinn 1: Brun lammekjøttet i en gryte.\nTrinn 2: Tilsett vann og kok i 45 min.\nTrinn 3: Tilsett gulrøtter, persillerøtter og kålrot.\nTrinn 4: Kok videre i 20 min. Server med poteter.',category:'Kjøtt'},
-  {id:2,title:'Ovnsbakte rotgrønnsaker med honning',description:'Enkel og smakfull oppskrift med sesonggrønnsaker glasert med lokal honning fra Helgen gård.',steps:'Trinn 1: Skrell og kutt rotgrønnsaker i biter.\nTrinn 2: Bland med honning og olivenolje.\nTrinn 3: Legg i langpanne.\nTrinn 4: Bak ved 200 grader i 35 min til de er gylne.',category:'Grønnsaker'},
-  {id:3,title:'Røykt laks med rømme og dill',description:'Enkel norsk klassiker med lokal laks. Perfekt som forrett eller lunsj.',steps:'Trinn 1: Legg røykt laks på tallerken.\nTrinn 2: Bland rømme med frisk dill og sitronjuice.\nTrinn 3: Server med rugbrød og sitronbåter.',category:'Fisk'},
-  {id:4,title:'Eple- og plommekake fra Hardanger',description:'Saftig høstkake med lokale frukter. En ekte norsk smaksopplevelse.',steps:'Trinn 1: Pisk egg og sukker til eggedosis.\nTrinn 2: Tilsett smeltet smør og mel.\nTrinn 3: Skjær epler og plommer i skiver og legg i formen.\nTrinn 4: Hell røren over og bak ved 175 grader i 40 min.',category:'Dessert'},
-  {id:5,title:'Jordskokk-suppe med sprø bacon',description:'Kremet suppe av jordskokk fra Jæren. Toppes med sprø bacon og friske urter.',steps:'Trinn 1: Surr løk og jordskokk i smør.\nTrinn 2: Tilsett kyllingkraft og kok i 20 min.\nTrinn 3: Miks til jevn suppe med stavmikser.\nTrinn 4: Tilsett fløte og smak til. Server med sprøstekt bacon.',category:'Grønnsaker'},
-];
-
 const catEmoji = {Kjøtt:'🥩',Grønnsaker:'🥦',Fisk:'🐟',Dessert:'🍰',Annet:'🍽️'};
 const catClass = {Kjøtt:'kjott',Grønnsaker:'gront',Fisk:'fisk',Dessert:'dessert',Annet:'annet'};
 
-let allRecipes = [], filtered = [], currentCat = 'all';
+const sampleRecipes = [
+  {id:1,title:'Lammefrikassé med rotgrønnsaker',description:'En klassisk norsk hverdagsrett med saftig lam og sesongens rotgrønnsaker. Perfekt for kalde høstdager.',ingredients:'1 kg lammekjøtt\n3 gulrøtter\n2 persillerøtter\n1 kålrot\n1 liter lammekraft\nSalt og pepper',steps:'Trinn 1: Brun lammekjøttet i en varm gryte med litt smør til det er gyllenbrunt.\nTrinn 2: Tilsett lammekraft og kok opp. Skum av og la det småkoke i 45 min.\nTrinn 3: Tilsett gulrøtter, persillerøtter og kålrot i biter.\nTrinn 4: Kok videre i 20 min til grønnsakene er møre. Smak til med salt og pepper. Server med kokte poteter.',category:'Kjøtt',cuisine:'Norsk'},
+  {id:2,title:'Ovnsbakte rotgrønnsaker med honning',description:'Enkel og smakfull oppskrift med sesonggrønnsaker glasert med lokal honning fra Helgen gård.',ingredients:'4 gulrøtter\n2 pastinakker\n1 søtpotet\n3 ss lokal honning\n3 ss olivenolje\n1 ts timian\nSalt og pepper',steps:'Trinn 1: Forvarm ovnen til 200 grader.\nTrinn 2: Skrell og kutt rotgrønnsaker i jevne biter.\nTrinn 3: Bland grønnsakene med honning, olivenolje, timian, salt og pepper i en stor bolle.\nTrinn 4: Fordel i en stor langpanne i ett lag.\nTrinn 5: Stek i 35–40 min, vend halvveis, til de er gylne og møre.',category:'Grønnsaker',cuisine:'Norsk'},
+  {id:3,title:'Røykt laks med rømme og dill',description:'Enkel norsk klassiker med lokal laks. Perfekt som forrett eller lettvint lunsj.',ingredients:'400 g røykt laks\n200 g rømme\n1 bunt fersk dill\n1 sitron\nMalt pepper\nRugbrød',steps:'Trinn 1: Legg røykt laks pent på tallerkenen.\nTrinn 2: Bland rømme med finhakket fersk dill og saften av en halv sitron. Smak til med pepper.\nTrinn 3: Legg en god skje rømme ved siden av laksen.\nTrinn 4: Server med ristet rugbrød og sitronbåter.',category:'Fisk',cuisine:'Norsk'},
+  {id:4,title:'Eple- og plommekake fra Hardanger',description:'Saftig høstkake med lokale frukter fra Hardanger. En ekte norsk smaksopplevelse fra fruktrikets hjerte.',ingredients:'3 egg\n200 g sukker\n150 g smør\n200 g hvetemel\n1 ts bakepulver\n3 epler\n6 plommer\n1 ts kanel',steps:'Trinn 1: Forvarm ovnen til 175 grader. Smør en 24 cm rund kakeform.\nTrinn 2: Pisk egg og sukker til en luftig eggedosis, ca. 5 min.\nTrinn 3: Smeltet avkjølt smør vendes forsiktig inn, deretter siktet mel og bakepulver.\nTrinn 4: Hell røren i formen. Skjær epler og plommer i skiver og trykk ned i røren.\nTrinn 5: Dryss over kanel og bak i 40 min til kaken er gyllenbrun og steker gjennom.',category:'Dessert',cuisine:'Vestlandsk'},
+  {id:5,title:'Jordskokk-suppe med sprø bacon',description:'Kremet suppe av jordskokk fra Jæren. Toppes med sprøstekt bacon og friske urter for ekstra dybde.',ingredients:'600 g jordskokk\n1 løk\n2 fedd hvitløk\n6 dl kyllingkraft\n2 dl fløte\n100 g bacon\nFriske urter\nSmør til steking',steps:'Trinn 1: Skrell og hakk jordskokk og løk. Finhakk hvitløk.\nTrinn 2: Surr løk og hvitløk i smør i en stor kjele til de er blanke, ca. 5 min. Tilsett jordskokk.\nTrinn 3: Hell over kyllingkraft og kok opp. La det småkoke i 20 min til jordskokken er myk.\nTrinn 4: Miks til en jevn suppe med stavmikser. Tilsett fløte og varm opp igjen.\nTrinn 5: Smak til med salt og pepper. Topp med sprøstekt bacon og friske urter ved servering.',category:'Grønnsaker',cuisine:'Jærsk'},
+];
 
+let allRecipes = [], filtered = [], currentCat = 'all';
+let uploadedImages = []; // array of base64 strings
+let sliderIndex = 0, currentSliderImages = [];
+
+// ---- LOAD ----
 async function loadRecipes() {
   try {
     const r = await fetch(`${API}/api/recipes`);
     if (r.ok) {
       const data = await r.json();
       allRecipes = data.length > 0 ? data : sampleRecipes;
-    } else {
-      allRecipes = sampleRecipes;
-    }
-  } catch(e) {
-    allRecipes = sampleRecipes;
-  }
+    } else { allRecipes = sampleRecipes; }
+  } catch(e) { allRecipes = sampleRecipes; }
   filtered = [...allRecipes];
   renderRecipes();
 }
 
+// ---- FILTER ----
 function filterCat(cat, btn) {
   currentCat = cat;
   document.querySelectorAll('.filter-row .chip').forEach(c => c.classList.remove('active'));
   btn.classList.add('active');
   applyFilters();
 }
-
 function applyFilters() {
   const s = document.getElementById('search-input').value.toLowerCase();
   filtered = allRecipes.filter(r =>
@@ -242,13 +625,9 @@ function applyFilters() {
   renderRecipes();
 }
 
-function getIcon(cat) {
-  return catEmoji[cat] || '🍲';
-}
-
-function getBgClass(cat) {
-  return catClass[cat] || 'annet';
-}
+// ---- RENDER CARDS ----
+function getIcon(cat) { return catEmoji[cat] || '🍲'; }
+function getBgClass(cat) { return catClass[cat] || 'annet'; }
 
 function renderRecipes() {
   const el = document.getElementById('recipes-container');
@@ -257,55 +636,194 @@ function renderRecipes() {
     `Viser <strong>${count}</strong> av <strong>${allRecipes.length}</strong> oppskrifter`;
 
   if (!count) {
-    el.innerHTML = `<div class="empty-state">
-      <h3>Ingen oppskrifter funnet 🔍</h3>
-      <p>Prøv å søke etter noe annet eller fjern filtrene</p>
-    </div>`;
+    el.innerHTML = `<div class="empty-state"><h3>Ingen oppskrifter funnet 🔍</h3><p>Prøv å søke etter noe annet eller fjern filtrene</p></div>`;
     return;
   }
 
-  el.innerHTML = filtered.map(r => `
-    <div class="recipe-card" onclick="showDetail(${r.id})">
-      <div class="recipe-img ${getBgClass(r.category)}">${getIcon(r.category)}</div>
-      <div class="recipe-body">
-        <span class="recipe-tag">${r.category || 'Oppskrift'}</span>
-        <h3>${r.title}</h3>
-        <p>${(r.description || '').slice(0, 100)}${(r.description || '').length > 100 ? '...' : ''}</p>
-        <div class="recipe-meta">
-          ${r.time ? `<span>⏱️ ${r.time}</span>` : ''}
-          ${r.servings ? `<span>👥 ${r.servings}</span>` : ''}
-        </div>
+  el.innerHTML = filtered.map((r, i) => {
+    const hasPic = r.images && r.images.length > 0;
+    const imgHtml = hasPic
+      ? `<img src="${r.images[0]}" alt="${r.title}" loading="lazy"/>`
+      : `<div class="recipe-img-placeholder ${getBgClass(r.category)}">${getIcon(r.category)}</div>`;
+
+    return `
+    <div class="recipe-card" onclick="showDetail(${r.id})" style="animation-delay:${i*0.06}s">
+      <div class="recipe-img-wrap">
+        ${imgHtml}
+        ${r.cuisine ? `<span class="card-cuisine-badge">${r.cuisine}</span>` : ''}
+        ${r.category ? `<span class="card-cat-badge">${getIcon(r.category)} ${r.category}</span>` : ''}
       </div>
-    </div>`).join('');
+      <div class="recipe-body">
+        <h3>${r.title}</h3>
+        <p>${(r.description || '').slice(0,110)}${(r.description||'').length>110?'…':''}</p>
+      </div>
+      <div class="card-footer">
+        <span style="font-size:0.8rem;color:var(--text-light)">${r.images && r.images.length > 1 ? `📷 ${r.images.length} bilder` : ''}</span>
+        <button class="card-view-btn">
+          Se oppskrift
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+      </div>
+    </div>`;
+  }).join('');
 }
 
+// ---- DETAIL OVERLAY ----
 function showDetail(id) {
   const r = allRecipes.find(x => x.id === id);
   if (!r) return;
-  const imgEl = document.getElementById('detail-img');
-  imgEl.className = `detail-img ${getBgClass(r.category)}`;
-  imgEl.innerHTML = `${getIcon(r.category)}<button class="detail-close" onclick="document.getElementById('detail-modal').classList.remove('open')">×</button>`;
-  document.getElementById('detail-body').innerHTML = `
+
+  // Build slider
+  const track = document.getElementById('slider-track');
+  const dots = document.getElementById('slider-dots');
+  const prevBtn = document.getElementById('slider-prev');
+  const nextBtn = document.getElementById('slider-next');
+  sliderIndex = 0;
+
+  if (r.images && r.images.length > 0) {
+    currentSliderImages = r.images;
+    track.innerHTML = r.images.map(src =>
+      `<div class="detail-slide"><img src="${src}" alt="${r.title}"/></div>`
+    ).join('');
+    if (r.images.length > 1) {
+      dots.innerHTML = r.images.map((_,i) =>
+        `<button class="slider-dot ${i===0?'active':''}" onclick="goSlide(${i})"></button>`
+      ).join('');
+      prevBtn.style.display = nextBtn.style.display = 'flex';
+    } else {
+      dots.innerHTML = ''; prevBtn.style.display = nextBtn.style.display = 'none';
+    }
+  } else {
+    currentSliderImages = [];
+    const cls = getBgClass(r.category);
+    track.innerHTML = `<div class="detail-slide placeholder ${cls}">${getIcon(r.category)}</div>`;
+    dots.innerHTML = ''; prevBtn.style.display = nextBtn.style.display = 'none';
+  }
+
+  updateSlider();
+
+  // Build content
+  const ingredients = (r.ingredients || r.steps || '').split('\n').filter(l => l.trim() && !l.toLowerCase().startsWith('trinn'));
+  const stepsRaw = r.steps || '';
+  const steps = stepsRaw.split('\n').filter(l => l.trim());
+
+  document.getElementById('detail-content').innerHTML = `
     <h2>${r.title}</h2>
-    <span style="display:inline-block;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;font-weight:700;padding:0.2em 0.7em;border-radius:20px;background:rgba(200,169,110,0.2);color:#7a5a1a;margin-bottom:1rem;">${r.category || 'Oppskrift'}</span>
-    ${r.description ? `<p style="color:var(--text-mid);line-height:1.7;margin-bottom:1rem;">${r.description}</p>` : ''}
-    ${r.steps ? `<div class="detail-section"><h4>Fremgangsmåte</h4><p>${r.steps}</p></div>` : ''}
+    <div class="detail-badges">
+      ${r.category ? `<span class="badge badge-cat">${getIcon(r.category)} ${r.category}</span>` : ''}
+      ${r.cuisine ? `<span class="badge badge-cuisine">🗺️ ${r.cuisine}</span>` : ''}
+    </div>
+    ${r.description ? `<p class="detail-desc">${r.description}</p>` : ''}
+
+    ${r.ingredients ? `
+    <div class="detail-section-title">Ingredienser</div>
+    <ul class="ingredients-list">
+      ${r.ingredients.split('\n').filter(l=>l.trim()).map(l=>`<li>${l.trim()}</li>`).join('')}
+    </ul>` : ''}
+
+    ${steps.length ? `
+    <div class="detail-section-title">Fremgangsmåte</div>
+    <ol class="steps-list">
+      ${steps.map((s,i) => {
+        const text = s.replace(/^trinn\s*\d+[:\s]*/i,'').trim();
+        return `<div class="step-item"><div class="step-num">${i+1}</div><div class="step-text">${text}</div></div>`;
+      }).join('')}
+    </ol>` : ''}
   `;
-  document.getElementById('detail-modal').classList.add('open');
+
+  document.getElementById('detail-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
 }
 
+function closeDetail() {
+  document.getElementById('detail-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function handleOverlayClick(e, id) {
+  if (e.target === document.getElementById(id)) {
+    if (id === 'detail-overlay') closeDetail();
+    else closeAddModal();
+  }
+}
+
+// ---- SLIDER ----
+function updateSlider() {
+  document.getElementById('slider-track').style.transform = `translateX(-${sliderIndex*100}%)`;
+  document.querySelectorAll('.slider-dot').forEach((d,i) => d.classList.toggle('active', i===sliderIndex));
+}
+function sliderPrev() { sliderIndex = (sliderIndex - 1 + currentSliderImages.length) % currentSliderImages.length; updateSlider(); }
+function sliderNext() { sliderIndex = (sliderIndex + 1) % currentSliderImages.length; updateSlider(); }
+function goSlide(i) { sliderIndex = i; updateSlider(); }
+
+// ---- ADD MODAL ----
+function openAddModal() {
+  document.getElementById('add-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeAddModal() {
+  document.getElementById('add-modal').classList.remove('open');
+  document.body.style.overflow = '';
+  uploadedImages = [];
+  document.getElementById('img-previews').innerHTML = '';
+  document.getElementById('img-count-hint').textContent = '';
+  document.getElementById('save-status').className = 'save-status';
+  ['rec-title','rec-desc','rec-ing','rec-steps','rec-cuisine'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('rec-cat').value = '';
+}
+
+// ---- IMAGE UPLOAD ----
+function handleImageUpload(event) {
+  const files = Array.from(event.target.files);
+  const remaining = 5 - uploadedImages.length;
+  const toAdd = files.slice(0, remaining);
+
+  toAdd.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      uploadedImages.push(e.target.result);
+      renderPreviews();
+    };
+    reader.readAsDataURL(file);
+  });
+  event.target.value = '';
+}
+
+function renderPreviews() {
+  const container = document.getElementById('img-previews');
+  const hint = document.getElementById('img-count-hint');
+  container.innerHTML = uploadedImages.map((src, i) => `
+    <div class="img-preview-item">
+      <img src="${src}" alt="Bilde ${i+1}"/>
+      <button class="img-preview-remove" onclick="removeImage(${i})" title="Fjern bilde">✕</button>
+    </div>
+  `).join('');
+  const n = uploadedImages.length;
+  hint.textContent = n === 0 ? '' : `${n} av 5 bilder valgt${n < 2 ? ' – legg til minst 2 bilder' : ''}`;
+  hint.style.color = n < 2 ? '#c07030' : 'var(--text-light)';
+}
+
+function removeImage(index) {
+  uploadedImages.splice(index, 1);
+  renderPreviews();
+}
+
+// ---- SAVE ----
 async function saveRecipe() {
   const title = document.getElementById('rec-title').value.trim();
-  if (!title) {
-    showStatus('error', '⚠️ Fyll inn tittel');
-    return;
-  }
+  if (!title) { showStatus('error', '⚠️ Fyll inn navn på oppskrift'); return; }
+  if (uploadedImages.length < 2) { showStatus('error', '⚠️ Legg til minst 2 bilder'); return; }
+
   const data = {
     title,
     description: document.getElementById('rec-desc').value,
-    steps: document.getElementById('rec-ing').value + '\n\n' + document.getElementById('rec-steps').value,
-    category: document.getElementById('rec-cat').value
+    ingredients: document.getElementById('rec-ing').value,
+    steps: document.getElementById('rec-steps').value,
+    category: document.getElementById('rec-cat').value,
+    cuisine: document.getElementById('rec-cuisine').value,
+    images: uploadedImages,
   };
+
   document.getElementById('save-btn').disabled = true;
   try {
     const r = await fetch(`${API}/api/recipes`, {
@@ -315,10 +833,8 @@ async function saveRecipe() {
     });
     if (r.ok) {
       showStatus('success', `✅ "${title}" er lagt til!`);
-      setTimeout(() => { document.getElementById('add-modal').classList.remove('open'); loadRecipes(); }, 2000);
-    } else {
-      showStatus('error', '❌ Kunne ikke lagre. Prøv igjen.');
-    }
+      setTimeout(() => { closeAddModal(); loadRecipes(); }, 2000);
+    } else { showStatus('error', '❌ Kunne ikke lagre. Prøv igjen.'); }
   } catch(e) {
     showStatus('error', '❌ Tilkoblingsfeil. Prøv igjen.');
   }
@@ -331,6 +847,7 @@ function showStatus(type, msg) {
   el.textContent = msg;
 }
 
+// ---- AUTH ----
 async function checkAuth() {
   try {
     const r = await fetch('/.auth/me');
@@ -339,16 +856,14 @@ async function checkAuth() {
       document.getElementById('login-btn').style.display = 'none';
       document.getElementById('nav-user').style.display = 'flex';
       document.getElementById('user-name').textContent = d.clientPrincipal.userDetails;
-      document.getElementById('add-recipe-btn').classList.add('visible');
+      document.getElementById('add-recipe-btn').style.display = 'flex';
     }
   } catch(e) {}
 }
 
-document.querySelectorAll('.modal-overlay').forEach(o =>
-  o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); })
-);
+// Nav scroll
 window.addEventListener('scroll', () => {
-  document.getElementById('main-nav').style.padding = window.scrollY > 50 ? '0.7rem 4rem' : '1rem 4rem';
+  document.getElementById('main-nav').classList.toggle('scrolled', window.scrollY > 50);
 });
 
 loadRecipes();
