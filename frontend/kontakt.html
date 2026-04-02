@@ -69,6 +69,9 @@
     footer p{color:rgba(245,240,232,0.4);font-size:0.85rem;}
     @media(max-width:900px){nav{padding:0.8rem 1.5rem;}.page-header,.register-section,.faq-section,.info-section{padding:5rem 1.5rem 3rem;}.register-section,.info-section{padding-top:3rem;}.forms-grid,.faq-grid,.info-grid{grid-template-columns:1fr;}.form-row{grid-template-columns:1fr;}footer{padding:2rem 1.5rem;flex-direction:column;}}
   </style>
+  <link rel="manifest" href="/manifest.json"/>
+  <meta name="theme-color" content="#1a3022"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
 </head>
 <body>
 <nav id="main-nav">
@@ -192,5 +195,10 @@ checkAuth();
 if(window.location.hash==='#faq')setTimeout(()=>document.getElementById('faq').scrollIntoView({behavior:'smooth'}),300);
 if(window.location.hash==='#registrer')setTimeout(()=>document.getElementById('registrer').scrollIntoView({behavior:'smooth'}),300);
 </script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js');
+    }
+  </script>
 </body>
 </html>

@@ -533,6 +533,9 @@
       .detail-content h2 { font-size: 1.6rem; }
     }
   </style>
+  <link rel="manifest" href="/manifest.json"/>
+  <meta name="theme-color" content="#1a3022"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
 </head>
 <body>
 
@@ -1088,5 +1091,10 @@ window.addEventListener('scroll', () => {
 loadRecipes();
 checkAuth();
 </script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js');
+    }
+  </script>
 </body>
 </html>
