@@ -3,24 +3,18 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Gårder & REKO-ringer | Gårdnavi</title>
+  <title>Gårder | Gårdnavi</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="manifest" href="/manifest.json"/>
+  <meta name="theme-color" content="#1a3022"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    :root{
-      --gd:#1a3022;--gm:#2d5a3d;--gl:#4a8c5c;
-      --cr:#f5f0e8;--ww:#faf8f3;
-      --ea:#c8a96e;--el:#e8d5a3;--ed:#a07840;
-      --td:#1a1a14;--tm:#3d3d2e;--tl:#7a7a60;
-      --cs:0 4px 24px rgba(26,48,34,.09);
-      --csh:0 16px 48px rgba(26,48,34,.18);
-    }
+    :root{--gd:#1a3022;--gm:#2d5a3d;--gl:#4a8c5c;--cr:#f5f0e8;--ww:#faf8f3;--ea:#c8a96e;--el:#e8d5a3;--ed:#a07840;--td:#1a1a14;--tm:#3d3d2e;--tl:#7a7a60;--cs:0 4px 24px rgba(26,48,34,.09);--csh:0 16px 48px rgba(26,48,34,.18);}
     html{scroll-behavior:smooth;}
     body{font-family:'DM Sans',sans-serif;background:var(--ww);color:var(--td);min-height:100vh;}
-
-    /* ── NAV ── */
     nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:1rem 4rem;background:rgba(245,240,232,.96);backdrop-filter:blur(14px);border-bottom:1px solid rgba(200,169,110,.18);transition:padding .3s,box-shadow .3s;}
     nav.scrolled{padding:.65rem 4rem;box-shadow:0 2px 20px rgba(26,48,34,.08);}
     .nav-logo{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;color:var(--gd);text-decoration:none;}
@@ -35,53 +29,22 @@
     .nav-user{display:flex;align-items:center;gap:.8rem;}
     #user-name{font-size:.85rem;font-weight:600;color:var(--gd);}
     .nav-logout-btn{font-size:.82rem;color:var(--tm);text-decoration:none;}
-
-    /* ── PAGE HEADER ── */
     .page-header{background:linear-gradient(135deg,var(--gd) 0%,var(--gm) 60%,#4a7a5c 100%);padding:8rem 4rem 4rem;position:relative;overflow:hidden;}
     .page-header::before{content:'';position:absolute;top:-100px;right:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(200,169,110,.18) 0%,transparent 70%);border-radius:50%;}
     .breadcrumb{font-size:.82rem;color:rgba(245,240,232,.55);margin-bottom:1rem;}
     .breadcrumb a{color:var(--el);text-decoration:none;opacity:.8;}
     .page-header h1{font-family:'Playfair Display',serif;font-size:clamp(2.5rem,4vw,3.8rem);color:var(--cr);margin-bottom:.8rem;position:relative;z-index:1;}
     .page-header p{color:rgba(245,240,232,.72);font-size:1.05rem;max-width:520px;position:relative;z-index:1;}
-
-    /* ── TABS ── */
-    .tab-bar{display:flex;gap:0;background:var(--gd);padding:0 4rem;}
+    .stats-bar{background:var(--gm);padding:.9rem 4rem;display:flex;gap:3rem;flex-wrap:wrap;}
+    .stat-item{display:flex;align-items:center;gap:.5rem;font-size:.88rem;color:rgba(245,240,232,.85);}
+    .stat-item strong{color:var(--el);font-size:1rem;}
+    .tab-bar{display:flex;background:var(--gd);padding:0 4rem;}
     .tab-btn{padding:1rem 2rem;background:none;border:none;color:rgba(245,240,232,.55);font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;}
     .tab-btn.active{color:var(--cr);border-bottom-color:var(--ea);}
     .tab-btn:hover{color:var(--el);}
-
-    /* ── TAB PANELS ── */
     .tab-panel{display:none;}
     .tab-panel.active{display:block;}
-
-    /* ── SECTION ── */
     .section{padding:3rem 4rem;}
-
-    /* ── REKO MAP PANEL ── */
-    .reko-search-bar{display:flex;gap:.8rem;margin-bottom:2rem;flex-wrap:wrap;align-items:flex-end;}
-    .reko-search-bar .field{display:flex;flex-direction:column;gap:.35rem;flex:1;min-width:200px;}
-    .reko-search-bar label{font-size:.74rem;font-weight:600;color:var(--tm);text-transform:uppercase;letter-spacing:.06em;}
-    .reko-search-bar input,.reko-search-bar select{padding:.75rem 1rem;border:1.5px solid rgba(26,48,34,.14);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.93rem;background:white;color:var(--td);transition:border-color .2s,box-shadow .2s;}
-    .reko-search-bar input:focus,.reko-search-bar select:focus{outline:none;border-color:var(--ea);box-shadow:0 0 0 3px rgba(200,169,110,.15);}
-    .search-btn{padding:.75rem 1.5rem;background:var(--gd);color:var(--cr);border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.9rem;cursor:pointer;transition:all .2s;white-space:nowrap;}
-    .search-btn:hover{background:var(--gm);}
-
-    #reko-map{height:460px;border-radius:16px;border:1px solid rgba(26,48,34,.1);box-shadow:var(--cs);}
-
-    .reko-results{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.4rem;margin-top:2rem;}
-    .reko-card{background:white;border-radius:14px;padding:1.4rem;border:1px solid rgba(26,48,34,.07);box-shadow:var(--cs);transition:all .25s;cursor:pointer;}
-    .reko-card:hover{transform:translateY(-3px);box-shadow:var(--csh);}
-    .reko-card-top{display:flex;align-items:flex-start;gap:1rem;margin-bottom:.8rem;}
-    .reko-icon{width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,var(--gd),var(--gm));display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;}
-    .reko-card h3{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--gd);margin-bottom:.2rem;}
-    .reko-card .reko-meta{font-size:.8rem;color:var(--tl);display:flex;gap:.7rem;flex-wrap:wrap;}
-    .reko-card .reko-meta span{display:flex;align-items:center;gap:.25rem;}
-    .reko-next-round{background:linear-gradient(135deg,rgba(200,169,110,.12),rgba(200,169,110,.06));border:1px solid rgba(200,169,110,.3);border-radius:8px;padding:.6rem .9rem;font-size:.82rem;color:var(--ed);font-weight:600;margin-bottom:.8rem;}
-    .reko-producers{font-size:.8rem;color:var(--tm);margin-bottom:.9rem;}
-    .reko-view-btn{width:100%;padding:.6rem;background:var(--gd);color:var(--cr);border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;transition:all .2s;}
-    .reko-view-btn:hover{background:var(--gm);}
-
-    /* ── FARM GRID ── */
     .toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem;}
     .toolbar h2{font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--gd);}
     .filter-row{display:flex;gap:.8rem;margin-bottom:2rem;flex-wrap:wrap;align-items:center;}
@@ -102,7 +65,7 @@
     .farm-img.blue{background:linear-gradient(135deg,#0c2a4a,#1a4a7a);}
     .farm-img.gold{background:linear-gradient(135deg,#3d3020,#c8a96e);}
     .farm-img.red{background:linear-gradient(135deg,#7a1a1a,#c84040);}
-    .reko-badge-on-card{position:absolute;top:10px;left:10px;background:rgba(26,48,34,.82);color:var(--cr);backdrop-filter:blur(6px);font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:.25em .65em;border-radius:14px;}
+    .market-badge{position:absolute;top:10px;left:10px;background:rgba(200,169,110,.92);color:var(--gd);font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:.25em .65em;border-radius:14px;}
     .farm-body{padding:1.3rem 1.4rem;}
     .farm-body h3{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--gd);margin-bottom:.25rem;}
     .farm-loc{font-size:.8rem;color:var(--tl);margin-bottom:.6rem;display:flex;align-items:center;gap:.3rem;}
@@ -118,108 +81,117 @@
     .add-btn{padding:.65rem 1.5rem;background:var(--ea);color:var(--gd);border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.88rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:.5rem;}
     .add-btn:hover{background:var(--ed);color:white;transform:translateY(-1px);}
 
-    /* ── FARM DETAIL OVERLAY ── */
+    /* BONDENS MARKED */
+    .market-intro{background:linear-gradient(135deg,rgba(200,169,110,.1),rgba(200,169,110,.04));border:1px solid rgba(200,169,110,.25);border-radius:16px;padding:1.6rem 2rem;margin-bottom:2rem;display:flex;align-items:flex-start;gap:1.4rem;}
+    .market-intro-icon{font-size:2.5rem;flex-shrink:0;}
+    .market-intro h3{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--gd);margin-bottom:.4rem;}
+    .market-intro p{font-size:.9rem;color:var(--tm);line-height:1.7;}
+    .market-intro a{color:var(--ed);font-weight:600;text-decoration:none;}
+    .market-intro a:hover{text-decoration:underline;}
+    .markets-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.4rem;}
+    .market-card{background:white;border-radius:14px;overflow:hidden;box-shadow:var(--cs);border:1px solid rgba(26,48,34,.07);transition:all .25s;animation:cardIn .4s ease both;}
+    .market-card:hover{transform:translateY(-4px);box-shadow:var(--csh);}
+    .market-hero{height:90px;display:flex;align-items:center;justify-content:center;font-size:2.5rem;background:linear-gradient(135deg,var(--gd),var(--gm));}
+    .market-body{padding:1.2rem 1.4rem;}
+    .market-body h3{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--gd);margin-bottom:.3rem;}
+    .market-loc{font-size:.8rem;color:var(--tl);margin-bottom:.4rem;}
+    .market-schedule{font-size:.82rem;font-weight:600;color:var(--ed);margin-bottom:.6rem;}
+    .market-desc{font-size:.82rem;color:var(--tl);line-height:1.55;margin-bottom:.9rem;}
+    .market-producers{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.9rem;}
+    .market-prod-pill{font-size:.7rem;font-weight:600;background:rgba(26,48,34,.07);color:var(--gd);border-radius:10px;padding:.2em .6em;}
+    .market-link{display:block;width:100%;padding:.55rem;background:var(--gd);color:var(--cr);border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.82rem;cursor:pointer;transition:all .2s;text-align:center;text-decoration:none;}
+    .market-link:hover{background:var(--gm);}
+
+    /* MAP */
+    #farm-map{height:520px;border-radius:16px;border:1px solid rgba(26,48,34,.1);box-shadow:var(--cs);}
+    .map-bar{display:flex;gap:.8rem;margin-bottom:1.5rem;flex-wrap:wrap;align-items:flex-end;}
+    .map-bar .field{display:flex;flex-direction:column;gap:.35rem;flex:1;min-width:200px;}
+    .map-bar label{font-size:.74rem;font-weight:600;color:var(--tm);text-transform:uppercase;letter-spacing:.06em;}
+    .map-bar input,.map-bar select{padding:.75rem 1rem;border:1.5px solid rgba(26,48,34,.14);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.93rem;background:white;color:var(--td);transition:border-color .2s;}
+    .map-bar input:focus,.map-bar select:focus{outline:none;border-color:var(--ea);}
+    .map-btn{padding:.75rem 1.5rem;background:var(--gd);color:var(--cr);border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.9rem;cursor:pointer;transition:all .2s;}
+    .map-btn:hover{background:var(--gm);}
+    .map-legend{display:flex;gap:1.2rem;flex-wrap:wrap;margin-top:1rem;font-size:.82rem;color:var(--tm);}
+    .legend-dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:4px;}
+
+    /* OVERLAY */
     .overlay{display:none;position:fixed;inset:0;background:rgba(20,30,22,.72);backdrop-filter:blur(8px);z-index:3000;align-items:center;justify-content:center;padding:1rem;}
     .overlay.open{display:flex;}
     .detail-panel{background:var(--ww);border-radius:20px;max-width:720px;width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 32px 80px rgba(0,0,0,.28);animation:panelUp .32s cubic-bezier(.34,1.2,.64,1);}
     @keyframes panelUp{from{opacity:0;transform:translateY(30px) scale(.97);}to{opacity:1;transform:translateY(0) scale(1);}}
     .detail-hero{height:220px;display:flex;align-items:center;justify-content:center;font-size:5rem;border-radius:20px 20px 0 0;position:relative;}
-    .detail-close{position:absolute;top:14px;right:14px;background:rgba(0,0,0,.35);border:none;color:white;width:34px;height:34px;border-radius:50%;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;}
+    .detail-close{position:absolute;top:14px;right:14px;background:rgba(0,0,0,.35);border:none;color:white;width:34px;height:34px;border-radius:50%;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
     .detail-close:hover{background:rgba(0,0,0,.6);}
     .detail-body{padding:2rem 2.2rem;}
     .detail-body h2{font-family:'Playfair Display',serif;font-size:1.9rem;color:var(--gd);margin-bottom:.3rem;}
     .detail-meta-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.2rem;}
-    .d-badge{font-size:.73rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:.3em .75em;border-radius:16px;}
-    .d-badge-cat{background:rgba(200,169,110,.2);color:var(--ed);}
-    .d-badge-reko{background:rgba(26,48,34,.1);color:var(--gd);}
+    .d-badge{font-size:.73rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:.3em .75em;border-radius:16px;background:rgba(200,169,110,.2);color:var(--ed);}
     .detail-desc{color:var(--tm);line-height:1.75;font-size:.95rem;margin-bottom:1.6rem;}
     .d-section-title{font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ed);font-weight:700;margin-bottom:.9rem;display:flex;align-items:center;gap:.6rem;}
     .d-section-title::after{content:'';flex:1;height:1px;background:rgba(200,169,110,.3);}
-
-    /* ── PRODUCTS IN FARM DETAIL ── */
     .products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin-bottom:1.8rem;}
     .product-card{background:white;border-radius:12px;padding:1.1rem;border:1px solid rgba(26,48,34,.08);box-shadow:0 2px 8px rgba(26,48,34,.06);transition:all .2s;}
     .product-card:hover{box-shadow:0 6px 20px rgba(26,48,34,.12);}
     .product-name{font-weight:700;font-size:.95rem;color:var(--gd);margin-bottom:.25rem;}
-    .product-price{font-size:.9rem;color:var(--ed);font-weight:600;margin-bottom:.25rem;}
-    .product-unit{font-size:.78rem;color:var(--tl);}
+    .product-price{font-size:.9rem;color:var(--ed);font-weight:600;}
     .product-avail{font-size:.75rem;margin-top:.4rem;}
-    .avail-in-stock{color:#2d7a4a;font-weight:600;}
+    .avail-ok{color:#2d7a4a;font-weight:600;}
     .avail-low{color:#c07030;font-weight:600;}
     .avail-out{color:#c03030;font-weight:600;}
     .order-btn{width:100%;margin-top:.7rem;padding:.5rem;background:var(--gd);color:var(--cr);border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.82rem;cursor:pointer;transition:all .2s;}
     .order-btn:hover{background:var(--gm);}
     .order-btn:disabled{opacity:.4;cursor:not-allowed;}
+    .pickup-box{background:linear-gradient(135deg,rgba(200,169,110,.1),rgba(200,169,110,.05));border:1px solid rgba(200,169,110,.3);border-radius:14px;padding:1.2rem 1.4rem;display:flex;gap:1rem;}
+    .pickup-box-icon{font-size:1.8rem;flex-shrink:0;}
+    .pickup-box h4{font-size:.88rem;font-weight:700;color:var(--gd);margin-bottom:.3rem;}
+    .pickup-box p{font-size:.83rem;color:var(--tm);line-height:1.65;}
 
-    /* ── ORDER MODAL ── */
+    /* ORDER MODAL */
     .modal-overlay{display:none;position:fixed;inset:0;background:rgba(20,30,22,.7);backdrop-filter:blur(10px);z-index:5000;align-items:center;justify-content:center;padding:1.5rem;}
     .modal-overlay.open{display:flex;}
     .modal-box{background:var(--ww);border-radius:20px;max-width:480px;width:100%;box-shadow:0 32px 80px rgba(0,0,0,.3);animation:panelUp .32s cubic-bezier(.34,1.2,.64,1);}
+    .modal-box.wide{max-width:600px;}
     .modal-head{background:linear-gradient(135deg,var(--gd),var(--gm));padding:1.6rem 2rem;border-radius:20px 20px 0 0;display:flex;justify-content:space-between;align-items:flex-start;}
     .modal-head h2{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--cr);}
     .modal-head p{font-size:.82rem;color:rgba(245,240,232,.6);margin-top:.15rem;}
     .modal-close-btn{background:rgba(255,255,255,.15);border:none;color:white;width:30px;height:30px;border-radius:50%;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
     .modal-body{padding:1.8rem 2rem;display:flex;flex-direction:column;gap:1rem;}
-    .order-summary-row{display:flex;justify-content:space-between;align-items:center;padding:.65rem .9rem;background:white;border-radius:8px;border:1px solid rgba(26,48,34,.08);}
-    .order-summary-row .osr-label{font-size:.88rem;color:var(--tm);}
-    .order-summary-row .osr-val{font-size:.95rem;font-weight:700;color:var(--gd);}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+    .osr{display:flex;justify-content:space-between;align-items:center;padding:.65rem .9rem;background:white;border-radius:8px;border:1px solid rgba(26,48,34,.08);}
+    .osr-label{font-size:.88rem;color:var(--tm);}
+    .osr-val{font-size:.95rem;font-weight:700;color:var(--gd);}
     .qty-row{display:flex;align-items:center;gap:.8rem;}
     .qty-row label{font-size:.76rem;font-weight:600;color:var(--tm);text-transform:uppercase;letter-spacing:.06em;}
     .qty-ctrl{display:flex;align-items:center;gap:.5rem;background:white;border:1.5px solid rgba(26,48,34,.14);border-radius:8px;padding:.3rem .6rem;}
-    .qty-btn{background:none;border:none;width:26px;height:26px;border-radius:6px;font-size:1.1rem;cursor:pointer;color:var(--gd);font-weight:700;display:flex;align-items:center;justify-content:center;transition:background .15s;}
+    .qty-btn{background:none;border:none;width:26px;height:26px;border-radius:6px;font-size:1.1rem;cursor:pointer;color:var(--gd);font-weight:700;display:flex;align-items:center;justify-content:center;}
     .qty-btn:hover{background:rgba(26,48,34,.08);}
-    .qty-display{font-size:1rem;font-weight:700;color:var(--gd);min-width:28px;text-align:center;}
-    .form-group{display:flex;flex-direction:column;gap:.35rem;}
-    .form-group label{font-size:.76rem;font-weight:600;color:var(--tm);letter-spacing:.06em;text-transform:uppercase;}
-    .form-group input{padding:.7rem 1rem;border:1.5px solid rgba(26,48,34,.14);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.93rem;background:white;color:var(--td);transition:border-color .2s;}
-    .form-group input:focus{outline:none;border-color:var(--ea);}
-    .reko-pickup-note{background:linear-gradient(135deg,rgba(200,169,110,.1),rgba(200,169,110,.05));border:1px solid rgba(200,169,110,.3);border-radius:10px;padding:.9rem 1.1rem;font-size:.84rem;color:var(--tm);line-height:1.6;}
-    .reko-pickup-note strong{color:var(--ed);}
+    .qty-val{font-size:1rem;font-weight:700;color:var(--gd);min-width:28px;text-align:center;}
+    .fg{display:flex;flex-direction:column;gap:.35rem;}
+    .fg label{font-size:.76rem;font-weight:600;color:var(--tm);letter-spacing:.06em;text-transform:uppercase;}
+    .fg input{padding:.7rem 1rem;border:1.5px solid rgba(26,48,34,.14);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.93rem;background:white;color:var(--td);}
+    .fg input:focus{outline:none;border-color:var(--ea);}
+    .pickup-note{background:linear-gradient(135deg,rgba(200,169,110,.1),rgba(200,169,110,.05));border:1px solid rgba(200,169,110,.3);border-radius:10px;padding:.9rem 1.1rem;font-size:.84rem;color:var(--tm);line-height:1.6;}
+    .pickup-note strong{color:var(--ed);}
     .modal-foot{padding:1.2rem 2rem;border-top:1px solid rgba(26,48,34,.08);display:flex;gap:.7rem;justify-content:flex-end;background:var(--cr);border-radius:0 0 20px 20px;}
     .btn-cancel{padding:.7rem 1.4rem;border:1.5px solid rgba(26,48,34,.18);background:transparent;border-radius:8px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:.88rem;cursor:pointer;color:var(--tm);transition:all .2s;}
     .btn-cancel:hover{border-color:var(--ea);color:var(--ed);}
     .btn-confirm{padding:.7rem 1.6rem;background:var(--gd);color:var(--cr);border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.9rem;cursor:pointer;transition:all .2s;}
     .btn-confirm:hover{background:var(--gm);}
 
-    /* ── ORDER CONFIRMATION ── */
-    .order-confirm-box{text-align:center;padding:2.5rem 2rem;}
-    .order-confirm-box .checkmark{font-size:3rem;margin-bottom:1rem;}
-    .order-confirm-box h3{font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--gd);margin-bottom:.4rem;}
-    .order-confirm-box p{color:var(--tm);font-size:.95rem;margin-bottom:1.5rem;}
-    .order-code-display{background:var(--gd);color:var(--cr);border-radius:14px;padding:1.4rem;margin:1.2rem 0;}
-    .order-code-label{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(245,240,232,.6);margin-bottom:.4rem;}
-    .order-code-number{font-family:'Playfair Display',serif;font-size:2.8rem;font-weight:900;letter-spacing:.12em;color:var(--ea);}
-    .order-code-hint{font-size:.8rem;color:rgba(245,240,232,.55);margin-top:.4rem;}
-    .order-details-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1.4rem;text-align:left;}
-    .order-detail-item{background:white;border-radius:10px;padding:.8rem 1rem;border:1px solid rgba(26,48,34,.08);}
-    .order-detail-item .odl{font-size:.72rem;color:var(--tl);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem;}
-    .order-detail-item .odv{font-size:.9rem;font-weight:700;color:var(--gd);}
+    /* CONFIRM */
+    .confirm-box{text-align:center;padding:2.5rem 2rem;}
+    .confirm-box h3{font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--gd);margin-bottom:.4rem;}
+    .confirm-box p{color:var(--tm);font-size:.95rem;margin-bottom:1.5rem;}
+    .code-display{background:var(--gd);color:var(--cr);border-radius:14px;padding:1.4rem;margin:1.2rem 0;}
+    .code-label{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(245,240,232,.6);margin-bottom:.4rem;}
+    .code-number{font-family:'Playfair Display',serif;font-size:2.8rem;font-weight:900;letter-spacing:.12em;color:var(--ea);}
+    .code-hint{font-size:.8rem;color:rgba(245,240,232,.55);margin-top:.4rem;}
+    .order-dg{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1.4rem;text-align:left;}
+    .order-di{background:white;border-radius:10px;padding:.8rem 1rem;border:1px solid rgba(26,48,34,.08);}
+    .order-di .l{font-size:.72rem;color:var(--tl);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem;}
+    .order-di .v{font-size:.9rem;font-weight:700;color:var(--gd);}
     .cash-notice{background:rgba(200,169,110,.12);border:1px solid rgba(200,169,110,.3);border-radius:10px;padding:1rem;font-size:.85rem;color:var(--ed);line-height:1.6;font-weight:600;}
 
-    /* ── ADD FARM MODAL ── */
-    .modal-box.wide{max-width:600px;}
-    .modal-body .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
-
-    /* ── REKO DETAIL OVERLAY ── */
-    .reko-detail-panel{background:var(--ww);border-radius:20px;max-width:680px;width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 32px 80px rgba(0,0,0,.28);animation:panelUp .32s cubic-bezier(.34,1.2,.64,1);}
-    .reko-hero{height:180px;background:linear-gradient(135deg,var(--gd),#2d6a4a);border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;position:relative;}
-    .reko-hero h2{font-family:'Playfair Display',serif;font-size:1.9rem;color:var(--cr);text-align:center;padding:0 3rem;}
-    .reko-detail-body{padding:2rem 2.2rem;}
-    .round-card{background:white;border-radius:12px;padding:1.1rem 1.3rem;border:1px solid rgba(26,48,34,.08);margin-bottom:.8rem;display:flex;align-items:center;justify-content:space-between;}
-    .round-date{font-weight:700;color:var(--gd);font-size:.95rem;}
-    .round-time{font-size:.82rem;color:var(--tl);}
-    .round-loc{font-size:.84rem;color:var(--tm);}
-    .round-status{font-size:.75rem;font-weight:700;padding:.25em .7em;border-radius:10px;}
-    .round-open{background:rgba(45,90,61,.12);color:var(--gm);}
-    .round-soon{background:rgba(200,169,110,.18);color:var(--ed);}
-    .producer-list{list-style:none;display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.5rem;}
-    .producer-item{display:flex;align-items:center;gap:.8rem;padding:.6rem .9rem;background:white;border-radius:8px;border:1px solid rgba(26,48,34,.07);font-size:.88rem;color:var(--tm);}
-    .producer-item-icon{font-size:1.2rem;}
-    .producer-item-name{font-weight:600;color:var(--gd);}
-    .join-reko-btn{width:100%;padding:.8rem;background:var(--ea);color:var(--gd);border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.95rem;cursor:pointer;transition:all .2s;margin-top:.5rem;}
-    .join-reko-btn:hover{background:var(--ed);color:white;}
-
-    /* FOOTER */
     footer{background:var(--td);padding:3rem 4rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-top:3rem;}
     .footer-logo{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;color:var(--cr);}
     .footer-logo span{color:var(--ea);}
@@ -228,16 +200,15 @@
     @media(max-width:900px){
       nav{padding:.8rem 1.5rem;}nav.scrolled{padding:.65rem 1.5rem;}
       .page-header,.section{padding:6rem 1.5rem 2.5rem;}.section{padding-top:2rem;}
-      .tab-bar{padding:0 1.5rem;}.tab-btn{padding:.8rem 1rem;}
+      .tab-bar{padding:0 1rem;}.tab-btn{padding:.8rem .9rem;font-size:.82rem;}
+      .stats-bar{padding:.9rem 1.5rem;gap:1.2rem;}
       footer{padding:2rem 1.5rem;flex-direction:column;}
       .filter-row{flex-direction:column;align-items:stretch;}
-      .modal-body .form-row{grid-template-columns:1fr;}
-      .order-details-grid{grid-template-columns:1fr;}
+      .form-row{grid-template-columns:1fr;}
+      .order-dg{grid-template-columns:1fr;}
+      .market-intro{flex-direction:column;}
     }
   </style>
-  <link rel="manifest" href="/manifest.json"/>
-  <meta name="theme-color" content="#1a3022"/>
-  <meta name="apple-mobile-web-app-capable" content="yes"/>
 </head>
 <body>
 
@@ -260,17 +231,25 @@
 </nav>
 
 <section class="page-header">
-  <div class="breadcrumb"><a href="index.html">Hjem</a> / Gårder & REKO</div>
-  <h1>Gårder & REKO-ringer 🌾</h1>
-  <p>Finn lokale gårder nær deg — eller finn din nærmeste REKO-ring og bestill direkte fra bonden</p>
+  <div class="breadcrumb"><a href="index.html">Hjem</a> / Gårder</div>
+  <h1>Lokale gårder 🌾</h1>
+  <p>Finn gårder nær deg med ferske råvarer direkte fra bonden — bestill på forhånd og hent når det passer deg</p>
 </section>
+
+<div class="stats-bar">
+  <div class="stat-item"><strong id="stat-farms">6</strong> gårder</div>
+  <div class="stat-item"><strong id="stat-kommuner">6</strong> kommuner</div>
+  <div class="stat-item">💵 Betal kontant ved henting</div>
+  <div class="stat-item">🗓 Bestill når som helst</div>
+</div>
 
 <div class="tab-bar">
   <button class="tab-btn active" onclick="switchTab('farms',this)">🏡 Gårder</button>
-  <button class="tab-btn" onclick="switchTab('reko',this)">🔄 REKO-ringer</button>
+  <button class="tab-btn" onclick="switchTab('markets',this)">🛒 Bondens marked</button>
+  <button class="tab-btn" onclick="switchTab('map',this)">🗺 Kart</button>
 </div>
 
-<!-- ═══════════════ FARMS TAB ═══════════════ -->
+<!-- FARMS -->
 <div class="tab-panel active" id="tab-farms">
   <div class="section">
     <div class="toolbar">
@@ -290,48 +269,59 @@
       <button class="chip" onclick="filterTag('Fisk',this)">🐟 Fisk</button>
       <button class="chip" onclick="filterTag('Meieri',this)">🧀 Meieri</button>
       <button class="chip" onclick="filterTag('Frukt',this)">🍎 Frukt</button>
+      <button class="chip" onclick="filterTag('Honning',this)">🍯 Honning</button>
     </div>
-    <div class="farms-grid" id="farms-grid">
-      <div style="grid-column:1/-1;text-align:center;padding:4rem;color:var(--tl)">Laster gårder…</div>
-    </div>
+    <div class="farms-grid" id="farms-grid"></div>
   </div>
 </div>
 
-<!-- ═══════════════ REKO TAB ═══════════════ -->
-<div class="tab-panel" id="tab-reko">
+<!-- BONDENS MARKED -->
+<div class="tab-panel" id="tab-markets">
   <div class="section">
-    <h2 style="font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--gd);margin-bottom:.5rem;">Finn din REKO-ring</h2>
-    <p style="color:var(--tl);font-size:.93rem;margin-bottom:1.8rem;">Søk på postnummer eller kommune for å finne ringer nær deg. Bestill direkte — betal kontant ved henting.</p>
-
-    <div class="reko-search-bar">
-      <div class="field">
-        <label>Postnummer eller kommune</label>
-        <input type="text" id="reko-search-input" placeholder="f.eks. 4006 eller Stavanger" oninput="filterReko()"/>
+    <div class="market-intro">
+      <div class="market-intro-icon">🛒</div>
+      <div>
+        <h3>Bondens marked — direkte fra produsent</h3>
+        <p>Bondens marked er Norges ledende nettverk for direktesalg fra bonde til forbruker — uten mellomledd. Her finner du lokale markeder over hele landet. For full oversikt over alle markeder, besøk <a href="https://www.bondensmarked.no" target="_blank">bondensmarked.no</a>.</p>
       </div>
-      <div class="field" style="flex:0 0 160px;">
-        <label>Region</label>
-        <select id="reko-region-filter" onchange="filterReko()">
-          <option value="">Alle regioner</option>
-          <option>Rogaland</option>
-          <option>Hordaland</option>
-          <option>Trøndelag</option>
-          <option>Viken</option>
-          <option>Innlandet</option>
-          <option>Vestland</option>
-          <option>Oslo</option>
+    </div>
+    <div class="filter-row">
+      <div class="search-wrap">
+        <input type="text" class="search-input" id="market-search" placeholder="Søk etter by eller marked…" oninput="filterMarkets()"/>
+      </div>
+      <button class="chip active" onclick="filterMarketRegion('all',this)">Alle regioner</button>
+      <button class="chip" onclick="filterMarketRegion('Rogaland',this)">Rogaland</button>
+      <button class="chip" onclick="filterMarketRegion('Vestland',this)">Vestland</button>
+      <button class="chip" onclick="filterMarketRegion('Oslo',this)">Oslo</button>
+      <button class="chip" onclick="filterMarketRegion('Trøndelag',this)">Trøndelag</button>
+      <button class="chip" onclick="filterMarketRegion('Viken',this)">Viken</button>
+    </div>
+    <div class="markets-grid" id="markets-grid"></div>
+  </div>
+</div>
+
+<!-- MAP -->
+<div class="tab-panel" id="tab-map">
+  <div class="section">
+    <div class="map-bar">
+      <div class="field">
+        <label>Søk etter kommune eller region</label>
+        <input type="text" id="map-search" placeholder="f.eks. Stavanger, Oslo, Bergen…" oninput="filterMapFarms()"/>
+      </div>
+      <div class="field" style="flex:0 0 180px;">
+        <label>Produkttype</label>
+        <select id="map-cat" onchange="filterMapFarms()">
+          <option value="">Alle produkter</option>
+          <option>Grønnsaker</option><option>Kjøtt</option><option>Fisk</option>
+          <option>Meieri</option><option>Frukt</option><option>Honning</option>
         </select>
       </div>
-      <button class="search-btn" onclick="filterReko()">🔍 Søk</button>
+      <button class="map-btn" onclick="filterMapFarms()">🔍 Søk</button>
     </div>
-
-    <div id="reko-map"></div>
-
-    <div style="margin-top:1.5rem;margin-bottom:.5rem;display:flex;align-items:center;justify-content:space-between;">
-      <h3 style="font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--gd);">REKO-ringer i nærheten</h3>
-      <span id="reko-count" style="font-size:.85rem;color:var(--tl);"></span>
-    </div>
-    <div class="reko-results" id="reko-results">
-      <div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--tl)">Laster ringer…</div>
+    <div id="farm-map"></div>
+    <div class="map-legend">
+      <span><span class="legend-dot" style="background:#1a3022"></span>Gård</span>
+      <span><span class="legend-dot" style="background:#c8a96e"></span>Gård med Bondens marked</span>
     </div>
   </div>
 </div>
@@ -341,9 +331,9 @@
   <p>© 2025 Handelhjelp. Grunnleggende oppføring er alltid gratis.</p>
 </footer>
 
-<!-- ═══════════════ FARM DETAIL OVERLAY ═══════════════ -->
+<!-- FARM DETAIL -->
 <div class="overlay" id="farm-overlay" onclick="if(event.target===this)closeFarmDetail()">
-  <div class="detail-panel" id="farm-detail-panel">
+  <div class="detail-panel">
     <div class="detail-hero green" id="detail-hero">
       <button class="detail-close" onclick="closeFarmDetail()">✕</button>
     </div>
@@ -351,44 +341,31 @@
   </div>
 </div>
 
-<!-- ═══════════════ REKO DETAIL OVERLAY ═══════════════ -->
-<div class="overlay" id="reko-overlay" onclick="if(event.target===this)closeRekoDetail()">
-  <div class="reko-detail-panel" id="reko-detail-panel">
-    <div class="reko-hero" id="reko-hero">
-      <button class="detail-close" onclick="closeRekoDetail()">✕</button>
-      <h2 id="reko-detail-title"></h2>
-    </div>
-    <div class="reko-detail-body" id="reko-detail-body"></div>
-  </div>
-</div>
-
-<!-- ═══════════════ ORDER MODAL ═══════════════ -->
+<!-- ORDER -->
 <div class="modal-overlay" id="order-modal" onclick="if(event.target===this)closeOrder()">
-  <div class="modal-box" id="order-modal-box">
-    <!-- filled by JS -->
-  </div>
+  <div class="modal-box" id="order-box"></div>
 </div>
 
-<!-- ═══════════════ ADD FARM MODAL ═══════════════ -->
-<div class="modal-overlay" id="add-farm-modal" onclick="if(event.target===this)closeAddFarm()">
+<!-- ADD FARM -->
+<div class="modal-overlay" id="add-modal" onclick="if(event.target===this)closeAddFarm()">
   <div class="modal-box wide">
     <div class="modal-head">
-      <div><h2>🌾 Legg til gård</h2><p>Gratis oppføring — synlig for alle besøkende</p></div>
+      <div><h2>🌾 Legg til gård</h2><p>Gratis oppføring for alle produsenter</p></div>
       <button class="modal-close-btn" onclick="closeAddFarm()">✕</button>
     </div>
     <div class="modal-body">
-      <div class="form-group"><label>Gårdens navn <span style="color:#e25555">*</span></label><input type="text" id="nf-name" placeholder="f.eks. Helgen Gård"/></div>
-      <div class="form-group"><label>Beskrivelse</label><input type="text" id="nf-desc" placeholder="Kort om hva dere produserer…"/></div>
+      <div class="fg"><label>Gårdens navn *</label><input type="text" id="nf-name" placeholder="f.eks. Helgen Gård"/></div>
+      <div class="fg"><label>Beskrivelse</label><input type="text" id="nf-desc" placeholder="Hva produserer dere?"/></div>
       <div class="form-row">
-        <div class="form-group"><label>Kommune <span style="color:#e25555">*</span></label><input type="text" id="nf-kommune" placeholder="f.eks. Stavanger"/></div>
-        <div class="form-group"><label>Region</label><input type="text" id="nf-region" placeholder="f.eks. Rogaland"/></div>
+        <div class="fg"><label>Kommune *</label><input type="text" id="nf-kommune" placeholder="f.eks. Stavanger"/></div>
+        <div class="fg"><label>Region</label><input type="text" id="nf-region" placeholder="f.eks. Rogaland"/></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label>Breddegrad</label><input type="number" id="nf-lat" placeholder="58.97" step="0.0001"/></div>
-        <div class="form-group"><label>Lengdegrad</label><input type="number" id="nf-lng" placeholder="5.73" step="0.0001"/></div>
+        <div class="fg"><label>Breddegrad</label><input type="number" id="nf-lat" placeholder="58.97" step="0.0001"/></div>
+        <div class="fg"><label>Lengdegrad</label><input type="number" id="nf-lng" placeholder="5.73" step="0.0001"/></div>
       </div>
-      <div class="form-group"><label>Produktkategorier (kommaseparert)</label><input type="text" id="nf-tags" placeholder="Grønnsaker, Egg, Honning"/></div>
-      <div class="form-group"><label>Tilhører REKO-ring</label><input type="text" id="nf-reko" placeholder="f.eks. REKO Stavanger"/></div>
+      <div class="fg"><label>Produktkategorier (kommaseparert)</label><input type="text" id="nf-tags" placeholder="Grønnsaker, Egg, Honning"/></div>
+      <div class="fg"><label>Hentested / åpningstider</label><input type="text" id="nf-pickup" placeholder="f.eks. Gårdsveien 12 — lørdager 09–14"/></div>
     </div>
     <div class="modal-foot">
       <button class="btn-cancel" onclick="closeAddFarm()">Avbryt</button>
@@ -400,229 +377,181 @@
 <script>
 const API = 'https://gardnavi-api-fecufjdrfbhyf2g6.norwayeast-01.azurewebsites.net';
 
-/* ─────────────────────────────────────────────────────────── DATA */
 const sampleFarms = [
-  {id:1,name:'Jæren Grønt',description:'Familiegård på Jæren med ferske rotgrønnsaker, sesonggrønnsaker og poteter. Dyrket bærekraftig siden 1987.',kommune:'Klepp',region:'Rogaland',lat:58.77,lng:5.63,icon:'🥦',color:'green',tags:['Grønnsaker','Poteter','Urter'],reko:'REKO Stavanger',
-    products:[
-      {id:101,name:'Jordskokk',price:49,unit:'kr/kg',stock:28,stockLabel:'På lager'},
-      {id:102,name:'Gulrøtter',price:35,unit:'kr/kg',stock:60,stockLabel:'På lager'},
-      {id:103,name:'Kålrot',price:30,unit:'kr/kg',stock:12,stockLabel:'Lite igjen'},
-      {id:104,name:'Purreløk',price:25,unit:'kr/bunt',stock:0,stockLabel:'Utsolgt'},
-    ]},
-  {id:2,name:'Hardanger Frukt',description:'Fruktgård midt i Hardanger med epler, plommer og kirsebær. Historisk gård med over 200 år i samme familie.',kommune:'Ullensvang',region:'Vestland',lat:60.32,lng:6.65,icon:'🍎',color:'red',tags:['Frukt','Juice','Syltetøy'],reko:'REKO Bergen',
-    products:[
-      {id:201,name:'Hardangereple',price:40,unit:'kr/kg',stock:80,stockLabel:'På lager'},
-      {id:202,name:'Plommer',price:55,unit:'kr/kg',stock:20,stockLabel:'Lite igjen'},
-      {id:203,name:'Eplecider',price:89,unit:'kr/flaske',stock:15,stockLabel:'Lite igjen'},
-    ]},
-  {id:3,name:'Trøndelag Kjøtt',description:'Lammebonde i Trøndelag med dyr på beite hele sommeren. Slaktelamm og stykningsdeler tilgjengelig fra september.',kommune:'Oppdal',region:'Trøndelag',lat:62.59,lng:9.69,icon:'🥩',color:'brown',tags:['Kjøtt','Lam','Storfe'],reko:'REKO Trondheim',
-    products:[
-      {id:301,name:'Lammebog',price:180,unit:'kr/kg',stock:10,stockLabel:'Lite igjen'},
-      {id:302,name:'Lammeribbe',price:150,unit:'kr/kg',stock:22,stockLabel:'På lager'},
-      {id:303,name:'Kvernet lammekjøtt',price:160,unit:'kr/kg',stock:35,stockLabel:'På lager'},
-    ]},
-  {id:4,name:'Valdres Ysteri',description:'Lite ysteri i Valdres som lager håndlagde oster av melk fra egne kuer. Alle oster er naturlige og uten tilsetningsstoffer.',kommune:'Nord-Aurdal',region:'Innlandet',lat:60.89,lng:9.13,icon:'🧀',color:'gold',tags:['Meieri','Ost','Smør','Rømme'],reko:'REKO Fagernes',
-    products:[
-      {id:401,name:'Brunost',price:120,unit:'kr/stk (500g)',stock:18,stockLabel:'På lager'},
-      {id:402,name:'Hvitost',price:140,unit:'kr/stk (400g)',stock:8,stockLabel:'Lite igjen'},
-      {id:403,name:'Rømme',price:45,unit:'kr/dl (250ml)',stock:30,stockLabel:'På lager'},
-    ]},
-  {id:5,name:'Lofoten Sjømat',description:'Familiedrevet fiskebåt i Lofoten. Fersk skrei, laks og torsk levert rett fra båt til REKO.',kommune:'Vestvågøy',region:'Nordland',lat:68.24,lng:13.61,icon:'🐟',color:'blue',tags:['Fisk','Sjømat','Tørrfisk'],reko:'REKO Leknes',
-    products:[
-      {id:501,name:'Fersk skrei',price:95,unit:'kr/kg',stock:40,stockLabel:'På lager'},
-      {id:502,name:'Laks hel',price:110,unit:'kr/kg',stock:15,stockLabel:'Lite igjen'},
-      {id:503,name:'Tørrfisk',price:380,unit:'kr/kg',stock:5,stockLabel:'Lite igjen'},
-    ]},
-  {id:6,name:'Helgen Gård',description:'Honning og epler fra Numedal. Birøkter og fruktbonde i sjette generasjon. Kaldpresset honning og sider.',kommune:'Numedal',region:'Viken',lat:59.97,lng:9.15,icon:'🍯',color:'gold',tags:['Honning','Frukt','Sider'],reko:'REKO Kongsberg',
-    products:[
-      {id:601,name:'Blomsterhonning',price:140,unit:'kr/glass (500g)',stock:22,stockLabel:'På lager'},
-      {id:602,name:'Eplehonning',price:165,unit:'kr/glass (500g)',stock:12,stockLabel:'Lite igjen'},
-      {id:603,name:'Epler',price:35,unit:'kr/kg',stock:80,stockLabel:'På lager'},
-    ]},
+  {id:1,name:'Jæren Grønt',description:'Familiegård på Jæren med ferske rotgrønnsaker og poteter. Dyrket bærekraftig siden 1987.',kommune:'Klepp',region:'Rogaland',lat:58.77,lng:5.63,icon:'🥦',color:'green',tags:['Grønnsaker','Poteter','Urter'],pickup:'Gårdsbutikk — lørdager 09–14',products:[
+    {id:101,name:'Jordskokk',price:49,unit:'kr/kg',stock:28},
+    {id:102,name:'Gulrøtter',price:35,unit:'kr/kg',stock:60},
+    {id:103,name:'Kålrot',price:30,unit:'kr/kg',stock:12},
+    {id:104,name:'Purreløk',price:25,unit:'kr/bunt',stock:0},
+  ]},
+  {id:2,name:'Hardanger Frukt',description:'Fruktgård i Hardanger med epler, plommer og kirsebær. Historisk gård i sjette generasjon.',kommune:'Ullensvang',region:'Vestland',lat:60.32,lng:6.65,icon:'🍎',color:'red',tags:['Frukt','Juice','Syltetøy'],pickup:'Bondens marked Bergen — søndager mai–oktober',products:[
+    {id:201,name:'Hardangereple',price:40,unit:'kr/kg',stock:80},
+    {id:202,name:'Plommer',price:55,unit:'kr/kg',stock:20},
+    {id:203,name:'Eplecider',price:89,unit:'kr/flaske',stock:15},
+  ]},
+  {id:3,name:'Trøndelag Kjøtt',description:'Lammebonde i Trøndelag med dyr på beite hele sommeren. Slaktelamm og stykningsdeler fra september.',kommune:'Oppdal',region:'Trøndelag',lat:62.59,lng:9.69,icon:'🥩',color:'brown',tags:['Kjøtt','Lam','Storfe'],pickup:'Bestilling på forhånd — henting på gård etter avtale',products:[
+    {id:301,name:'Lammebog',price:180,unit:'kr/kg',stock:10},
+    {id:302,name:'Lammeribbe',price:150,unit:'kr/kg',stock:22},
+    {id:303,name:'Kvernet lammekjøtt',price:160,unit:'kr/kg',stock:35},
+  ]},
+  {id:4,name:'Valdres Ysteri',description:'Lite ysteri med håndlagde oster av melk fra egne kuer. Naturlige oster uten tilsetningsstoffer.',kommune:'Nord-Aurdal',region:'Innlandet',lat:60.89,lng:9.13,icon:'🧀',color:'gold',tags:['Meieri','Ost','Smør','Rømme'],pickup:'Gårdsbutikk — tirsdager og torsdager 12–17',products:[
+    {id:401,name:'Brunost',price:120,unit:'kr/stk (500g)',stock:18},
+    {id:402,name:'Hvitost',price:140,unit:'kr/stk (400g)',stock:8},
+    {id:403,name:'Rømme',price:45,unit:'kr (250ml)',stock:30},
+  ]},
+  {id:5,name:'Lofoten Sjømat',description:'Familiedrevet fiskebåt i Lofoten. Fersk skrei og laks rett fra båt.',kommune:'Vestvågøy',region:'Nordland',lat:68.24,lng:13.61,icon:'🐟',color:'blue',tags:['Fisk','Sjømat','Tørrfisk'],pickup:'Kai i Leknes — fredager 14–17 når båten er inne',products:[
+    {id:501,name:'Fersk skrei',price:95,unit:'kr/kg',stock:40},
+    {id:502,name:'Laks hel',price:110,unit:'kr/kg',stock:15},
+    {id:503,name:'Tørrfisk',price:380,unit:'kr/kg',stock:5},
+  ]},
+  {id:6,name:'Helgen Gård',description:'Honning og epler fra Numedal. Birøkter og fruktbonde i sjette generasjon.',kommune:'Numedal',region:'Viken',lat:59.97,lng:9.15,icon:'🍯',color:'gold',tags:['Honning','Frukt','Sider'],pickup:'Bondens marked Kongsberg — annenhver lørdag',products:[
+    {id:601,name:'Blomsterhonning',price:140,unit:'kr/glass (500g)',stock:22},
+    {id:602,name:'Eplehonning',price:165,unit:'kr/glass (500g)',stock:12},
+    {id:603,name:'Epler',price:35,unit:'kr/kg',stock:80},
+  ]},
 ];
 
-const rekoRings = [
-  {id:1,name:'REKO Stavanger',region:'Rogaland',lat:58.97,lng:5.73,nextRound:'Lørdag 5. april 2025, kl. 10–11',location:'Storhaug Torv, Stavanger',producers:['Jæren Grønt','Helgen Gård (gjesteselger)','Jæren Egg'],producerCount:8,memberCount:420},
-  {id:2,name:'REKO Bergen',region:'Hordaland',lat:60.39,lng:5.32,nextRound:'Søndag 6. april 2025, kl. 11–12',location:'Danmarksplass, Bergen',producers:['Hardanger Frukt','Vestland Kjøtt','Granvin Urter'],producerCount:12,memberCount:680},
-  {id:3,name:'REKO Trondheim',region:'Trøndelag',lat:63.43,lng:10.39,nextRound:'Lørdag 5. april 2025, kl. 09–10',location:'Nedre Elvehavn, Trondheim',producers:['Trøndelag Kjøtt','Inderøy Gård','Stjørdal Grønt'],producerCount:15,memberCount:890},
-  {id:4,name:'REKO Oslo',region:'Oslo',lat:59.91,lng:10.75,nextRound:'Lørdag 5. april 2025, kl. 10–12',location:'Grønland, Oslo',producers:['Romerike Grønt','Hedmarken Kjøtt','Østfold Fisk'],producerCount:20,memberCount:1240},
-  {id:5,name:'REKO Fagernes',region:'Innlandet',lat:60.99,lng:9.23,nextRound:'Fredag 4. april 2025, kl. 15–16',location:'Fagernes Sentrum',producers:['Valdres Ysteri','Aurdal Grønt'],producerCount:6,memberCount:210},
-  {id:6,name:'REKO Leknes',region:'Nordland',lat:68.14,lng:13.61,nextRound:'Lørdag 5. april 2025, kl. 11–12',location:'Leknes Sentrum, Lofoten',producers:['Lofoten Sjømat','Vestvågøy Fisk'],producerCount:5,memberCount:190},
-  {id:7,name:'REKO Kongsberg',region:'Viken',lat:59.66,lng:9.65,nextRound:'Torsdag 3. april 2025, kl. 16–17',location:'Stortorget, Kongsberg',producers:['Helgen Gård','Numedal Kjøtt'],producerCount:7,memberCount:280},
-  {id:8,name:'REKO Ålesund',region:'Møre og Romsdal',lat:62.47,lng:6.15,nextRound:'Lørdag 5. april 2025, kl. 10–11',location:'Brogata, Ålesund',producers:['Sunnmøre Fisk','Geiranger Kjøtt'],producerCount:9,memberCount:350},
+const bondensMarkeder = [
+  {id:1,name:'Bondens marked Stavanger',region:'Rogaland',icon:'🌾',schedule:'Annenhver lørdag mai–okt, kl. 09–14',location:'Torget, Stavanger sentrum',producers:['Jæren Grønt','Jæren Egg','Sola Urter','Ryfylke Kjøtt'],description:'Rogalands største bondens marked med over 20 lokale produsenter.'},
+  {id:2,name:'Bondens marked Bergen',region:'Vestland',icon:'🍎',schedule:'Søndager mai–sept, kl. 10–15',location:'Festplassen, Bergen',producers:['Hardanger Frukt','Voss Meieri','Granvin Urter'],description:'Vestlandets fremste matmarked med produsenter fra hele regionen.'},
+  {id:3,name:'Bondens marked Oslo',region:'Oslo',icon:'🥕',schedule:'Lørdager hele året, kl. 10–15',location:'Youngstorget, Oslo',producers:['Romerike Grønt','Østfold Fisk','Hedmarken Kjøtt','Follo Bær'],description:'Norges mest besøkte bondens marked med over 40 faste stands.'},
+  {id:4,name:'Bondens marked Trondheim',region:'Trøndelag',icon:'🥩',schedule:'Første lørdag i måneden, kl. 09–13',location:'Nedre Elvehavn, Trondheim',producers:['Trøndelag Kjøtt','Inderøy Gård','Stjørdal Grønt'],description:'Trøndersk matkultur på sitt beste — kortreist og tradisjonsmessig.'},
+  {id:5,name:'Bondens marked Kongsberg',region:'Viken',icon:'🍯',schedule:'Annenhver lørdag april–nov, kl. 10–14',location:'Stortorget, Kongsberg',producers:['Helgen Gård','Numedal Kjøtt','Flesberg Grønt'],description:'Hyggelig lokalt marked med produsenter fra Numedal og omegn.'},
 ];
 
 let allFarms = [...sampleFarms];
 let filteredFarms = [...allFarms];
+let filteredMarkets = [...bondensMarkeder];
 let currentTag = 'all';
+let currentMarketRegion = 'all';
 let currentOrder = null;
 let orderQty = 1;
-let rekoMap = null;
-let rekoMarkers = [];
-let filteredReko = [...rekoRings];
+let farmMap = null;
+let mapMarkers = [];
 
-/* ─────────────────────────────────────────────────────────── TABS */
 function switchTab(tab, btn) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById('tab-'+tab).classList.add('active');
-  if (tab === 'reko' && !rekoMap) initRekoMap();
+  if (tab === 'map' && !farmMap) initFarmMap();
 }
 
-/* ─────────────────────────────────────────────────────────── FARMS */
-function colorClass(c){return c||'green';}
-
-function filterFarms(){
+/* FARMS */
+function filterFarms() {
   const q = document.getElementById('farm-search').value.toLowerCase();
   filteredFarms = allFarms.filter(f =>
-    (currentTag==='all' || f.tags.includes(currentTag)) &&
-    (!q || f.name.toLowerCase().includes(q) || f.kommune.toLowerCase().includes(q) || f.tags.some(t=>t.toLowerCase().includes(q)))
+    (currentTag === 'all' || f.tags.includes(currentTag)) &&
+    (!q || f.name.toLowerCase().includes(q) || f.kommune.toLowerCase().includes(q) || f.tags.some(t => t.toLowerCase().includes(q)))
   );
   renderFarms();
 }
 
-function filterTag(tag,btn){
-  currentTag=tag;
-  document.querySelectorAll('.filter-row .chip').forEach(c=>c.classList.remove('active'));
+function filterTag(tag, btn) {
+  currentTag = tag;
+  document.querySelectorAll('#tab-farms .chip').forEach(c => c.classList.remove('active'));
   btn.classList.add('active');
   filterFarms();
 }
 
-function renderFarms(){
+function renderFarms() {
   const el = document.getElementById('farms-grid');
-  if(!filteredFarms.length){
-    el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:4rem;color:var(--tl)">Ingen gårder funnet 🔍</div>';
+  document.getElementById('stat-farms').textContent = allFarms.length;
+  document.getElementById('stat-kommuner').textContent = [...new Set(allFarms.map(f => f.kommune))].length;
+  if (!filteredFarms.length) {
+    el.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:4rem;color:var(--tl)">Ingen gårder funnet 🔍</div>';
     return;
   }
-  el.innerHTML = filteredFarms.map((f,i)=>`
+  el.innerHTML = filteredFarms.map((f,i) => `
     <div class="farm-card" style="animation-delay:${i*.06}s" onclick="showFarmDetail(${f.id})">
-      <div class="farm-img ${colorClass(f.color)}">${f.icon}
-        ${f.reko?`<span class="reko-badge-on-card">REKO</span>`:''}
+      <div class="farm-img ${f.color}">${f.icon}
+        ${f.pickup && f.pickup.toLowerCase().includes('marked') ? `<span class="market-badge">Bondens marked</span>` : ''}
       </div>
       <div class="farm-body">
         <h3>${f.name}</h3>
-        <div class="farm-loc">📍 ${f.kommune}${f.region?', '+f.region:''}</div>
+        <div class="farm-loc">📍 ${f.kommune}${f.region ? ', '+f.region : ''}</div>
         <div class="farm-tags">${f.tags.map(t=>`<span class="farm-tag">${t}</span>`).join('')}</div>
         <div class="farm-desc">${f.description.slice(0,100)}…</div>
         <div class="farm-footer">
           <button class="farm-btn farm-btn-primary" onclick="event.stopPropagation();showFarmDetail(${f.id})">Se produkter</button>
-          ${f.reko?`<button class="farm-btn farm-btn-secondary" onclick="event.stopPropagation();openRekoByName('${f.reko}')">🔄 ${f.reko}</button>`:''}
+          <button class="farm-btn farm-btn-secondary" onclick="event.stopPropagation();showFarmDetail(${f.id})">📍 Hentested</button>
         </div>
       </div>
     </div>`).join('');
 }
 
-function showFarmDetail(id){
-  const f = allFarms.find(x=>x.id===id);
-  if(!f) return;
+function showFarmDetail(id) {
+  const f = allFarms.find(x => x.id === id);
+  if (!f) return;
   const hero = document.getElementById('detail-hero');
-  hero.className = `detail-hero ${colorClass(f.color)}`;
+  hero.className = `detail-hero ${f.color}`;
   hero.innerHTML = `${f.icon}<button class="detail-close" onclick="closeFarmDetail()">✕</button>`;
   document.getElementById('detail-body').innerHTML = `
     <h2>${f.name}</h2>
-    <div class="detail-meta-row">
-      ${f.tags.map(t=>`<span class="d-badge d-badge-cat">${t}</span>`).join('')}
-      ${f.reko?`<span class="d-badge d-badge-reko">🔄 ${f.reko}</span>`:''}
-    </div>
+    <div class="detail-meta-row">${f.tags.map(t=>`<span class="d-badge">${t}</span>`).join('')}</div>
     <p class="detail-desc">📍 ${f.kommune}${f.region?', '+f.region:''} &nbsp;·&nbsp; ${f.description}</p>
-
     <div class="d-section-title">Tilgjengelige produkter</div>
     <div class="products-grid">
-      ${f.products.map(p=>{
-        const lowStock = p.stock>0&&p.stock<=15;
-        const outOfStock = p.stock===0;
-        const stockClass = outOfStock?'avail-out':lowStock?'avail-low':'avail-in-stock';
-        const stockText = outOfStock?'Utsolgt':lowStock?`Bare ${p.stock} igjen`:'På lager';
+      ${f.products.map(p => {
+        const low = p.stock>0&&p.stock<=15, out = p.stock===0;
+        const cls = out?'avail-out':low?'avail-low':'avail-ok';
+        const txt = out?'Utsolgt':low?`Bare ${p.stock} igjen`:'På lager';
         return `<div class="product-card">
           <div class="product-name">${p.name}</div>
           <div class="product-price">${p.price} ${p.unit}</div>
-          <div class="product-avail ${stockClass}">● ${stockText}</div>
-          <button class="order-btn" ${outOfStock?'disabled':''} onclick="startOrder(${f.id},${p.id})">
-            ${outOfStock?'Utsolgt':'Bestill'}
-          </button>
+          <div class="product-avail ${cls}">● ${txt}</div>
+          <button class="order-btn" ${out?'disabled':''} onclick="startOrder(${f.id},${p.id})">${out?'Utsolgt':'Bestill'}</button>
         </div>`;
       }).join('')}
     </div>
-
-    ${f.reko?`
-    <div class="d-section-title">REKO-ring</div>
-    <div style="background:linear-gradient(135deg,rgba(26,48,34,.04),rgba(200,169,110,.07));border:1px solid rgba(200,169,110,.25);border-radius:14px;padding:1.2rem 1.4rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.8rem;">
-      <div>
-        <div style="font-weight:700;color:var(--gd);margin-bottom:.2rem;">${f.reko}</div>
-        <div style="font-size:.83rem;color:var(--tl);">Bestill og hent på neste utdeling — betal kontant på stedet</div>
-      </div>
-      <button onclick="openRekoByName('${f.reko}')" style="padding:.6rem 1.2rem;background:var(--gd);color:var(--cr);border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;">Finn ring →</button>
-    </div>`:''} `;
+    ${f.pickup?`
+    <div class="d-section-title">Hentested</div>
+    <div class="pickup-box">
+      <div class="pickup-box-icon">📍</div>
+      <div><h4>Hent og betal kontant</h4><p>${f.pickup}<br><br>Bestill i appen → motta bestillingskode → møt opp → betal bonden direkte. Ingen kortbetaling, ingen mellomledd.</p></div>
+    </div>`:''}`;
   document.getElementById('farm-overlay').classList.add('open');
-  document.body.style.overflow='hidden';
+  document.body.style.overflow = 'hidden';
 }
 
-function closeFarmDetail(){
+function closeFarmDetail() {
   document.getElementById('farm-overlay').classList.remove('open');
-  document.body.style.overflow='';
+  document.body.style.overflow = '';
 }
 
-/* ─────────────────────────────────────────────────────────── ORDER */
-function startOrder(farmId, productId){
-  const farm = allFarms.find(f=>f.id===farmId);
-  const product = farm.products.find(p=>p.id===productId);
-  currentOrder = {farm,product};
-  orderQty = 1;
+/* ORDER */
+function startOrder(farmId, productId) {
+  const farm = allFarms.find(f => f.id===farmId);
+  const product = farm.products.find(p => p.id===productId);
+  currentOrder = {farm, product}; orderQty = 1;
   renderOrderModal();
   document.getElementById('order-modal').classList.add('open');
 }
 
-function renderOrderModal(){
+function renderOrderModal() {
   const {farm,product} = currentOrder;
-  const total = (product.price * orderQty).toLocaleString('nb-NO');
-  document.getElementById('order-modal-box').innerHTML = `
+  const total = (product.price*orderQty).toLocaleString('nb-NO');
+  document.getElementById('order-box').innerHTML = `
     <div class="modal-head">
       <div><h2>Bestill fra ${farm.name}</h2><p>Betal kontant ved henting</p></div>
       <button class="modal-close-btn" onclick="closeOrder()">✕</button>
     </div>
     <div class="modal-body">
-      <div class="order-summary-row">
-        <span class="osr-label">Produkt</span>
-        <span class="osr-val">${product.name}</span>
-      </div>
-      <div class="order-summary-row">
-        <span class="osr-label">Pris</span>
-        <span class="osr-val">${product.price} ${product.unit}</span>
-      </div>
-
+      <div class="osr"><span class="osr-label">Produkt</span><span class="osr-val">${product.name}</span></div>
+      <div class="osr"><span class="osr-label">Pris</span><span class="osr-val">${product.price} ${product.unit}</span></div>
       <div class="qty-row">
         <label>Antall</label>
         <div class="qty-ctrl">
           <button class="qty-btn" onclick="changeQty(-1)">−</button>
-          <span class="qty-display" id="qty-display">${orderQty}</span>
+          <span class="qty-val" id="qty-val">${orderQty}</span>
           <button class="qty-btn" onclick="changeQty(1)">+</button>
         </div>
-        <span style="font-size:.88rem;color:var(--tl);">${product.unit.replace('kr/','')}</span>
+        <span style="font-size:.85rem;color:var(--tl)">${product.unit.replace('kr/','').replace('kr ','')}</span>
       </div>
-
-      <div class="order-summary-row">
-        <span class="osr-label">Total å betale</span>
-        <span class="osr-val" id="total-display">${total} kr</span>
-      </div>
-
-      <div class="form-group">
-        <label>Ditt navn <span style="color:#e25555">*</span></label>
-        <input type="text" id="ord-name" placeholder="Ola Nordmann"/>
-      </div>
-      <div class="form-group">
-        <label>Telefon (for bekreftelse)</label>
-        <input type="tel" id="ord-phone" placeholder="+47 000 00 000"/>
-      </div>
-
-      ${farm.reko?`
-      <div class="reko-pickup-note">
-        🔄 <strong>${farm.reko}</strong><br>
-        Du vil motta en <strong>bestillingskode</strong> etter bekreftelse. Ta med koden ved henting og betal <strong>kontant</strong> direkte til bonden. Ingen online betaling kreves.
-      </div>`:`
-      <div class="reko-pickup-note">
-        🏡 Hentes direkte fra <strong>${farm.name}</strong>. Du mottar en <strong>bestillingskode</strong> — betal kontant ved henting.
-      </div>`}
+      <div class="osr"><span class="osr-label">Totalt å betale</span><span class="osr-val" id="total-val">${total} kr</span></div>
+      <div class="fg"><label>Ditt navn *</label><input type="text" id="ord-name" placeholder="Ola Nordmann"/></div>
+      <div class="fg"><label>Telefon (valgfri)</label><input type="tel" id="ord-phone" placeholder="+47 000 00 000"/></div>
+      <div class="pickup-note">📍 <strong>${farm.pickup||farm.name}</strong><br>Motta bestillingskode → møt opp → betal <strong>kontant</strong> til bonden.</div>
     </div>
     <div class="modal-foot">
       <button class="btn-cancel" onclick="closeOrder()">Avbryt</button>
@@ -630,260 +559,139 @@ function renderOrderModal(){
     </div>`;
 }
 
-function changeQty(delta){
-  orderQty = Math.max(1, orderQty + delta);
-  document.getElementById('qty-display').textContent = orderQty;
-  const total = (currentOrder.product.price * orderQty).toLocaleString('nb-NO');
-  document.getElementById('total-display').textContent = total + ' kr';
+function changeQty(d) {
+  orderQty = Math.max(1, orderQty+d);
+  document.getElementById('qty-val').textContent = orderQty;
+  document.getElementById('total-val').textContent = (currentOrder.product.price*orderQty).toLocaleString('nb-NO')+' kr';
 }
 
-function generateOrderCode(){
-  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let code='';
-  for(let i=0;i<6;i++) code+=chars[Math.floor(Math.random()*chars.length)];
-  return code;
+function genCode() {
+  return Array.from({length:6},()=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random()*32)]).join('');
 }
 
-function confirmOrder(){
+function confirmOrder() {
   const name = document.getElementById('ord-name').value.trim();
-  if(!name){alert('Fyll inn ditt navn');return;}
+  if (!name) { alert('Fyll inn ditt navn'); return; }
   const {farm,product} = currentOrder;
-  const code = generateOrderCode();
-  const total = (product.price * orderQty).toLocaleString('nb-NO');
-  const now = new Date();
-  const dateStr = now.toLocaleDateString('nb-NO',{weekday:'long',day:'numeric',month:'long'});
-
-  document.getElementById('order-modal-box').innerHTML = `
-    <div class="order-confirm-box">
-      <div class="checkmark">✅</div>
+  const code = genCode();
+  const total = (product.price*orderQty).toLocaleString('nb-NO');
+  document.getElementById('order-box').innerHTML = `
+    <div class="confirm-box">
+      <div style="font-size:3rem;margin-bottom:1rem;">✅</div>
       <h3>Bestilling mottatt!</h3>
-      <p>Takk, ${name}! Ta vare på bestillingskoden din og vis den til bonden ved henting.</p>
-
-      <div class="order-code-display">
-        <div class="order-code-label">Din bestillingskode</div>
-        <div class="order-code-number">${code}</div>
-        <div class="order-code-hint">Vis denne koden ved henting</div>
+      <p>Takk, ${name}! Vis bestillingskoden til bonden ved henting.</p>
+      <div class="code-display">
+        <div class="code-label">Din bestillingskode</div>
+        <div class="code-number">${code}</div>
+        <div class="code-hint">Vis denne koden ved henting</div>
       </div>
-
-      <div class="order-details-grid">
-        <div class="order-detail-item"><div class="odl">Produkt</div><div class="odv">${product.name}</div></div>
-        <div class="order-detail-item"><div class="odl">Antall</div><div class="odv">${orderQty} ${product.unit.replace('kr/','')}</div></div>
-        <div class="order-detail-item"><div class="odl">Fra</div><div class="odv">${farm.name}</div></div>
-        <div class="order-detail-item"><div class="odl">Å betale</div><div class="odv">${total} kr</div></div>
-        ${farm.reko?`<div class="order-detail-item" style="grid-column:1/-1"><div class="odl">Henting via</div><div class="odv">${farm.reko}</div></div>`:''}
+      <div class="order-dg">
+        <div class="order-di"><div class="l">Produkt</div><div class="v">${product.name}</div></div>
+        <div class="order-di"><div class="l">Antall</div><div class="v">${orderQty} ${product.unit.replace('kr/','').replace('kr ','')}</div></div>
+        <div class="order-di"><div class="l">Fra</div><div class="v">${farm.name}</div></div>
+        <div class="order-di"><div class="l">Å betale</div><div class="v">${total} kr</div></div>
       </div>
-
-      <div class="cash-notice">
-        💵 Betal <strong>${total} kr kontant</strong> direkte til bonden når du henter varene. Ingen kortbetaling eller overføring nødvendig.
-      </div>
-
+      <div class="cash-notice">💵 Betal <strong>${total} kr kontant</strong> direkte til bonden ved henting.</div>
       <button onclick="closeOrder()" style="margin-top:1.2rem;padding:.7rem 2rem;background:var(--gd);color:var(--cr);border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-weight:700;cursor:pointer;">Lukk</button>
     </div>`;
 }
 
-function closeOrder(){
+function closeOrder() {
   document.getElementById('order-modal').classList.remove('open');
   currentOrder=null; orderQty=1;
 }
 
-/* ─────────────────────────────────────────────────────────── REKO MAP */
-function initRekoMap(){
-  rekoMap = L.map('reko-map').setView([64.5,15],5);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-    attribution:'© OpenStreetMap contributors',maxZoom:18
-  }).addTo(rekoMap);
-  renderRekoMap(rekoRings);
-}
-
-function renderRekoMap(rings){
-  rekoMarkers.forEach(m=>rekoMap.removeLayer(m));
-  rekoMarkers=[];
-  rings.forEach(r=>{
-    const icon = L.divIcon({
-      className:'',
-      html:`<div style="background:#1a3022;color:#f5f0e8;border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;border:3px solid #c8a96e;box-shadow:0 2px 8px rgba(0,0,0,.3);">🔄</div>`,
-      iconSize:[34,34],iconAnchor:[17,17]
-    });
-    const m = L.marker([r.lat,r.lng],{icon})
-      .addTo(rekoMap)
-      .bindPopup(`<div style="font-family:'DM Sans',sans-serif;min-width:200px">
-        <strong style="color:#1a3022;font-size:1rem;">${r.name}</strong><br>
-        <span style="font-size:.82rem;color:#555">📍 ${r.region}</span><br>
-        <span style="font-size:.82rem;color:#2d5a3d;font-weight:600;">🗓 ${r.nextRound.split(',')[0]}</span><br>
-        <span style="font-size:.8rem;color:#777">${r.producerCount} produsenter · ${r.memberCount} medlemmer</span>
-      </div>`);
-    m.on('click',()=>showRekoDetail(r.id));
-    rekoMarkers.push(m);
-  });
-  if(rings.length===1) rekoMap.setView([rings[0].lat,rings[0].lng],12);
-  else if(rings.length>0){
-    const group = L.featureGroup(rekoMarkers);
-    rekoMap.fitBounds(group.getBounds().pad(.2));
-  }
-}
-
-function filterReko(){
-  const q = document.getElementById('reko-search-input').value.toLowerCase();
-  const region = document.getElementById('reko-region-filter').value;
-  filteredReko = rekoRings.filter(r=>
-    (!q || r.name.toLowerCase().includes(q) || r.region.toLowerCase().includes(q) || String(r.lat).includes(q)) &&
-    (!region || r.region===region)
+/* MARKETS */
+function filterMarkets() {
+  const q = document.getElementById('market-search').value.toLowerCase();
+  filteredMarkets = bondensMarkeder.filter(m =>
+    (currentMarketRegion==='all'||m.region===currentMarketRegion) &&
+    (!q||m.name.toLowerCase().includes(q)||m.location.toLowerCase().includes(q))
   );
-  renderRekoCards();
-  if(rekoMap) renderRekoMap(filteredReko);
+  renderMarkets();
 }
 
-function renderRekoCards(){
-  const el = document.getElementById('reko-results');
-  document.getElementById('reko-count').textContent = `${filteredReko.length} ringer`;
-  if(!filteredReko.length){
-    el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--tl)">Ingen ringer funnet – prøv et annet søk</div>';
-    return;
-  }
-  el.innerHTML = filteredReko.map(r=>`
-    <div class="reko-card" onclick="showRekoDetail(${r.id})">
-      <div class="reko-card-top">
-        <div class="reko-icon">🔄</div>
-        <div>
-          <h3>${r.name}</h3>
-          <div class="reko-meta">
-            <span>📍 ${r.region}</span>
-            <span>👨‍🌾 ${r.producerCount} produsenter</span>
-            <span>👥 ${r.memberCount} membres</span>
-          </div>
-        </div>
+function filterMarketRegion(region, btn) {
+  currentMarketRegion = region;
+  document.querySelectorAll('#tab-markets .chip').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  filterMarkets();
+}
+
+function renderMarkets() {
+  const el = document.getElementById('markets-grid');
+  if (!filteredMarkets.length) { el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--tl)">Ingen markeder funnet</div>'; return; }
+  el.innerHTML = filteredMarkets.map((m,i)=>`
+    <div class="market-card" style="animation-delay:${i*.07}s">
+      <div class="market-hero">${m.icon}</div>
+      <div class="market-body">
+        <h3>${m.name}</h3>
+        <div class="market-loc">📍 ${m.location}</div>
+        <div class="market-schedule">🗓 ${m.schedule}</div>
+        <div class="market-desc">${m.description}</div>
+        <div class="market-producers">${m.producers.map(p=>`<span class="market-prod-pill">${p}</span>`).join('')}</div>
+        <a href="https://www.bondensmarked.no" target="_blank" class="market-link">Mer info på bondensmarked.no →</a>
       </div>
-      <div class="reko-next-round">📅 Neste runde: ${r.nextRound.split(',')[0]}</div>
-      <div class="reko-producers">Produsenter: ${r.producers.slice(0,2).join(', ')}${r.producers.length>2?` +${r.producers.length-2} til`:''}</div>
-      <button class="reko-view-btn">Se ring og bestill →</button>
     </div>`).join('');
 }
 
-function openRekoByName(name){
-  closeFarmDetail();
-  switchTab('reko', document.querySelectorAll('.tab-btn')[1]);
-  if(!rekoMap) initRekoMap();
-  setTimeout(()=>{
-    const ring = rekoRings.find(r=>r.name===name);
-    if(ring) showRekoDetail(ring.id);
-  },300);
+/* MAP */
+function initFarmMap() {
+  farmMap = L.map('farm-map').setView([64.5,15],5);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors',maxZoom:18}).addTo(farmMap);
+  renderMapMarkers(allFarms);
 }
 
-function showRekoDetail(id){
-  const r = rekoRings.find(x=>x.id===id);
-  if(!r) return;
-  document.getElementById('reko-detail-title').textContent = r.name;
-  document.getElementById('reko-detail-body').innerHTML = `
-    <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.2rem;">
-      <span class="d-badge d-badge-reko">📍 ${r.region}</span>
-      <span class="d-badge d-badge-cat">👨‍🌾 ${r.producerCount} produsenter</span>
-      <span class="d-badge d-badge-cat">👥 ${r.memberCount} membres</span>
-    </div>
-
-    <div class="d-section-title">Kommende runder</div>
-    <div class="round-card">
-      <div>
-        <div class="round-date">${r.nextRound.split(',')[0]}</div>
-        <div class="round-time">${r.nextRound.split(',').slice(1).join(',').trim()}</div>
-        <div class="round-loc">📍 ${r.location}</div>
-      </div>
-      <span class="round-status round-open">Åpen</span>
-    </div>
-    <div class="round-card" style="opacity:.6">
-      <div>
-        <div class="round-date">Neste måned</div>
-        <div class="round-time">Dato kunngjøres</div>
-        <div class="round-loc">📍 ${r.location}</div>
-      </div>
-      <span class="round-status round-soon">Snart</span>
-    </div>
-
-    <div class="d-section-title" style="margin-top:1.5rem;">Produsenter i ringen</div>
-    <ul class="producer-list">
-      ${r.producers.map(p=>{
-        const farm = allFarms.find(f=>f.name===p);
-        return `<li class="producer-item" ${farm?`onclick="closeFarmDetail();showFarmDetail(${farm.id})" style="cursor:pointer"`:''}> 
-          <span class="producer-item-icon">${farm?farm.icon:'🌿'}</span>
-          <div><div class="producer-item-name">${p}</div>${farm?`<div style="font-size:.76rem;color:var(--tl)">${farm.tags.join(' · ')}</div>`:''}</div>
-          ${farm?`<span style="margin-left:auto;font-size:.8rem;color:var(--gl);font-weight:600;">Se produkter →</span>`:''}
-        </li>`;
-      }).join('')}
-    </ul>
-
-    <div style="background:linear-gradient(135deg,rgba(200,169,110,.1),rgba(200,169,110,.05));border:1px solid rgba(200,169,110,.3);border-radius:12px;padding:1.1rem 1.3rem;font-size:.85rem;color:var(--tm);line-height:1.65;margin-bottom:1rem;">
-      💵 <strong style="color:var(--ed);">Slik fungerer det:</strong> Bestill fra produsenter i denne ringen, motta en unik bestillingskode, møt opp på hentepunktet og betal <strong>kontant direkte til bonden</strong>. Ingen mellomledd — helt i tråd med REKO-prinsippene.
-    </div>
-
-    <button class="join-reko-btn" onclick="alert('Funksjon for å melde seg inn som produsent kommer snart!')">
-      👨‍🌾 Meld deg inn som produsent i ${r.name}
-    </button>`;
-  document.getElementById('reko-overlay').classList.add('open');
-  document.body.style.overflow='hidden';
+function renderMapMarkers(farms) {
+  mapMarkers.forEach(m=>farmMap.removeLayer(m));
+  mapMarkers=[];
+  farms.forEach(f=>{
+    const isMarked = f.pickup&&f.pickup.toLowerCase().includes('marked');
+    const icon = L.divIcon({
+      className:'',
+      html:`<div style="background:${isMarked?'#c8a96e':'#1a3022'};color:${isMarked?'#1a3022':'#f5f0e8'};border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;border:3px solid ${isMarked?'#a07840':'#4a8c5c'};box-shadow:0 2px 8px rgba(0,0,0,.25);">${f.icon}</div>`,
+      iconSize:[36,36],iconAnchor:[18,18]
+    });
+    const m = L.marker([f.lat,f.lng],{icon}).addTo(farmMap)
+      .bindPopup(`<div style="font-family:'DM Sans',sans-serif;min-width:180px;"><strong style="color:#1a3022;">${f.name}</strong><br><span style="font-size:.8rem;color:#555;">📍 ${f.kommune}, ${f.region}</span><br><span style="font-size:.78rem;color:#4a8c5c;">${f.tags.join(' · ')}</span><br><span style="font-size:.75rem;color:#a07840;font-weight:600;">${f.pickup||''}</span></div>`);
+    m.on('click',()=>showFarmDetail(f.id));
+    mapMarkers.push(m);
+  });
+  if (farms.length>0) farmMap.fitBounds(L.featureGroup(mapMarkers).getBounds().pad(.2));
 }
 
-function closeRekoDetail(){
-  document.getElementById('reko-overlay').classList.remove('open');
-  document.body.style.overflow='';
+function filterMapFarms() {
+  const q = document.getElementById('map-search').value.toLowerCase();
+  const cat = document.getElementById('map-cat').value;
+  if (farmMap) renderMapMarkers(allFarms.filter(f=>
+    (!q||f.kommune.toLowerCase().includes(q)||f.name.toLowerCase().includes(q)||f.region.toLowerCase().includes(q))&&
+    (!cat||f.tags.includes(cat))
+  ));
 }
 
-/* ─────────────────────────────────────────────────────────── ADD FARM */
-function openAddFarm(){document.getElementById('add-farm-modal').classList.add('open');document.body.style.overflow='hidden';}
-function closeAddFarm(){document.getElementById('add-farm-modal').classList.remove('open');document.body.style.overflow='';}
-
+/* ADD FARM */
+function openAddFarm(){document.getElementById('add-modal').classList.add('open');document.body.style.overflow='hidden';}
+function closeAddFarm(){document.getElementById('add-modal').classList.remove('open');document.body.style.overflow='';}
 function saveNewFarm(){
-  const name = document.getElementById('nf-name').value.trim();
-  const kommune = document.getElementById('nf-kommune').value.trim();
+  const name=document.getElementById('nf-name').value.trim();
+  const kommune=document.getElementById('nf-kommune').value.trim();
   if(!name||!kommune){alert('Fyll inn navn og kommune');return;}
-  const colors=['green','brown','blue','gold','red'];
-  const icons=['🌿','🥦','🥕','🥩','🐄','🍎','🧀'];
-  const newFarm = {
-    id: Date.now(),
-    name,
-    description: document.getElementById('nf-desc').value||'Lokal gård.',
-    kommune,
-    region: document.getElementById('nf-region').value,
-    lat: parseFloat(document.getElementById('nf-lat').value)||59.9,
-    lng: parseFloat(document.getElementById('nf-lng').value)||10.7,
-    icon: icons[Math.floor(Math.random()*icons.length)],
-    color: colors[Math.floor(Math.random()*colors.length)],
-    tags: (document.getElementById('nf-tags').value||'').split(',').map(t=>t.trim()).filter(Boolean),
-    reko: document.getElementById('nf-reko').value,
-    products:[],
-  };
-  allFarms.unshift(newFarm);
-  filteredFarms=[...allFarms];
-  renderFarms();
-  closeAddFarm();
-  ['nf-name','nf-desc','nf-kommune','nf-region','nf-lat','nf-lng','nf-tags','nf-reko'].forEach(id=>document.getElementById(id).value='');
+  const f={id:Date.now(),name,description:document.getElementById('nf-desc').value||'Lokal gård.',kommune,region:document.getElementById('nf-region').value,lat:parseFloat(document.getElementById('nf-lat').value)||59.9,lng:parseFloat(document.getElementById('nf-lng').value)||10.7,icon:['🌿','🥦','🥕','🥩','🍎','🧀'][Math.floor(Math.random()*6)],color:['green','brown','blue','gold','red'][Math.floor(Math.random()*5)],tags:(document.getElementById('nf-tags').value||'').split(',').map(t=>t.trim()).filter(Boolean),pickup:document.getElementById('nf-pickup').value,products:[]};
+  allFarms.unshift(f);filteredFarms=[...allFarms];renderFarms();closeAddFarm();
+  ['nf-name','nf-desc','nf-kommune','nf-region','nf-lat','nf-lng','nf-tags','nf-pickup'].forEach(id=>document.getElementById(id).value='');
 }
 
-/* ─────────────────────────────────────────────────────────── AUTH */
+/* AUTH */
 async function checkAuth(){
-  try{
-    const r=await fetch('/.auth/me');
-    const d=await r.json();
-    if(d.clientPrincipal){
-      document.getElementById('login-btn').style.display='none';
-      document.getElementById('nav-user').style.display='flex';
-      document.getElementById('user-name').textContent=d.clientPrincipal.userDetails;
-      document.getElementById('add-farm-btn').style.display='flex';
-    }
-  }catch(e){}
+  try{const r=await fetch('/.auth/me');const d=await r.json();if(d.clientPrincipal){document.getElementById('login-btn').style.display='none';document.getElementById('nav-user').style.display='flex';document.getElementById('user-name').textContent=d.clientPrincipal.userDetails;document.getElementById('add-farm-btn').style.display='flex';}}catch(e){}
 }
 
-/* ─────────────────────────────────────────────────────────── INIT */
-window.addEventListener('scroll',()=>{
-  document.getElementById('main-nav').classList.toggle('scrolled',window.scrollY>50);
-});
+window.addEventListener('scroll',()=>document.getElementById('main-nav').classList.toggle('scrolled',window.scrollY>50));
+if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js');
 
 renderFarms();
-renderRekoCards();
+renderMarkets();
 checkAuth();
 </script>
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js');
-    }
-  </script>
 </body>
 </html>
