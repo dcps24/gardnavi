@@ -1,0 +1,44 @@
+{
+  "name": "Gårdnavi",
+  "short_name": "Gårdnavi",
+  "description": "Finn lokale gårder og REKO-ringer nær deg",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#faf8f3",
+  "theme_color": "#1a3022",
+  "lang": "no",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Gårder",
+      "url": "/garder.html",
+      "description": "Finn lokale gårder"
+    },
+    {
+      "name": "REKO-ringer",
+      "url": "/garder.html#reko",
+      "description": "Finn din REKO-ring"
+    },
+    {
+      "name": "Oppskrifter",
+      "url": "/oppskrifter.html",
+      "description": "Norske oppskrifter"
+    }
+  ],
+  "categories": ["food", "shopping", "lifestyle"]
+}
