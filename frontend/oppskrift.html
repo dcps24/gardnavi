@@ -12,6 +12,9 @@
     pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;font-size:1.1rem;line-height:1.6;}
     .back{text-decoration:none;color:#c8a96e;font-weight:700;display:block;margin-bottom:20px;}
   </style>
+  <link rel="manifest" href="/manifest.json"/>
+  <meta name="theme-color" content="#1a3022"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
 </head>
 <body>
   <div class="container">
@@ -42,5 +45,10 @@ async function loadDetail(){
 }
 loadDetail();
 </script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js');
+    }
+  </script>
 </body>
 </html>

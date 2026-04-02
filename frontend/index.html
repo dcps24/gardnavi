@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Gårdnavi | Finn lokal mat i Norge</title>
+  <title>Gårdnavi | joy Finn lokal mat i Norge</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -164,6 +164,9 @@
       .hero-left{padding:5rem 2rem 4rem;}.preview-section{padding:3rem 1.5rem;}.how,.cta{padding:4rem 1.5rem;}
     }
   </style>
+  <link rel="manifest" href="/manifest.json"/>
+  <meta name="theme-color" content="#1a3022"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
 </head>
 <body>
 
@@ -484,5 +487,10 @@ async function checkAuth(){
 }
 checkAuth();
 </script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js');
+    }
+  </script>
 </body>
 </html>
