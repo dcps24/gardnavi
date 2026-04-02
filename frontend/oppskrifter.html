@@ -5,532 +5,229 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Oppskrifter | Gårdnavi</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+  <link rel="manifest" href="/manifest.json"/>
+  <meta name="theme-color" content="#1a3022"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --green-dark: #1a3022;
-      --green-mid: #2d5a3d;
-      --green-light: #4a8c5c;
-      --cream: #f5f0e8;
-      --warm-white: #faf8f3;
-      --earth: #c8a96e;
-      --earth-light: #e8d5a3;
-      --earth-dark: #a07840;
-      --text-dark: #1a1a14;
-      --text-mid: #3d3d2e;
-      --text-light: #7a7a60;
-      --card-shadow: 0 4px 24px rgba(26,48,34,0.09);
-      --card-shadow-hover: 0 16px 48px rgba(26,48,34,0.18);
-    }
-
-    html { scroll-behavior: smooth; }
-    body { font-family: 'DM Sans', sans-serif; background: var(--warm-white); color: var(--text-dark); min-height: 100vh; }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--gd:#1a3022;--gm:#2d5a3d;--gl:#4a8c5c;--cr:#f5f0e8;--ww:#faf8f3;--ea:#c8a96e;--el:#e8d5a3;--ed:#a07840;--td:#1a1a14;--tm:#3d3d2e;--tl:#7a7a60;--cs:0 4px 24px rgba(26,48,34,.09);--csh:0 16px 48px rgba(26,48,34,.18);}
+    html{scroll-behavior:smooth;}
+    body{font-family:'DM Sans',sans-serif;background:var(--ww);color:var(--td);min-height:100vh;}
 
     /* NAV */
-    nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 1rem 4rem;
-      background: rgba(245,240,232,0.96);
-      backdrop-filter: blur(14px);
-      border-bottom: 1px solid rgba(200,169,110,0.18);
-      transition: padding 0.3s, box-shadow 0.3s;
-    }
-    nav.scrolled { padding: 0.65rem 4rem; box-shadow: 0 2px 20px rgba(26,48,34,0.08); }
-    .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 900; color: var(--green-dark); text-decoration: none; }
-    .nav-logo span { color: var(--earth); }
-    .nav-links { display: flex; gap: 2rem; list-style: none; }
-    .nav-links a { text-decoration: none; color: var(--text-mid); font-weight: 500; font-size: 0.92rem; transition: color 0.2s; position: relative; }
-    .nav-links a::after { content: ''; position: absolute; bottom: -3px; left: 0; width: 0; height: 2px; background: var(--earth); transition: width 0.3s; }
-    .nav-links a:hover, .nav-links a.active { color: var(--green-dark); }
-    .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
-    .nav-login-btn { padding: 0.5rem 1.2rem; background: var(--green-dark); color: var(--cream); border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 700; transition: all 0.2s; }
-    .nav-login-btn:hover { background: var(--green-mid); }
-    .nav-user { display: flex; align-items: center; gap: 0.8rem; }
-    #user-name { font-size: 0.85rem; font-weight: 600; color: var(--green-dark); }
-    .nav-logout-btn { font-size: 0.82rem; color: var(--text-mid); text-decoration: none; }
+    nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:1rem 4rem;background:rgba(245,240,232,.96);backdrop-filter:blur(14px);border-bottom:1px solid rgba(200,169,110,.18);transition:padding .3s,box-shadow .3s;}
+    nav.scrolled{padding:.65rem 4rem;box-shadow:0 2px 20px rgba(26,48,34,.08);}
+    .nav-logo{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;color:var(--gd);text-decoration:none;}
+    .nav-logo span{color:var(--ea);}
+    .nav-links{display:flex;gap:2rem;list-style:none;}
+    .nav-links a{text-decoration:none;color:var(--tm);font-weight:500;font-size:.92rem;transition:color .2s;position:relative;}
+    .nav-links a::after{content:'';position:absolute;bottom:-3px;left:0;width:0;height:2px;background:var(--ea);transition:width .3s;}
+    .nav-links a:hover,.nav-links a.active{color:var(--gd);}
+    .nav-links a:hover::after,.nav-links a.active::after{width:100%;}
+    .nav-login-btn{padding:.5rem 1.2rem;background:var(--gd);color:var(--cr);border-radius:6px;text-decoration:none;font-size:.85rem;font-weight:700;transition:all .2s;}
+    .nav-login-btn:hover{background:var(--gm);}
+    .nav-user{display:flex;align-items:center;gap:.8rem;}
+    #user-name{font-size:.85rem;font-weight:600;color:var(--gd);}
+    .nav-logout-btn{font-size:.82rem;color:var(--tm);text-decoration:none;}
 
     /* PAGE HEADER */
-    .page-header {
-      background: linear-gradient(135deg, var(--green-dark) 0%, var(--green-mid) 60%, #4a7a5c 100%);
-      padding: 8rem 4rem 4rem;
-      position: relative; overflow: hidden;
-    }
-    .page-header::before {
-      content: ''; position: absolute; top: -100px; right: -100px;
-      width: 500px; height: 500px;
-      background: radial-gradient(circle, rgba(200,169,110,0.18) 0%, transparent 70%);
-      border-radius: 50%;
-    }
-    .page-header::after {
-      content: ''; position: absolute; bottom: -60px; left: 10%;
-      width: 280px; height: 280px;
-      background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
-      border-radius: 50%;
-    }
-    .breadcrumb { font-size: 0.82rem; color: rgba(245,240,232,0.55); margin-bottom: 1rem; }
-    .breadcrumb a { color: var(--earth-light); text-decoration: none; opacity: 0.8; }
-    .page-header h1 { font-family: 'Playfair Display', serif; font-size: clamp(2.5rem, 4vw, 3.8rem); color: var(--cream); margin-bottom: 0.8rem; position: relative; z-index: 1; }
-    .page-header p { color: rgba(245,240,232,0.72); font-size: 1.05rem; max-width: 520px; position: relative; z-index: 1; }
+    .page-header{background:linear-gradient(135deg,var(--gd) 0%,var(--gm) 60%,#4a7a5c 100%);padding:8rem 4rem 4rem;position:relative;overflow:hidden;}
+    .page-header::before{content:'';position:absolute;top:-100px;right:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(200,169,110,.18) 0%,transparent 70%);border-radius:50%;}
+    .breadcrumb{font-size:.82rem;color:rgba(245,240,232,.55);margin-bottom:1rem;}
+    .breadcrumb a{color:var(--el);text-decoration:none;opacity:.8;}
+    .page-header h1{font-family:'Playfair Display',serif;font-size:clamp(2.5rem,4vw,3.8rem);color:var(--cr);margin-bottom:.8rem;position:relative;z-index:1;}
+    .page-header p{color:rgba(245,240,232,.72);font-size:1.05rem;max-width:520px;position:relative;z-index:1;}
 
     /* CONTENT */
-    .content-section { padding: 3rem 4rem; }
+    .content-section{padding:3rem 4rem;}
+    .toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem;}
+    .toolbar h2{font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--gd);}
+    .filter-row{display:flex;gap:.8rem;margin-bottom:2rem;flex-wrap:wrap;align-items:center;}
+    .search-wrap{position:relative;flex:1;min-width:220px;}
+    .search-wrap::before{content:'🔍';position:absolute;left:.9rem;top:50%;transform:translateY(-50%);font-size:.85rem;}
+    .search-input{width:100%;padding:.75rem 1rem .75rem 2.6rem;border:1.5px solid rgba(26,48,34,.12);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.92rem;background:white;color:var(--td);transition:border-color .2s,box-shadow .2s;}
+    .search-input:focus{outline:none;border-color:var(--ea);box-shadow:0 0 0 3px rgba(200,169,110,.15);}
+    .chip{padding:.45rem 1rem;border:1.5px solid rgba(26,48,34,.12);border-radius:24px;font-size:.83rem;font-weight:500;cursor:pointer;transition:all .2s;background:white;font-family:'DM Sans',sans-serif;color:var(--tm);}
+    .chip:hover{border-color:var(--ea);color:var(--ed);}
+    .chip.active{background:var(--gd);border-color:var(--gd);color:var(--cr);}
+    .results-count{font-size:.88rem;color:var(--tl);margin-bottom:1.5rem;}
+    .results-count strong{color:var(--gd);}
 
-    .toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
-    .toolbar h2 { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--green-dark); }
+    /* RECIPE CARDS */
+    .recipes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.8rem;}
+    .recipe-card{background:white;border-radius:16px;overflow:hidden;box-shadow:var(--cs);border:1px solid rgba(26,48,34,.06);transition:transform .28s cubic-bezier(.34,1.56,.64,1),box-shadow .28s ease;cursor:pointer;display:flex;flex-direction:column;animation:cardIn .4s ease both;}
+    @keyframes cardIn{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+    .recipe-card:hover{transform:translateY(-6px) scale(1.01);box-shadow:var(--csh);}
+    .recipe-img-wrap{position:relative;height:200px;overflow:hidden;flex-shrink:0;}
+    .recipe-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .4s ease;}
+    .recipe-card:hover .recipe-img-wrap img{transform:scale(1.06);}
+    .recipe-img-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:4rem;}
+    .recipe-img-placeholder.kjott{background:linear-gradient(135deg,#5a2d0c,#8b4513);}
+    .recipe-img-placeholder.gront{background:linear-gradient(135deg,#1a3022,#2d5a3d);}
+    .recipe-img-placeholder.fisk{background:linear-gradient(135deg,#0c2a4a,#1a4a7a);}
+    .recipe-img-placeholder.dessert{background:linear-gradient(135deg,#7a3020,#c8692e);}
+    .recipe-img-placeholder.annet{background:linear-gradient(135deg,#3d3020,#c8a96e);}
+    .card-cat-badge{position:absolute;top:12px;right:12px;background:rgba(200,169,110,.92);color:var(--gd);font-size:.7rem;font-weight:700;padding:.3em .7em;border-radius:20px;}
+    .card-farm-count{position:absolute;top:12px;left:12px;background:rgba(26,48,34,.82);color:var(--cr);backdrop-filter:blur(6px);font-size:.7rem;font-weight:700;padding:.3em .7em;border-radius:20px;}
+    .recipe-body{padding:1.4rem 1.5rem;flex:1;display:flex;flex-direction:column;gap:.5rem;}
+    .recipe-body h3{font-family:'Playfair Display',serif;font-size:1.15rem;color:var(--gd);line-height:1.3;}
+    .recipe-cuisine{font-size:.75rem;color:var(--tl);font-weight:500;}
+    .recipe-desc{font-size:.87rem;color:var(--tm);line-height:1.65;flex:1;}
 
-    .add-btn {
-      padding: 0.65rem 1.5rem;
-      background: var(--earth); color: var(--green-dark);
-      border: none; border-radius: 8px;
-      font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.88rem;
-      cursor: pointer; transition: all 0.2s;
-      display: flex; align-items: center; gap: 0.5rem;
-    }
-    .add-btn:hover { background: var(--earth-dark); color: white; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(200,169,110,0.4); }
+    /* Farm pills on card */
+    .card-farm-pills{display:flex;flex-wrap:wrap;gap:.35rem;padding:.2rem 0 .2rem;}
+    .card-farm-pill{font-size:.7rem;font-weight:600;background:rgba(26,48,34,.07);color:var(--gd);border:1px solid rgba(26,48,34,.1);border-radius:12px;padding:.2em .6em;display:flex;align-items:center;gap:.25rem;}
+    .card-farm-pill::before{content:'🌿';font-size:.65rem;}
 
-    .filter-row { display: flex; gap: 0.8rem; margin-bottom: 2rem; flex-wrap: wrap; align-items: center; }
-    .search-wrap { position: relative; flex: 1; min-width: 220px; }
-    .search-wrap::before { content: '🔍'; position: absolute; left: 0.9rem; top: 50%; transform: translateY(-50%); font-size: 0.85rem; }
-    .search-input {
-      width: 100%; padding: 0.75rem 1rem 0.75rem 2.6rem;
-      border: 1.5px solid rgba(26,48,34,0.12); border-radius: 8px;
-      font-family: 'DM Sans', sans-serif; font-size: 0.92rem;
-      background: white; color: var(--text-dark);
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    .search-input:focus { outline: none; border-color: var(--earth); box-shadow: 0 0 0 3px rgba(200,169,110,0.15); }
+    .card-footer{padding:.9rem 1.5rem;border-top:1px solid rgba(26,48,34,.06);display:flex;align-items:center;justify-content:space-between;}
+    .card-view-btn{font-size:.82rem;font-weight:600;color:var(--ed);background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:.3rem;transition:color .2s;}
+    .card-view-btn:hover{color:var(--gd);}
 
-    .chip {
-      padding: 0.45rem 1rem; border: 1.5px solid rgba(26,48,34,0.12);
-      border-radius: 24px; font-size: 0.83rem; font-weight: 500;
-      cursor: pointer; transition: all 0.2s; background: white;
-      font-family: 'DM Sans', sans-serif; color: var(--text-mid);
-    }
-    .chip:hover { border-color: var(--earth); color: var(--earth-dark); }
-    .chip.active { background: var(--green-dark); border-color: var(--green-dark); color: var(--cream); }
+    /* ADD BUTTON */
+    .add-btn{padding:.65rem 1.5rem;background:var(--ea);color:var(--gd);border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.88rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:.5rem;}
+    .add-btn:hover{background:var(--ed);color:white;transform:translateY(-1px);}
 
-    .results-count { font-size: 0.88rem; color: var(--text-light); margin-bottom: 1.5rem; }
-    .results-count strong { color: var(--green-dark); }
+    /* ── DETAIL OVERLAY ── */
+    .overlay{display:none;position:fixed;inset:0;background:rgba(20,30,22,.72);backdrop-filter:blur(8px);z-index:3000;align-items:center;justify-content:center;padding:1.5rem;}
+    .overlay.open{display:flex;}
+    .detail-panel{background:var(--ww);border-radius:20px;max-width:740px;width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 32px 80px rgba(0,0,0,.28);animation:panelUp .32s cubic-bezier(.34,1.2,.64,1);}
+    @keyframes panelUp{from{opacity:0;transform:translateY(30px) scale(.97);}to{opacity:1;transform:translateY(0) scale(1);}}
 
-    /* RECIPE CARDS GRID */
-    .recipes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.8rem; }
+    /* image slider */
+    .detail-slider{position:relative;height:280px;overflow:hidden;border-radius:20px 20px 0 0;}
+    .slider-track{display:flex;height:100%;transition:transform .4s ease;}
+    .slide{min-width:100%;height:100%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:6rem;}
+    .slide img{width:100%;height:100%;object-fit:cover;}
+    .slide.kjott{background:linear-gradient(135deg,#5a2d0c,#8b4513);}
+    .slide.gront{background:linear-gradient(135deg,#1a3022,#2d5a3d);}
+    .slide.fisk{background:linear-gradient(135deg,#0c2a4a,#1a4a7a);}
+    .slide.dessert{background:linear-gradient(135deg,#7a3020,#c8692e);}
+    .slide.annet{background:linear-gradient(135deg,#3d3020,#c8a96e);}
+    .slider-btn{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.85);border:none;width:36px;height:36px;border-radius:50%;font-size:1rem;cursor:pointer;color:var(--gd);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.18);transition:all .2s;}
+    .slider-btn:hover{background:white;transform:translateY(-50%) scale(1.08);}
+    .slider-btn.prev{left:12px;}
+    .slider-btn.next{right:12px;}
+    .slider-dots{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:6px;}
+    .slider-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.5);border:none;cursor:pointer;transition:all .2s;padding:0;}
+    .slider-dot.active{background:white;width:20px;border-radius:4px;}
+    .detail-close-btn{position:absolute;top:14px;right:14px;background:rgba(0,0,0,.35);border:none;color:white;width:34px;height:34px;border-radius:50%;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+    .detail-close-btn:hover{background:rgba(0,0,0,.6);}
 
-    .recipe-card {
-      background: white;
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: var(--card-shadow);
-      transition: transform 0.28s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.28s ease;
-      cursor: pointer;
-      display: flex; flex-direction: column;
-      border: 1px solid rgba(26,48,34,0.06);
-      animation: cardIn 0.4s ease both;
-    }
-    @keyframes cardIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .recipe-card:hover { transform: translateY(-6px) scale(1.01); box-shadow: var(--card-shadow-hover); }
+    /* detail content */
+    .detail-content{padding:2rem 2.2rem 2.5rem;}
+    .detail-content h2{font-family:'Playfair Display',serif;font-size:2rem;color:var(--gd);margin-bottom:.3rem;line-height:1.2;}
+    .detail-badges{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;}
+    .badge{display:inline-flex;align-items:center;gap:.3rem;font-size:.74rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:.3em .8em;border-radius:20px;}
+    .badge-cat{background:rgba(200,169,110,.2);color:var(--ed);}
+    .badge-cuisine{background:rgba(26,48,34,.1);color:var(--gd);}
+    .detail-desc{color:var(--tm);line-height:1.75;font-size:.96rem;margin-bottom:1.8rem;}
+    .section-title{font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ed);font-weight:700;margin-bottom:1rem;display:flex;align-items:center;gap:.6rem;}
+    .section-title::after{content:'';flex:1;height:1px;background:rgba(200,169,110,.3);}
 
-    .recipe-img-wrap {
-      position: relative; height: 200px; overflow: hidden; flex-shrink: 0;
-    }
-    .recipe-img-wrap img {
-      width: 100%; height: 100%; object-fit: cover;
-      transition: transform 0.4s ease;
-    }
-    .recipe-card:hover .recipe-img-wrap img { transform: scale(1.06); }
-    .recipe-img-placeholder {
-      width: 100%; height: 100%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 4rem;
-    }
-    .recipe-img-placeholder.kjott { background: linear-gradient(135deg,#5a2d0c,#8b4513); }
-    .recipe-img-placeholder.gront { background: linear-gradient(135deg,#1a3022,#2d5a3d); }
-    .recipe-img-placeholder.fisk { background: linear-gradient(135deg,#0c2a4a,#1a4a7a); }
-    .recipe-img-placeholder.dessert { background: linear-gradient(135deg,#7a3020,#c8692e); }
-    .recipe-img-placeholder.annet { background: linear-gradient(135deg,#3d3020,#c8a96e); }
+    /* ── INGREDIENT LIST WITH FARM LINKS ── */
+    .ingredients-list{list-style:none;display:flex;flex-direction:column;gap:.5rem;margin-bottom:2rem;}
+    .ingredient-row{display:flex;align-items:center;gap:0;border-radius:10px;overflow:hidden;border:1px solid rgba(26,48,34,.08);background:white;}
+    .ingredient-text{flex:1;padding:.6rem .9rem;font-size:.93rem;color:var(--td);border-left:3px solid var(--ea);}
+    .ingredient-farm-btn{display:flex;align-items:center;gap:.4rem;padding:.6rem .9rem;background:rgba(26,48,34,.04);border:none;border-left:1px solid rgba(26,48,34,.08);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.76rem;font-weight:700;color:var(--gd);white-space:nowrap;transition:all .2s;text-decoration:none;}
+    .ingredient-farm-btn:hover{background:var(--gd);color:var(--cr);}
+    .ingredient-farm-btn .farm-dot{width:6px;height:6px;border-radius:50%;background:var(--gl);flex-shrink:0;}
+    .ingredient-no-farm{padding:.6rem .9rem;font-size:.76rem;color:var(--tl);white-space:nowrap;}
 
-    .card-cuisine-badge {
-      position: absolute; top: 12px; left: 12px;
-      background: rgba(26,48,34,0.82); color: var(--cream);
-      backdrop-filter: blur(8px);
-      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
-      padding: 0.3em 0.75em; border-radius: 20px;
-    }
-    .card-cat-badge {
-      position: absolute; top: 12px; right: 12px;
-      background: rgba(200,169,110,0.92); color: var(--green-dark);
-      font-size: 0.75rem; font-weight: 700; padding: 0.3em 0.7em; border-radius: 20px;
-      backdrop-filter: blur(6px);
-    }
+    /* steps */
+    .steps-list{list-style:none;display:flex;flex-direction:column;gap:1rem;margin-bottom:2rem;}
+    .step-item{display:flex;gap:1rem;align-items:flex-start;}
+    .step-num{min-width:32px;height:32px;background:var(--gd);color:var(--cr);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;flex-shrink:0;margin-top:1px;}
+    .step-text{font-size:.93rem;color:var(--tm);line-height:1.7;padding-top:.35rem;}
 
-    .recipe-body { padding: 1.4rem 1.5rem; flex: 1; display: flex; flex-direction: column; gap: 0.5rem; }
-    .recipe-body h3 { font-family: 'Playfair Display', serif; font-size: 1.15rem; color: var(--green-dark); line-height: 1.3; }
-    .recipe-body p { font-size: 0.87rem; color: var(--text-mid); line-height: 1.65; flex: 1; }
-    .recipe-meta { display: flex; gap: 0.8rem; font-size: 0.8rem; color: var(--text-light); margin-top: 0.3rem; flex-wrap: wrap; }
-    .recipe-meta span { display: flex; align-items: center; gap: 0.3rem; }
+    /* ── FARM SOURCE SECTION ── */
+    .farm-source-section{background:linear-gradient(135deg,rgba(26,48,34,.04),rgba(200,169,110,.07));border:1px solid rgba(200,169,110,.25);border-radius:14px;padding:1.4rem 1.6rem;margin-bottom:1.5rem;}
+    .farm-source-header{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem;}
+    .farm-source-header h4{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ed);font-weight:700;}
+    .farm-source-header span{font-size:1.1rem;}
+    .farm-source-grid{display:flex;flex-direction:column;gap:.6rem;}
+    .farm-source-card{display:flex;align-items:center;gap:.9rem;padding:.75rem 1rem;border-radius:10px;background:white;border:1px solid rgba(26,48,34,.08);text-decoration:none;color:inherit;transition:all .2s;cursor:pointer;}
+    .farm-source-card:hover{border-color:var(--gl);box-shadow:0 4px 12px rgba(26,48,34,.08);transform:translateX(3px);}
+    .farm-source-icon{font-size:1.6rem;flex-shrink:0;}
+    .farm-source-info{flex:1;min-width:0;}
+    .farm-source-name{font-weight:700;font-size:.9rem;color:var(--gd);}
+    .farm-source-loc{font-size:.76rem;color:var(--tl);margin-top:.1rem;}
+    .farm-source-products{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.4rem;}
+    .source-pill{font-size:.69rem;font-weight:600;padding:.18em .55em;border-radius:10px;}
+    .source-pill.match{background:rgba(74,140,92,.15);color:#2d5a3d;}
+    .source-pill.other{background:rgba(200,169,110,.15);color:var(--ed);}
+    .farm-source-arrow{color:var(--tl);font-size:.9rem;flex-shrink:0;}
 
-    .card-footer {
-      padding: 0.9rem 1.5rem;
-      border-top: 1px solid rgba(26,48,34,0.06);
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .card-view-btn {
-      font-size: 0.82rem; font-weight: 600; color: var(--earth-dark);
-      background: none; border: none; cursor: pointer;
-      font-family: 'DM Sans', sans-serif;
-      display: flex; align-items: center; gap: 0.3rem;
-      transition: color 0.2s;
-    }
-    .card-view-btn:hover { color: var(--green-dark); }
-    .card-view-btn svg { transition: transform 0.2s; }
-    .recipe-card:hover .card-view-btn svg { transform: translateX(4px); }
+    /* ── ADD RECIPE MODAL ── */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(20,30,22,.65);backdrop-filter:blur(8px);z-index:4000;align-items:center;justify-content:center;padding:1.5rem;}
+    .modal-overlay.open{display:flex;}
+    .modal{background:var(--ww);border-radius:20px;max-width:620px;width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 32px 80px rgba(0,0,0,.28);animation:panelUp .32s cubic-bezier(.34,1.2,.64,1);}
+    .modal-header{background:linear-gradient(135deg,var(--gd),var(--gm));padding:1.8rem 2rem;border-radius:20px 20px 0 0;display:flex;justify-content:space-between;align-items:flex-start;position:sticky;top:0;z-index:1;}
+    .modal-header h2{font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--cr);}
+    .modal-header p{font-size:.85rem;color:rgba(245,240,232,.6);margin-top:.2rem;}
+    .modal-close{background:rgba(255,255,255,.15);border:none;color:white;width:32px;height:32px;border-radius:50%;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+    .modal-close:hover{background:rgba(255,255,255,.25);}
+    .modal-body{padding:2rem;display:flex;flex-direction:column;gap:1.2rem;}
+    .fg{display:flex;flex-direction:column;gap:.4rem;}
+    .fg label{font-size:.76rem;font-weight:600;color:var(--tm);letter-spacing:.06em;text-transform:uppercase;}
+    .fg label span{color:#e25555;}
+    .fg input,.fg textarea,.fg select{width:100%;padding:.75rem 1rem;border:1.5px solid rgba(26,48,34,.14);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.93rem;background:white;color:var(--td);transition:border-color .2s,box-shadow .2s;}
+    .fg input:focus,.fg textarea:focus,.fg select:focus{outline:none;border-color:var(--ea);box-shadow:0 0 0 3px rgba(200,169,110,.15);}
+    .fg textarea{min-height:100px;resize:vertical;}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
 
-    /* EMPTY / LOADING */
-    .empty-state { text-align: center; padding: 5rem 2rem; grid-column: 1/-1; }
-    .empty-state h3 { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--green-dark); margin-bottom: 0.5rem; }
-    .empty-state p { color: var(--text-mid); }
-    .loading { display: flex; align-items: center; justify-content: center; padding: 5rem; grid-column: 1/-1; gap: 0.8rem; color: var(--text-mid); }
-    .spinner { width: 22px; height: 22px; border: 2px solid rgba(45,90,61,0.2); border-top-color: var(--green-mid); border-radius: 50%; animation: spin 0.8s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    /* image upload */
+    .img-upload-zone{border:2px dashed rgba(200,169,110,.5);border-radius:12px;padding:1.5rem;text-align:center;background:rgba(200,169,110,.04);cursor:pointer;transition:all .2s;position:relative;}
+    .img-upload-zone:hover{border-color:var(--ea);background:rgba(200,169,110,.08);}
+    .img-upload-zone p{font-size:.88rem;color:var(--tm);margin-top:.4rem;}
+    .img-upload-zone small{color:var(--tl);font-size:.78rem;}
+    .img-previews{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.8rem;}
+    .img-preview-item{position:relative;width:80px;height:80px;border-radius:10px;overflow:hidden;border:2px solid rgba(200,169,110,.3);}
+    .img-preview-item img{width:100%;height:100%;object-fit:cover;}
+    .img-remove{position:absolute;top:2px;right:2px;background:rgba(180,30,30,.85);color:white;border:none;width:20px;height:20px;border-radius:50%;font-size:.7rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 
-    /* ===== DETAIL OVERLAY ===== */
-    .overlay {
-      display: none; position: fixed; inset: 0;
-      background: rgba(20,30,22,0.72);
-      backdrop-filter: blur(8px);
-      z-index: 3000;
-      align-items: center; justify-content: center;
-      padding: 1.5rem;
-      animation: overlayIn 0.25s ease;
-    }
-    @keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
-    .overlay.open { display: flex; }
+    /* farm picker */
+    .farm-picker{position:relative;}
+    .farm-picker-input{width:100%;padding:.75rem 1rem .75rem 2.4rem;border:1.5px solid rgba(26,48,34,.14);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.93rem;background:white;color:var(--td);transition:border-color .2s;}
+    .farm-picker-input:focus{outline:none;border-color:var(--ea);box-shadow:0 0 0 3px rgba(200,169,110,.15);}
+    .farm-picker-icon{position:absolute;left:.8rem;top:50%;transform:translateY(-50%);font-size:.85rem;pointer-events:none;}
+    .farm-dropdown{position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:100;background:white;border:1.5px solid rgba(200,169,110,.4);border-radius:10px;box-shadow:0 8px 24px rgba(26,48,34,.12);max-height:200px;overflow-y:auto;display:none;}
+    .farm-dropdown.open{display:block;}
+    .farm-option{padding:.65rem 1rem;cursor:pointer;display:flex;align-items:center;gap:.6rem;font-size:.88rem;color:var(--td);border-bottom:1px solid rgba(26,48,34,.05);transition:background .15s;}
+    .farm-option:last-child{border-bottom:none;}
+    .farm-option:hover{background:rgba(200,169,110,.1);}
+    .farm-option-meta{font-size:.74rem;color:var(--tl);}
+    .selected-farms{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.7rem;}
+    .selected-farm-tag{display:inline-flex;align-items:center;gap:.4rem;background:rgba(26,48,34,.08);color:var(--gd);border:1px solid rgba(26,48,34,.15);border-radius:20px;font-size:.8rem;font-weight:600;padding:.3em .5em .3em .8em;}
+    .remove-farm-btn{background:none;border:none;cursor:pointer;color:var(--tl);font-size:.8rem;padding:0 .2rem;line-height:1;transition:color .15s;}
+    .remove-farm-btn:hover{color:#c03030;}
 
-    .detail-panel {
-      background: var(--warm-white);
-      border-radius: 20px;
-      max-width: 680px; width: 100%;
-      max-height: 90vh;
-      overflow-y: auto;
-      box-shadow: 0 32px 80px rgba(0,0,0,0.28);
-      animation: panelUp 0.32s cubic-bezier(0.34,1.2,0.64,1);
-      position: relative;
-    }
-    @keyframes panelUp {
-      from { opacity: 0; transform: translateY(30px) scale(0.97); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
+    .modal-footer{padding:1.4rem 2rem;border-top:1px solid rgba(26,48,34,.08);display:flex;gap:.8rem;justify-content:flex-end;background:var(--cr);border-radius:0 0 20px 20px;position:sticky;bottom:0;}
+    .btn-cancel{padding:.75rem 1.5rem;border:1.5px solid rgba(26,48,34,.18);background:transparent;border-radius:8px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:.9rem;cursor:pointer;color:var(--tm);transition:all .2s;}
+    .btn-cancel:hover{border-color:var(--ea);color:var(--ed);}
+    .btn-save{padding:.75rem 2rem;background:var(--gd);color:var(--cr);border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.9rem;cursor:pointer;transition:all .25s;display:flex;align-items:center;gap:.5rem;}
+    .btn-save:hover{background:var(--gm);}
+    .btn-save:disabled{opacity:.5;cursor:not-allowed;}
+    .save-status{display:none;padding:.9rem 2rem;font-weight:600;font-size:.9rem;text-align:center;}
+    .save-status.success{display:block;color:var(--gm);}
+    .save-status.error{display:block;color:#c03030;}
 
-    /* Image slider inside detail */
-    .detail-slider { position: relative; height: 260px; overflow: hidden; border-radius: 20px 20px 0 0; }
-    .detail-slider-track { display: flex; height: 100%; transition: transform 0.4s ease; }
-    .detail-slide {
-      min-width: 100%; height: 100%;
-      flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 6rem;
-    }
-    .detail-slide img { width: 100%; height: 100%; object-fit: cover; }
-    .detail-slide.placeholder.kjott { background: linear-gradient(135deg,#5a2d0c,#8b4513); }
-    .detail-slide.placeholder.gront { background: linear-gradient(135deg,#1a3022,#2d5a3d); }
-    .detail-slide.placeholder.fisk { background: linear-gradient(135deg,#0c2a4a,#1a4a7a); }
-    .detail-slide.placeholder.dessert { background: linear-gradient(135deg,#7a3020,#c8692e); }
-    .detail-slide.placeholder.annet { background: linear-gradient(135deg,#3d3020,#c8a96e); }
+    footer{background:var(--td);padding:3rem 4rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-top:3rem;}
+    .footer-logo{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;color:var(--cr);}
+    .footer-logo span{color:var(--ea);}
+    footer p{color:rgba(245,240,232,.4);font-size:.85rem;}
 
-    .slider-btn {
-      position: absolute; top: 50%; transform: translateY(-50%);
-      background: rgba(255,255,255,0.85); border: none;
-      width: 36px; height: 36px; border-radius: 50%;
-      font-size: 1rem; cursor: pointer; color: var(--green-dark);
-      display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
-      transition: all 0.2s;
-    }
-    .slider-btn:hover { background: white; transform: translateY(-50%) scale(1.08); }
-    .slider-btn.prev { left: 12px; }
-    .slider-btn.next { right: 12px; }
-    .slider-dots { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; }
-    .slider-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.5); border: none; cursor: pointer; transition: all 0.2s; padding: 0; }
-    .slider-dot.active { background: white; width: 20px; border-radius: 4px; }
+    .empty-state{text-align:center;padding:5rem 2rem;grid-column:1/-1;}
+    .empty-state h3{font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--gd);margin-bottom:.5rem;}
+    .empty-state p{color:var(--tm);}
 
-    .detail-close-btn {
-      position: absolute; top: 14px; right: 14px;
-      background: rgba(0,0,0,0.35); border: none; color: white;
-      width: 34px; height: 34px; border-radius: 50%;
-      font-size: 1.1rem; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      backdrop-filter: blur(4px);
-      transition: background 0.2s;
-    }
-    .detail-close-btn:hover { background: rgba(0,0,0,0.6); }
-
-    .detail-content { padding: 2rem 2.2rem 2.5rem; }
-    .detail-content h2 { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--green-dark); margin-bottom: 0.4rem; line-height: 1.2; }
-    .detail-badges { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
-    .badge { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.74rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 0.3em 0.8em; border-radius: 20px; }
-    .badge-cat { background: rgba(200,169,110,0.2); color: var(--earth-dark); }
-    .badge-cuisine { background: rgba(26,48,34,0.1); color: var(--green-dark); }
-    .detail-desc { color: var(--text-mid); line-height: 1.75; font-size: 0.96rem; margin-bottom: 1.8rem; }
-
-    .detail-section-title {
-      font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase;
-      color: var(--earth-dark); font-weight: 700;
-      margin-bottom: 1rem;
-      display: flex; align-items: center; gap: 0.6rem;
-    }
-    .detail-section-title::after { content: ''; flex: 1; height: 1px; background: rgba(200,169,110,0.3); }
-
-    .ingredients-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 2rem; }
-    .ingredients-list li {
-      display: flex; align-items: center; gap: 0.7rem;
-      font-size: 0.93rem; color: var(--text-dark);
-      padding: 0.5rem 0.8rem; border-radius: 8px;
-      background: rgba(26,48,34,0.03);
-      border-left: 3px solid var(--earth);
-    }
-    .ingredients-list li::before { content: '·'; color: var(--earth); font-weight: 900; font-size: 1.2rem; line-height: 1; }
-
-    .steps-list { list-style: none; display: flex; flex-direction: column; gap: 1rem; }
-    .step-item { display: flex; gap: 1rem; align-items: flex-start; }
-    .step-num {
-      min-width: 32px; height: 32px;
-      background: var(--green-dark); color: var(--cream);
-      border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      font-size: 0.8rem; font-weight: 700; flex-shrink: 0; margin-top: 1px;
-    }
-    .step-text { font-size: 0.93rem; color: var(--text-mid); line-height: 1.7; padding-top: 0.35rem; }
-
-    /* ===== FARM TAGS ===== */
-    .farm-tags-row { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 0.3rem; }
-    .farm-tag {
-      display: inline-flex; align-items: center; gap: 0.35rem;
-      background: rgba(26,48,34,0.07); color: var(--green-dark);
-      border: 1px solid rgba(26,48,34,0.14);
-      border-radius: 20px; font-size: 0.78rem; font-weight: 600;
-      padding: 0.28em 0.75em; cursor: default;
-      transition: all 0.2s;
-    }
-    .farm-tag .farm-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green-light); flex-shrink: 0; }
-    /* Clickable in detail */
-    a.farm-tag { text-decoration: none; cursor: pointer; }
-    a.farm-tag:hover { background: var(--green-dark); color: var(--cream); border-color: var(--green-dark); }
-
-    /* Farm section in detail */
-    .farm-section {
-      margin-top: 1.8rem;
-      background: linear-gradient(135deg, rgba(26,48,34,0.04), rgba(200,169,110,0.07));
-      border: 1px solid rgba(200,169,110,0.25);
-      border-radius: 14px; padding: 1.2rem 1.4rem;
-    }
-    .farm-section-header { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.9rem; }
-    .farm-section-header h4 { font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--earth-dark); font-weight: 700; }
-    .farm-section-header span { font-size: 1.1rem; }
-    .farm-card-mini {
-      display: flex; align-items: center; gap: 0.9rem;
-      padding: 0.7rem 0.9rem; border-radius: 10px;
-      background: white; border: 1px solid rgba(26,48,34,0.08);
-      margin-bottom: 0.6rem; text-decoration: none; color: inherit;
-      transition: all 0.2s;
-    }
-    .farm-card-mini:last-child { margin-bottom: 0; }
-    .farm-card-mini:hover { border-color: var(--green-light); box-shadow: 0 4px 12px rgba(26,48,34,0.08); transform: translateX(3px); }
-    .farm-card-mini-icon { font-size: 1.6rem; flex-shrink: 0; }
-    .farm-card-mini-info { flex: 1; min-width: 0; }
-    .farm-card-mini-name { font-weight: 700; font-size: 0.9rem; color: var(--green-dark); }
-    .farm-card-mini-meta { font-size: 0.78rem; color: var(--text-light); margin-top: 0.1rem; }
-    .farm-card-mini-products { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.4rem; }
-    .farm-product-pill {
-      font-size: 0.7rem; padding: 0.15em 0.55em;
-      background: rgba(200,169,110,0.18); color: var(--earth-dark);
-      border-radius: 10px; font-weight: 600;
-    }
-    .farm-card-mini-arrow { color: var(--text-light); font-size: 0.9rem; flex-shrink: 0; }
-
-    /* Card farm strip */
-    .card-farm-strip {
-      display: flex; align-items: center; gap: 0.4rem;
-      padding: 0 1.5rem 1rem; flex-wrap: wrap;
-    }
-    .card-farm-strip .mini-farm-pill {
-      font-size: 0.72rem; font-weight: 600;
-      background: rgba(26,48,34,0.07); color: var(--green-dark);
-      border: 1px solid rgba(26,48,34,0.12); border-radius: 12px;
-      padding: 0.2em 0.6em; display: flex; align-items: center; gap: 0.3rem;
-    }
-    .card-farm-strip .mini-farm-pill::before { content: '🌿'; font-size: 0.65rem; }
-
-    /* Farm picker in form */
-    .farm-picker { position: relative; }
-    .farm-search-input {
-      width: 100%; padding: 0.75rem 1rem 0.75rem 2.4rem;
-      border: 1.5px solid rgba(26,48,34,0.14); border-radius: 8px;
-      font-family: 'DM Sans', sans-serif; font-size: 0.93rem;
-      background: white; color: var(--text-dark);
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    .farm-search-input:focus { outline: none; border-color: var(--earth); box-shadow: 0 0 0 3px rgba(200,169,110,0.15); }
-    .farm-search-icon { position: absolute; left: 0.8rem; top: 50%; transform: translateY(-50%); font-size: 0.85rem; pointer-events: none; }
-    .farm-dropdown {
-      position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 100;
-      background: white; border: 1.5px solid rgba(200,169,110,0.4);
-      border-radius: 10px; box-shadow: 0 8px 24px rgba(26,48,34,0.12);
-      max-height: 200px; overflow-y: auto; display: none;
-    }
-    .farm-dropdown.open { display: block; }
-    .farm-option {
-      padding: 0.65rem 1rem; cursor: pointer;
-      display: flex; align-items: center; gap: 0.6rem;
-      font-size: 0.88rem; color: var(--text-dark);
-      border-bottom: 1px solid rgba(26,48,34,0.05);
-      transition: background 0.15s;
-    }
-    .farm-option:last-child { border-bottom: none; }
-    .farm-option:hover { background: rgba(200,169,110,0.1); }
-    .farm-option-icon { font-size: 1.1rem; }
-    .farm-option-meta { font-size: 0.74rem; color: var(--text-light); }
-    .selected-farms { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.7rem; }
-    .selected-farm-tag {
-      display: inline-flex; align-items: center; gap: 0.4rem;
-      background: rgba(26,48,34,0.08); color: var(--green-dark);
-      border: 1px solid rgba(26,48,34,0.15); border-radius: 20px;
-      font-size: 0.8rem; font-weight: 600; padding: 0.3em 0.5em 0.3em 0.8em;
-    }
-    .remove-farm-btn {
-      background: none; border: none; cursor: pointer;
-      color: var(--text-light); font-size: 0.8rem; padding: 0 0.2rem;
-      line-height: 1; transition: color 0.15s;
-    }
-    .remove-farm-btn:hover { color: #c03030; }
-    .farm-hint { font-size: 0.76rem; color: var(--text-light); margin-top: 0.4rem; }
-
-    /* ===== ADD MODAL ===== */
-    .modal-overlay {
-      display: none; position: fixed; inset: 0;
-      background: rgba(20,30,22,0.65);
-      backdrop-filter: blur(8px);
-      z-index: 4000;
-      align-items: center; justify-content: center;
-      padding: 1.5rem;
-    }
-    .modal-overlay.open { display: flex; }
-
-    .modal {
-      background: var(--warm-white);
-      border-radius: 20px;
-      max-width: 600px; width: 100%;
-      max-height: 92vh; overflow-y: auto;
-      box-shadow: 0 32px 80px rgba(0,0,0,0.28);
-      animation: panelUp 0.32s cubic-bezier(0.34,1.2,0.64,1);
-    }
-
-    .modal-header {
-      background: linear-gradient(135deg, var(--green-dark), var(--green-mid));
-      padding: 1.8rem 2rem;
-      border-radius: 20px 20px 0 0;
-      display: flex; justify-content: space-between; align-items: flex-start;
-      position: sticky; top: 0; z-index: 1;
-    }
-    .modal-header h2 { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--cream); }
-    .modal-header p { font-size: 0.85rem; color: rgba(245,240,232,0.6); margin-top: 0.2rem; }
-    .modal-close { background: rgba(255,255,255,0.15); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
-    .modal-close:hover { background: rgba(255,255,255,0.25); }
-
-    .modal-body { padding: 2rem; display: flex; flex-direction: column; gap: 1.2rem; }
-
-    .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
-    .form-group label { font-size: 0.76rem; font-weight: 600; color: var(--text-mid); letter-spacing: 0.06em; text-transform: uppercase; }
-    .form-group label span { color: #e25555; }
-    .form-group input, .form-group textarea, .form-group select {
-      width: 100%; padding: 0.75rem 1rem;
-      border: 1.5px solid rgba(26,48,34,0.14); border-radius: 8px;
-      font-family: 'DM Sans', sans-serif; font-size: 0.93rem;
-      background: white; color: var(--text-dark);
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
-      outline: none; border-color: var(--earth); box-shadow: 0 0 0 3px rgba(200,169,110,0.15);
-    }
-    .form-group textarea { min-height: 100px; resize: vertical; }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-
-    /* IMAGE UPLOAD */
-    .img-upload-label {
-      font-size: 0.76rem; font-weight: 600; color: var(--text-mid); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.5rem; display: block;
-    }
-    .img-upload-zone {
-      border: 2px dashed rgba(200,169,110,0.5); border-radius: 12px;
-      padding: 1.5rem; text-align: center;
-      background: rgba(200,169,110,0.04);
-      cursor: pointer; transition: all 0.2s;
-      position: relative;
-    }
-    .img-upload-zone:hover { border-color: var(--earth); background: rgba(200,169,110,0.08); }
-    .img-upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-    .img-upload-zone p { font-size: 0.88rem; color: var(--text-mid); margin-top: 0.4rem; }
-    .img-upload-zone .upload-icon { font-size: 2rem; margin-bottom: 0.3rem; }
-    .img-upload-zone small { color: var(--text-light); font-size: 0.78rem; }
-
-    .img-previews { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.8rem; }
-    .img-preview-item {
-      position: relative; width: 80px; height: 80px; border-radius: 10px; overflow: hidden;
-      border: 2px solid rgba(200,169,110,0.3);
-    }
-    .img-preview-item img { width: 100%; height: 100%; object-fit: cover; }
-    .img-preview-remove {
-      position: absolute; top: 2px; right: 2px;
-      background: rgba(180,30,30,0.85); color: white;
-      border: none; width: 20px; height: 20px; border-radius: 50%;
-      font-size: 0.7rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
-    }
-    .img-count-hint { font-size: 0.78rem; color: var(--text-light); margin-top: 0.4rem; }
-
-    .modal-footer {
-      padding: 1.4rem 2rem;
-      border-top: 1px solid rgba(26,48,34,0.08);
-      display: flex; gap: 0.8rem; justify-content: flex-end;
-      background: var(--cream);
-      border-radius: 0 0 20px 20px;
-      position: sticky; bottom: 0;
-    }
-    .btn-cancel {
-      padding: 0.75rem 1.5rem; border: 1.5px solid rgba(26,48,34,0.18);
-      background: transparent; border-radius: 8px;
-      font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 0.9rem;
-      cursor: pointer; color: var(--text-mid); transition: all 0.2s;
-    }
-    .btn-cancel:hover { border-color: var(--earth); color: var(--earth-dark); }
-    .btn-save {
-      padding: 0.75rem 2rem; background: var(--green-dark); color: var(--cream);
-      border: none; border-radius: 8px;
-      font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.9rem;
-      cursor: pointer; transition: all 0.25s;
-      display: flex; align-items: center; gap: 0.5rem;
-    }
-    .btn-save:hover { background: var(--green-mid); transform: translateY(-1px); }
-    .btn-save:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-    .save-status { display: none; padding: 0.9rem 2rem; font-weight: 600; font-size: 0.9rem; text-align: center; }
-    .save-status.success { display: block; color: var(--green-mid); }
-    .save-status.error { display: block; color: #c03030; }
-
-    /* FOOTER */
-    footer { background: var(--text-dark); padding: 3rem 4rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-top: 3rem; }
-    .footer-logo { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 900; color: var(--cream); }
-    .footer-logo span { color: var(--earth); }
-    footer p { color: rgba(245,240,232,0.4); font-size: 0.85rem; }
-
-    @media (max-width: 900px) {
-      nav { padding: 0.8rem 1.5rem; }
-      .page-header, .content-section { padding: 6rem 1.5rem 2.5rem; }
-      .content-section { padding-top: 2rem; }
-      footer { padding: 2rem 1.5rem; flex-direction: column; }
-      .filter-row { flex-direction: column; align-items: stretch; }
-      .form-row { grid-template-columns: 1fr; }
-      .detail-content { padding: 1.5rem; }
-      .detail-content h2 { font-size: 1.6rem; }
+    @media(max-width:900px){
+      nav{padding:.8rem 1.5rem;}nav.scrolled{padding:.65rem 1.5rem;}
+      .page-header,.content-section{padding:6rem 1.5rem 2.5rem;}.content-section{padding-top:2rem;}
+      footer{padding:2rem 1.5rem;flex-direction:column;}
+      .filter-row{flex-direction:column;align-items:stretch;}
+      .form-row{grid-template-columns:1fr;}
+      .detail-content{padding:1.5rem;}
+      .detail-content h2{font-size:1.6rem;}
     }
   </style>
 </head>
@@ -557,33 +254,33 @@
 <section class="page-header">
   <div class="breadcrumb"><a href="index.html">Hjem</a> / Oppskrifter</div>
   <h1>Oppskrifter 📖</h1>
-  <p>Hjemmelaget mat basert på norske, sesongbaserte råvarer koblet til lokale gårder</p>
+  <p>Norske oppskrifter med lokale råvarer — hvert ingrediens koblet til gården som produserer det</p>
 </section>
 
 <section class="content-section">
   <div class="toolbar">
     <h2>Alle oppskrifter</h2>
     <button class="add-btn" id="add-recipe-btn" style="display:none" onclick="openAddModal()">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       Legg til oppskrift
     </button>
   </div>
 
   <div class="filter-row">
     <div class="search-wrap">
-      <input type="text" class="search-input" id="search-input" placeholder="Søk etter oppskrift..." oninput="applyFilters()"/>
+      <input type="text" class="search-input" id="search-input" placeholder="Søk etter oppskrift, ingrediens, gård…" oninput="applyFilters()"/>
     </div>
     <button class="chip active" onclick="filterCat('all',this)">Alle</button>
     <button class="chip" onclick="filterCat('Kjøtt',this)">🥩 Kjøtt</button>
     <button class="chip" onclick="filterCat('Grønnsaker',this)">🥦 Grønnsaker</button>
     <button class="chip" onclick="filterCat('Fisk',this)">🐟 Fisk</button>
     <button class="chip" onclick="filterCat('Dessert',this)">🍰 Dessert</button>
-    <button class="chip" onclick="filterCat('Annet',this)">🍽️ Annet</button>
+    <button class="chip" onclick="filterCat('med-gård',this)">🌿 Med gårdstilkobling</button>
   </div>
 
   <p class="results-count" id="results-count"></p>
   <div class="recipes-grid" id="recipes-container">
-    <div class="loading"><div class="spinner"></div> Laster oppskrifter...</div>
+    <div style="grid-column:1/-1;text-align:center;padding:4rem;color:var(--tl)">Laster oppskrifter…</div>
   </div>
 </section>
 
@@ -592,11 +289,11 @@
   <p>© 2025 Handelhjelp. Del dine favorittoppskrifter!</p>
 </footer>
 
-<!-- ===== DETAIL OVERLAY ===== -->
-<div class="overlay" id="detail-overlay" onclick="handleOverlayClick(event,'detail-overlay')">
-  <div class="detail-panel" id="detail-panel">
+<!-- DETAIL OVERLAY -->
+<div class="overlay" id="detail-overlay" onclick="if(event.target===this)closeDetail()">
+  <div class="detail-panel">
     <div class="detail-slider" id="detail-slider">
-      <div class="detail-slider-track" id="slider-track"></div>
+      <div class="slider-track" id="slider-track"></div>
       <button class="slider-btn prev" id="slider-prev" onclick="sliderPrev()" style="display:none">‹</button>
       <button class="slider-btn next" id="slider-next" onclick="sliderNext()" style="display:none">›</button>
       <div class="slider-dots" id="slider-dots"></div>
@@ -606,43 +303,33 @@
   </div>
 </div>
 
-<!-- ===== ADD RECIPE MODAL ===== -->
-<div class="modal-overlay" id="add-modal" onclick="handleOverlayClick(event,'add-modal')">
+<!-- ADD RECIPE MODAL -->
+<div class="modal-overlay" id="add-modal" onclick="if(event.target===this)closeAddModal()">
   <div class="modal">
     <div class="modal-header">
-      <div>
-        <h2>📖 Legg til oppskrift</h2>
-        <p>Del en oppskrift basert på lokale norske råvarer</p>
-      </div>
+      <div><h2>📖 Legg til oppskrift</h2><p>Del en oppskrift med lokale norske råvarer</p></div>
       <button class="modal-close" onclick="closeAddModal()">✕</button>
     </div>
     <div class="modal-body">
 
       <!-- Bilder -->
       <div>
-        <label class="img-upload-label">Bilder <small style="font-weight:400;text-transform:none;letter-spacing:0">(2–5 bilder)</small></label>
+        <label style="font-size:.76rem;font-weight:600;color:var(--tm);letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:.5rem;">Bilder <small style="font-weight:400;text-transform:none;letter-spacing:0;">(2–5 bilder)</small></label>
         <div class="img-upload-zone" onclick="document.getElementById('img-input').click()">
-          <div class="upload-icon">📷</div>
+          <div style="font-size:2rem;margin-bottom:.3rem;">📷</div>
           <p>Klikk for å laste opp bilder</p>
           <small>PNG, JPG, WEBP – maks 5 bilder</small>
           <input type="file" id="img-input" accept="image/*" multiple style="display:none" onchange="handleImageUpload(event)"/>
         </div>
         <div class="img-previews" id="img-previews"></div>
-        <p class="img-count-hint" id="img-count-hint"></p>
+        <p id="img-count-hint" style="font-size:.78rem;color:var(--tl);margin-top:.4rem;"></p>
       </div>
 
-      <div class="form-group">
-        <label>Navn på oppskrift <span>*</span></label>
-        <input type="text" id="rec-title" placeholder="f.eks. Lammefrikassé med rotgrønnsaker"/>
-      </div>
-
-      <div class="form-group">
-        <label>Beskrivelse</label>
-        <textarea id="rec-desc" style="min-height:70px" placeholder="Kort beskrivelse av retten..."></textarea>
-      </div>
+      <div class="fg"><label>Navn på oppskrift <span>*</span></label><input type="text" id="rec-title" placeholder="f.eks. Lammefrikassé med rotgrønnsaker"/></div>
+      <div class="fg"><label>Beskrivelse</label><textarea id="rec-desc" style="min-height:70px" placeholder="Kort beskrivelse av retten…"></textarea></div>
 
       <div class="form-row">
-        <div class="form-group">
+        <div class="fg">
           <label>Kategori</label>
           <select id="rec-cat">
             <option value="">Velg kategori</option>
@@ -653,31 +340,22 @@
             <option value="Annet">🍽️ Annet</option>
           </select>
         </div>
-        <div class="form-group">
-          <label>Kjøkken / Opprinnelse</label>
-          <input type="text" id="rec-cuisine" placeholder="f.eks. Norsk, Vestlandsk, Samisk"/>
-        </div>
+        <div class="fg"><label>Kjøkken / Opprinnelse</label><input type="text" id="rec-cuisine" placeholder="f.eks. Norsk, Vestlandsk"/></div>
       </div>
 
-      <!-- Tilknyttede gårder -->
-      <div class="form-group">
+      <div class="fg"><label>Ingredienser <span>*</span></label><textarea id="rec-ing" placeholder="1 kg lammekjøtt&#10;3 gulrøtter&#10;2 persillerøtter&#10;1 liter kraft&#10;…"></textarea></div>
+      <div class="fg"><label>Fremgangsmåte <span>*</span></label><textarea id="rec-steps" style="min-height:130px" placeholder="Trinn 1: Brun kjøttet…&#10;Trinn 2: Tilsett grønnsaker…"></textarea></div>
+
+      <!-- Gårder -->
+      <div class="fg">
         <label>🌿 Tilknyttede gårder</label>
         <div class="farm-picker">
-          <span class="farm-search-icon">🔍</span>
-          <input type="text" class="farm-search-input" id="farm-search" placeholder="Søk etter gård..." oninput="filterFarms()" onfocus="openFarmDropdown()" onblur="setTimeout(closeFarmDropdown,200)" autocomplete="off"/>
-          <div class="farm-dropdown" id="farm-dropdown"></div>
+          <span class="farm-picker-icon">🔍</span>
+          <input type="text" class="farm-picker-input" id="farm-search-input" placeholder="Søk etter gård eller produkt…" oninput="filterFarmDropdown()" onfocus="openFarmDd()" onblur="setTimeout(closeFarmDd,200)" autocomplete="off"/>
+          <div class="farm-dropdown" id="farm-dd"></div>
         </div>
-        <div class="selected-farms" id="selected-farms"></div>
-        <p class="farm-hint">Tagg gårder som leverer ingredienser til denne oppskriften</p>
-      </div>
-
-
-        <textarea id="rec-ing" placeholder="1 kg lammekjøtt&#10;3 gulrøtter&#10;2 persillerøtter&#10;1 liter kraft&#10;..."></textarea>
-      </div>
-
-      <div class="form-group">
-        <label>Fremgangsmåte <span>*</span></label>
-        <textarea id="rec-steps" style="min-height:130px" placeholder="Trinn 1: Brun kjøttet i en varm panne...&#10;Trinn 2: Tilsett grønnsaker...&#10;Trinn 3: ..."></textarea>
+        <div class="selected-farms" id="selected-farms-list"></div>
+        <p style="font-size:.76rem;color:var(--tl);margin-top:.4rem;">Tagg gårder som leverer ingredienser til denne oppskriften</p>
       </div>
 
     </div>
@@ -695,128 +373,167 @@
 <script>
 const API = 'https://gardnavi-api-fecufjdrfbhyf2g6.norwayeast-01.azurewebsites.net';
 
+/* ── FARM DATA (shared with garder.html) ── */
+const farmData = [
+  {id:1,name:'Jæren Grønt',location:'Klepp, Rogaland',icon:'🥦',color:'green',products:['Jordskokk','Gulrøtter','Kålrot','Poteter','Purreløk','Grønnsaker'],pickup:'Gårdsbutikk — lørdager 09–14'},
+  {id:2,name:'Hardanger Frukt',location:'Ullensvang, Vestland',icon:'🍎',color:'red',products:['Epler','Plommer','Kirsebær','Pærer','Frukt'],pickup:'Bondens marked Bergen — søndager mai–okt'},
+  {id:3,name:'Trøndelag Kjøtt',location:'Oppdal, Trøndelag',icon:'🥩',color:'brown',products:['Lam','Lammekjøtt','Storfe','Villsau','Kjøtt'],pickup:'Henting på gård etter avtale'},
+  {id:4,name:'Valdres Ysteri',location:'Nord-Aurdal, Innlandet',icon:'🧀',color:'gold',products:['Ost','Brunost','Hvitost','Smør','Rømme','Meieri'],pickup:'Gårdsbutikk — tirsd og torsd 12–17'},
+  {id:5,name:'Lofoten Sjømat',location:'Vestvågøy, Nordland',icon:'🐟',color:'blue',products:['Laks','Skrei','Torsk','Røykt laks','Fisk','Tørrfisk'],pickup:'Kai i Leknes — fredager 14–17'},
+  {id:6,name:'Helgen Gård',location:'Numedal, Viken',icon:'🍯',color:'gold',products:['Honning','Blomsterhonning','Eplehonning','Epler','Sider'],pickup:'Bondens marked Kongsberg — annenhver lørdag'},
+  {id:7,name:'Telemark Urter',location:'Telemark',icon:'🌿',color:'green',products:['Timian','Dill','Persille','Rosmarin','Urter'],pickup:'Bestilling på forhånd'},
+  {id:8,name:'Vestfold Bær',location:'Vestfold',icon:'🍓',color:'red',products:['Jordbær','Blåbær','Bringebær','Bær'],pickup:'Gårdsbutikk — sommersesong'},
+];
+
+/* ── RECIPE DATA ── */
+/* Each ingredient can have a farmId — shown as clickable link to that farm */
+const sampleRecipes = [
+  {
+    id:1,
+    title:'Lammefrikassé med rotgrønnsaker',
+    description:'En klassisk norsk hverdagsrett med saftig lam og sesongens rotgrønnsaker. Perfekt for kalde høstdager.',
+    category:'Kjøtt', cuisine:'Norsk',
+    farms:[farmData[2], farmData[0]],
+    ingredients:[
+      {text:'1 kg lammekjøtt', farmId:3},
+      {text:'3 gulrøtter', farmId:1},
+      {text:'2 persillerøtter', farmId:1},
+      {text:'1 kålrot', farmId:1},
+      {text:'1 liter lammekraft', farmId:null},
+      {text:'Salt og pepper', farmId:null},
+    ],
+    steps:'Trinn 1: Brun lammekjøttet i en varm gryte med smør til gyllenbrunt.\nTrinn 2: Tilsett kraft og kok opp. Skum av og la det småkoke i 45 min.\nTrinn 3: Tilsett gulrøtter, persillerøtter og kålrot i biter.\nTrinn 4: Kok videre i 20 min til grønnsakene er møre. Server med kokte poteter.',
+  },
+  {
+    id:2,
+    title:'Ovnsbakte rotgrønnsaker med honning',
+    description:'Enkel og smakfull oppskrift med sesonggrønnsaker glasert med lokal honning fra Numedal.',
+    category:'Grønnsaker', cuisine:'Norsk',
+    farms:[farmData[0], farmData[5]],
+    ingredients:[
+      {text:'4 gulrøtter', farmId:1},
+      {text:'2 pastinakker', farmId:1},
+      {text:'1 kålrot', farmId:1},
+      {text:'3 ss lokal blomsterhonning', farmId:6},
+      {text:'3 ss olivenolje', farmId:null},
+      {text:'1 ts fersk timian', farmId:7},
+      {text:'Salt og pepper', farmId:null},
+    ],
+    steps:'Trinn 1: Forvarm ovnen til 200 grader.\nTrinn 2: Skrell og kutt rotgrønnsaker i jevne biter.\nTrinn 3: Bland med honning, olje, timian, salt og pepper.\nTrinn 4: Fordel i langpanne i ett lag.\nTrinn 5: Stek 35–40 min, vend halvveis, til gylne og møre.',
+  },
+  {
+    id:3,
+    title:'Røykt laks med rømme og dill',
+    description:'Enkel norsk klassiker med lokal laks fra Lofoten. Perfekt som forrett eller lettvint lunsj.',
+    category:'Fisk', cuisine:'Norsk',
+    farms:[farmData[4], farmData[3]],
+    ingredients:[
+      {text:'400 g røykt laks', farmId:5},
+      {text:'200 g rømme', farmId:4},
+      {text:'1 bunt fersk dill', farmId:7},
+      {text:'1 sitron', farmId:null},
+      {text:'Malt pepper', farmId:null},
+      {text:'Rugbrød', farmId:null},
+    ],
+    steps:'Trinn 1: Legg røykt laks pent på tallerkenen.\nTrinn 2: Bland rømme med finhakket fersk dill og sitronsaft. Smak til med pepper.\nTrinn 3: Legg en god skje rømme ved siden av laksen.\nTrinn 4: Server med ristet rugbrød og sitronbåter.',
+  },
+  {
+    id:4,
+    title:'Eple- og plommekake fra Hardanger',
+    description:'Saftig høstkake med lokale frukter fra Hardanger. En ekte norsk smaksopplevelse fra fruktrikets hjerte.',
+    category:'Dessert', cuisine:'Vestlandsk',
+    farms:[farmData[1]],
+    ingredients:[
+      {text:'3 egg', farmId:null},
+      {text:'200 g sukker', farmId:null},
+      {text:'150 g smør', farmId:null},
+      {text:'200 g hvetemel', farmId:null},
+      {text:'1 ts bakepulver', farmId:null},
+      {text:'3 Hardanger-epler', farmId:2},
+      {text:'6 plommer', farmId:2},
+      {text:'1 ts kanel', farmId:null},
+    ],
+    steps:'Trinn 1: Forvarm ovnen til 175 grader. Smør en 24 cm rund kakeform.\nTrinn 2: Pisk egg og sukker til en luftig eggedosis, ca. 5 min.\nTrinn 3: Vend inn smeltet smør, deretter siktet mel og bakepulver.\nTrinn 4: Hell røren i formen. Skjær epler og plommer i skiver og trykk ned.\nTrinn 5: Dryss over kanel og bak 40 min til gyllenbrun.',
+  },
+  {
+    id:5,
+    title:'Jordskokk-suppe med sprø bacon',
+    description:'Kremet suppe av jordskokk fra Jæren. Toppes med sprøstekt bacon og friske urter.',
+    category:'Grønnsaker', cuisine:'Jærsk',
+    farms:[farmData[0], farmData[6]],
+    ingredients:[
+      {text:'600 g jordskokk', farmId:1},
+      {text:'1 løk', farmId:1},
+      {text:'2 fedd hvitløk', farmId:null},
+      {text:'6 dl kyllingkraft', farmId:null},
+      {text:'2 dl fløte', farmId:null},
+      {text:'100 g bacon', farmId:null},
+      {text:'Frisk dill og persille', farmId:7},
+      {text:'Smør til steking', farmId:null},
+    ],
+    steps:'Trinn 1: Skrell og hakk jordskokk og løk. Finhakk hvitløk.\nTrinn 2: Surr løk og hvitløk i smør i kjele, ca. 5 min. Tilsett jordskokk.\nTrinn 3: Hell over kraft og kok opp. Småkok i 20 min til jordskokken er myk.\nTrinn 4: Miks til jevn suppe med stavmikser. Tilsett fløte.\nTrinn 5: Smak til. Topp med sprøstekt bacon og friske urter.',
+  },
+  {
+    id:6,
+    title:'Blåbærmousse med Vestfold-bær',
+    description:'Lett og luftig mousse av ferske norske blåbær. Enkel sommerdessert på høyden av blåbærsesongen.',
+    category:'Dessert', cuisine:'Norsk',
+    farms:[farmData[7]],
+    ingredients:[
+      {text:'400 g ferske blåbær', farmId:8},
+      {text:'3 dl fløte', farmId:null},
+      {text:'3 ss sukker', farmId:null},
+      {text:'1 ts vaniljesukker', farmId:null},
+      {text:'2 plater gelatin', farmId:null},
+    ],
+    steps:'Trinn 1: Mos 300 g blåbær med sukker. Varm opp til sukkeret løser seg.\nTrinn 2: Bløtlegg gelatin i kaldt vann 5 min. Klem ut og løs i varm bærmos.\nTrinn 3: Avkjøl til romtemperatur.\nTrinn 4: Pisk fløte og vanilje til myk krem. Vend inn bærmosen.\nTrinn 5: Fordel i glass og kjøl 2 timer. Topp med resten av friske blåbær.',
+  },
+];
+
 const catEmoji = {Kjøtt:'🥩',Grønnsaker:'🥦',Fisk:'🐟',Dessert:'🍰',Annet:'🍽️'};
 const catClass = {Kjøtt:'kjott',Grønnsaker:'gront',Fisk:'fisk',Dessert:'dessert',Annet:'annet'};
 
-const sampleRecipes = [
-  {id:1,title:'Lammefrikassé med rotgrønnsaker',description:'En klassisk norsk hverdagsrett med saftig lam og sesongens rotgrønnsaker. Perfekt for kalde høstdager.',ingredients:'1 kg lammekjøtt\n3 gulrøtter\n2 persillerøtter\n1 kålrot\n1 liter lammekraft\nSalt og pepper',steps:'Trinn 1: Brun lammekjøttet i en varm gryte med litt smør til det er gyllenbrunt.\nTrinn 2: Tilsett lammekraft og kok opp. Skum av og la det småkoke i 45 min.\nTrinn 3: Tilsett gulrøtter, persillerøtter og kålrot i biter.\nTrinn 4: Kok videre i 20 min til grønnsakene er møre. Smak til med salt og pepper. Server med kokte poteter.',category:'Kjøtt',cuisine:'Norsk'},
-  {id:2,title:'Ovnsbakte rotgrønnsaker med honning',description:'Enkel og smakfull oppskrift med sesonggrønnsaker glasert med lokal honning fra Helgen gård.',ingredients:'4 gulrøtter\n2 pastinakker\n1 søtpotet\n3 ss lokal honning\n3 ss olivenolje\n1 ts timian\nSalt og pepper',steps:'Trinn 1: Forvarm ovnen til 200 grader.\nTrinn 2: Skrell og kutt rotgrønnsaker i jevne biter.\nTrinn 3: Bland grønnsakene med honning, olivenolje, timian, salt og pepper i en stor bolle.\nTrinn 4: Fordel i en stor langpanne i ett lag.\nTrinn 5: Stek i 35–40 min, vend halvveis, til de er gylne og møre.',category:'Grønnsaker',cuisine:'Norsk'},
-  {id:3,title:'Røykt laks med rømme og dill',description:'Enkel norsk klassiker med lokal laks. Perfekt som forrett eller lettvint lunsj.',ingredients:'400 g røykt laks\n200 g rømme\n1 bunt fersk dill\n1 sitron\nMalt pepper\nRugbrød',steps:'Trinn 1: Legg røykt laks pent på tallerkenen.\nTrinn 2: Bland rømme med finhakket fersk dill og saften av en halv sitron. Smak til med pepper.\nTrinn 3: Legg en god skje rømme ved siden av laksen.\nTrinn 4: Server med ristet rugbrød og sitronbåter.',category:'Fisk',cuisine:'Norsk'},
-  {id:4,title:'Eple- og plommekake fra Hardanger',description:'Saftig høstkake med lokale frukter fra Hardanger. En ekte norsk smaksopplevelse fra fruktrikets hjerte.',ingredients:'3 egg\n200 g sukker\n150 g smør\n200 g hvetemel\n1 ts bakepulver\n3 epler\n6 plommer\n1 ts kanel',steps:'Trinn 1: Forvarm ovnen til 175 grader. Smør en 24 cm rund kakeform.\nTrinn 2: Pisk egg og sukker til en luftig eggedosis, ca. 5 min.\nTrinn 3: Smeltet avkjølt smør vendes forsiktig inn, deretter siktet mel og bakepulver.\nTrinn 4: Hell røren i formen. Skjær epler og plommer i skiver og trykk ned i røren.\nTrinn 5: Dryss over kanel og bak i 40 min til kaken er gyllenbrun og steker gjennom.',category:'Dessert',cuisine:'Vestlandsk'},
-  {id:5,title:'Jordskokk-suppe med sprø bacon',description:'Kremet suppe av jordskokk fra Jæren. Toppes med sprøstekt bacon og friske urter for ekstra dybde.',ingredients:'600 g jordskokk\n1 løk\n2 fedd hvitløk\n6 dl kyllingkraft\n2 dl fløte\n100 g bacon\nFriske urter\nSmør til steking',steps:'Trinn 1: Skrell og hakk jordskokk og løk. Finhakk hvitløk.\nTrinn 2: Surr løk og hvitløk i smør i en stor kjele til de er blanke, ca. 5 min. Tilsett jordskokk.\nTrinn 3: Hell over kyllingkraft og kok opp. La det småkoke i 20 min til jordskokken er myk.\nTrinn 4: Miks til en jevn suppe med stavmikser. Tilsett fløte og varm opp igjen.\nTrinn 5: Smak til med salt og pepper. Topp med sprøstekt bacon og friske urter ved servering.',category:'Grønnsaker',cuisine:'Jærsk'},
-];
-
 let allRecipes = [], filtered = [], currentCat = 'all';
-let uploadedImages = []; // array of base64 strings
+let uploadedImages = [];
 let sliderIndex = 0, currentSliderImages = [];
-
-// ---- FARM DATA ----
-const allFarms = [
-  {id:1, name:'Helgen Gård', location:'Numedal, Viken', icon:'🏡', products:['Honning','Epler','Pærer']},
-  {id:2, name:'Jæren Grønt', location:'Jæren, Rogaland', icon:'🌾', products:['Jordskokk','Gulrøtter','Kålrot']},
-  {id:3, name:'Hardanger Frukt', location:'Hardanger, Vestland', icon:'🍎', products:['Epler','Plommer','Kirsebær']},
-  {id:4, name:'Lofoten Sjømat', location:'Lofoten, Nordland', icon:'🐟', products:['Laks','Torsk','Skrei']},
-  {id:5, name:'Valdres Ysteri', location:'Valdres, Innlandet', icon:'🧀', products:['Ost','Smør','Rømme']},
-  {id:6, name:'Telemark Urter', location:'Telemark', icon:'🌿', products:['Timian','Dill','Persille','Rosmarin']},
-  {id:7, name:'Trøndelag Kjøtt', location:'Trøndelag', icon:'🥩', products:['Lam','Storfe','Villsau']},
-  {id:8, name:'Vestfold Bær', location:'Vestfold', icon:'🍓', products:['Jordbær','Blåbær','Bringebær']},
-  {id:9, name:'Finnskogen Vilt', location:'Hedmark, Innlandet', icon:'🦌', products:['Elg','Rein','Rype']},
-  {id:10, name:'Mjøsa Grønnsaker', location:'Innlandet', icon:'🥦', products:['Kål','Brokkoli','Purre','Løk']},
-];
-
-// Update sample recipes with farms
-sampleRecipes[0].farms = [allFarms[6], allFarms[1]]; // Lammefrikassé
-sampleRecipes[1].farms = [allFarms[1], allFarms[0]]; // Rotgrønnsaker
-sampleRecipes[2].farms = [allFarms[3]];               // Laks
-sampleRecipes[3].farms = [allFarms[2]];               // Hardangerkake
-sampleRecipes[4].farms = [allFarms[1], allFarms[5]];  // Jordskokk
-
 let selectedFarms = [];
 
-function filterFarms() {
-  const q = document.getElementById('farm-search').value.toLowerCase();
-  openFarmDropdown(q);
-}
-
-function openFarmDropdown(q = '') {
-  const dd = document.getElementById('farm-dropdown');
-  const term = q || document.getElementById('farm-search').value.toLowerCase();
-  const available = allFarms.filter(f =>
-    !selectedFarms.find(s => s.id === f.id) &&
-    (f.name.toLowerCase().includes(term) || f.products.some(p => p.toLowerCase().includes(term)) || f.location.toLowerCase().includes(term))
-  );
-  if (!available.length) {
-    dd.innerHTML = `<div class="farm-option" style="color:var(--text-light);cursor:default">Ingen gårder funnet</div>`;
-  } else {
-    dd.innerHTML = available.map(f => `
-      <div class="farm-option" onmousedown="selectFarm(${f.id})">
-        <span class="farm-option-icon">${f.icon}</span>
-        <div>
-          <div>${f.name}</div>
-          <div class="farm-option-meta">📍 ${f.location} · ${f.products.slice(0,3).join(', ')}</div>
-        </div>
-      </div>`).join('');
-  }
-  dd.classList.add('open');
-}
-
-function closeFarmDropdown() {
-  document.getElementById('farm-dropdown').classList.remove('open');
-}
-
-function selectFarm(id) {
-  const farm = allFarms.find(f => f.id === id);
-  if (farm && !selectedFarms.find(f => f.id === id)) {
-    selectedFarms.push(farm);
-    renderSelectedFarms();
-    document.getElementById('farm-search').value = '';
-  }
-}
-
-function removeFarm(id) {
-  selectedFarms = selectedFarms.filter(f => f.id !== id);
-  renderSelectedFarms();
-}
-
-function renderSelectedFarms() {
-  const el = document.getElementById('selected-farms');
-  el.innerHTML = selectedFarms.map(f => `
-    <span class="selected-farm-tag">
-      ${f.icon} ${f.name}
-      <button class="remove-farm-btn" onclick="removeFarm(${f.id})" title="Fjern">✕</button>
-    </span>`).join('');
-}
-
-// ---- LOAD ----
+/* ── LOAD ── */
 async function loadRecipes() {
   try {
     const r = await fetch(`${API}/api/recipes`);
-    if (r.ok) {
-      const data = await r.json();
-      allRecipes = data.length > 0 ? data : sampleRecipes;
-    } else { allRecipes = sampleRecipes; }
+    if (r.ok) { const d = await r.json(); allRecipes = d.length > 0 ? d : sampleRecipes; }
+    else { allRecipes = sampleRecipes; }
   } catch(e) { allRecipes = sampleRecipes; }
   filtered = [...allRecipes];
   renderRecipes();
 }
 
-// ---- FILTER ----
+/* ── FILTER ── */
 function filterCat(cat, btn) {
   currentCat = cat;
   document.querySelectorAll('.filter-row .chip').forEach(c => c.classList.remove('active'));
   btn.classList.add('active');
   applyFilters();
 }
+
 function applyFilters() {
   const s = document.getElementById('search-input').value.toLowerCase();
-  filtered = allRecipes.filter(r =>
-    (currentCat === 'all' || (r.category || '') === currentCat) &&
-    (!s || r.title.toLowerCase().includes(s) || (r.description || '').toLowerCase().includes(s))
-  );
+  filtered = allRecipes.filter(r => {
+    const catMatch = currentCat === 'all'
+      || (currentCat === 'med-gård' ? (r.farms && r.farms.length > 0) : r.category === currentCat);
+    const searchMatch = !s
+      || r.title.toLowerCase().includes(s)
+      || (r.description||'').toLowerCase().includes(s)
+      || (r.cuisine||'').toLowerCase().includes(s)
+      || (r.farms||[]).some(f => f.name.toLowerCase().includes(s))
+      || (r.ingredients||[]).some(i => i.text.toLowerCase().includes(s));
+    return catMatch && searchMatch;
+  });
   renderRecipes();
 }
 
-// ---- RENDER CARDS ----
+/* ── RENDER CARDS ── */
 function getIcon(cat) { return catEmoji[cat] || '🍲'; }
 function getBgClass(cat) { return catClass[cat] || 'annet'; }
 
@@ -833,121 +550,157 @@ function renderRecipes() {
 
   el.innerHTML = filtered.map((r, i) => {
     const hasPic = r.images && r.images.length > 0;
-    const imgHtml = hasPic
-      ? `<img src="${r.images[0]}" alt="${r.title}" loading="lazy"/>`
-      : `<div class="recipe-img-placeholder ${getBgClass(r.category)}">${getIcon(r.category)}</div>`;
-
+    const farmCount = (r.farms||[]).length;
+    const linkedIngCount = (r.ingredients||[]).filter(ing => ing.farmId).length;
     return `
-    <div class="recipe-card" onclick="showDetail(${r.id})" style="animation-delay:${i*0.06}s">
+    <div class="recipe-card" onclick="showDetail(${r.id})" style="animation-delay:${i*.06}s">
       <div class="recipe-img-wrap">
-        ${imgHtml}
-        ${r.cuisine ? `<span class="card-cuisine-badge">${r.cuisine}</span>` : ''}
+        ${hasPic
+          ? `<img src="${r.images[0]}" alt="${r.title}" loading="lazy"/>`
+          : `<div class="recipe-img-placeholder ${getBgClass(r.category)}">${getIcon(r.category)}</div>`}
         ${r.category ? `<span class="card-cat-badge">${getIcon(r.category)} ${r.category}</span>` : ''}
+        ${farmCount > 0 ? `<span class="card-farm-count">🌿 ${farmCount} gård${farmCount>1?'er':''}</span>` : ''}
       </div>
       <div class="recipe-body">
         <h3>${r.title}</h3>
-        <p>${(r.description || '').slice(0,110)}${(r.description||'').length>110?'…':''}</p>
+        ${r.cuisine ? `<div class="recipe-cuisine">📍 ${r.cuisine}</div>` : ''}
+        <div class="recipe-desc">${(r.description||'').slice(0,110)}${(r.description||'').length>110?'…':''}</div>
+        ${(r.farms||[]).length > 0 ? `
+        <div class="card-farm-pills">
+          ${r.farms.slice(0,2).map(f=>`<span class="card-farm-pill">${f.name}</span>`).join('')}
+          ${r.farms.length > 2 ? `<span style="font-size:.72rem;color:var(--tl);">+${r.farms.length-2}</span>` : ''}
+        </div>` : ''}
       </div>
       <div class="card-footer">
-        <span style="font-size:0.8rem;color:var(--text-light)">${r.images && r.images.length > 1 ? `📷 ${r.images.length} bilder` : ''}</span>
+        <span style="font-size:.78rem;color:var(--tl);">
+          ${linkedIngCount > 0 ? `🔗 ${linkedIngCount} ingrediens${linkedIngCount>1?'er':''} koblet til gård` : ''}
+        </span>
         <button class="card-view-btn">
           Se oppskrift
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </button>
       </div>
-      ${r.farms && r.farms.length > 0 ? `
-      <div class="card-farm-strip">
-        ${r.farms.slice(0,3).map(f=>`<span class="mini-farm-pill">${f.name}</span>`).join('')}
-        ${r.farms.length > 3 ? `<span style="font-size:0.72rem;color:var(--text-light)">+${r.farms.length-3} gårder</span>` : ''}
-      </div>` : ''}
     </div>`;
   }).join('');
 }
 
-// ---- DETAIL OVERLAY ----
+/* ── DETAIL OVERLAY ── */
 function showDetail(id) {
   const r = allRecipes.find(x => x.id === id);
   if (!r) return;
 
-  // Build slider
+  // Slider
   const track = document.getElementById('slider-track');
   const dots = document.getElementById('slider-dots');
-  const prevBtn = document.getElementById('slider-prev');
-  const nextBtn = document.getElementById('slider-next');
+  const prev = document.getElementById('slider-prev');
+  const next = document.getElementById('slider-next');
   sliderIndex = 0;
 
   if (r.images && r.images.length > 0) {
     currentSliderImages = r.images;
-    track.innerHTML = r.images.map(src =>
-      `<div class="detail-slide"><img src="${src}" alt="${r.title}"/></div>`
-    ).join('');
+    track.innerHTML = r.images.map(src => `<div class="slide"><img src="${src}" alt="${r.title}"/></div>`).join('');
     if (r.images.length > 1) {
-      dots.innerHTML = r.images.map((_,i) =>
-        `<button class="slider-dot ${i===0?'active':''}" onclick="goSlide(${i})"></button>`
-      ).join('');
-      prevBtn.style.display = nextBtn.style.display = 'flex';
-    } else {
-      dots.innerHTML = ''; prevBtn.style.display = nextBtn.style.display = 'none';
-    }
+      dots.innerHTML = r.images.map((_,i) => `<button class="slider-dot ${i===0?'active':''}" onclick="goSlide(${i})"></button>`).join('');
+      prev.style.display = next.style.display = 'flex';
+    } else { dots.innerHTML=''; prev.style.display=next.style.display='none'; }
   } else {
     currentSliderImages = [];
     const cls = getBgClass(r.category);
-    track.innerHTML = `<div class="detail-slide placeholder ${cls}">${getIcon(r.category)}</div>`;
-    dots.innerHTML = ''; prevBtn.style.display = nextBtn.style.display = 'none';
+    track.innerHTML = `<div class="slide ${cls}">${getIcon(r.category)}</div>`;
+    dots.innerHTML=''; prev.style.display=next.style.display='none';
   }
-
   updateSlider();
 
-  // Build content
-  const ingredients = (r.ingredients || r.steps || '').split('\n').filter(l => l.trim() && !l.toLowerCase().startsWith('trinn'));
-  const stepsRaw = r.steps || '';
-  const steps = stepsRaw.split('\n').filter(l => l.trim());
+  // Build ingredient list with farm links
+  const ingredientsHtml = (r.ingredients && r.ingredients.length > 0)
+    ? `<div class="section-title">Ingredienser</div>
+       <ul class="ingredients-list">
+         ${r.ingredients.map(ing => {
+           const farm = ing.farmId ? farmData.find(f => f.id === ing.farmId) : null;
+           return `<li class="ingredient-row">
+             <span class="ingredient-text">${ing.text}</span>
+             ${farm
+               ? `<button class="ingredient-farm-btn" onclick="event.stopPropagation();showFarmFromRecipe(${farm.id})">
+                    <span class="farm-dot"></span>${farm.icon} ${farm.name}
+                  </button>`
+               : `<span class="ingredient-no-farm">–</span>`}
+           </li>`;
+         }).join('')}
+       </ul>`
+    : (r.ingredients_text
+        ? `<div class="section-title">Ingredienser</div>
+           <ul class="ingredients-list">
+             ${r.ingredients_text.split('\n').filter(l=>l.trim()).map(l=>`
+               <li class="ingredient-row">
+                 <span class="ingredient-text">${l.trim()}</span>
+                 <span class="ingredient-no-space"></span>
+               </li>`).join('')}
+           </ul>`
+        : '');
 
-  document.getElementById('detail-content').innerHTML = `
-    <h2>${r.title}</h2>
-    <div class="detail-badges">
-      ${r.category ? `<span class="badge badge-cat">${getIcon(r.category)} ${r.category}</span>` : ''}
-      ${r.cuisine ? `<span class="badge badge-cuisine">🗺️ ${r.cuisine}</span>` : ''}
-    </div>
-    ${r.description ? `<p class="detail-desc">${r.description}</p>` : ''}
-
-    ${r.ingredients ? `
-    <div class="detail-section-title">Ingredienser</div>
-    <ul class="ingredients-list">
-      ${r.ingredients.split('\n').filter(l=>l.trim()).map(l=>`<li>${l.trim()}</li>`).join('')}
-    </ul>` : ''}
-
-    ${steps.length ? `
-    <div class="detail-section-title">Fremgangsmåte</div>
+  // Steps
+  const steps = (r.steps||'').split('\n').filter(l=>l.trim());
+  const stepsHtml = steps.length ? `
+    <div class="section-title">Fremgangsmåte</div>
     <ol class="steps-list">
       ${steps.map((s,i) => {
         const text = s.replace(/^trinn\s*\d+[:\s]*/i,'').trim();
         return `<div class="step-item"><div class="step-num">${i+1}</div><div class="step-text">${text}</div></div>`;
       }).join('')}
-    </ol>` : ''}
+    </ol>` : '';
 
-    ${r.farms && r.farms.length > 0 ? `
-    <div class="farm-section">
-      <div class="farm-section-header">
+  // Farm source section — grouped farms with which ingredients they supply
+  const linkedFarms = (r.farms||[]);
+  const farmSourceHtml = linkedFarms.length > 0 ? `
+    <div class="farm-source-section">
+      <div class="farm-source-header">
         <span>🌿</span>
         <h4>Råvarer fra lokale gårder</h4>
       </div>
-      ${r.farms.map(f => `
-        <a class="farm-card-mini" href="garder.html?id=${f.id}" target="_blank">
-          <div class="farm-card-mini-icon">${f.icon || '🏡'}</div>
-          <div class="farm-card-mini-info">
-            <div class="farm-card-mini-name">${f.name}</div>
-            <div class="farm-card-mini-meta">📍 ${f.location || 'Norge'}</div>
-            ${f.products && f.products.length > 0 ? `<div class="farm-card-mini-products">${f.products.map(p=>`<span class="farm-product-pill">${p}</span>`).join('')}</div>` : ''}
-          </div>
-          <div class="farm-card-mini-arrow">→</div>
-        </a>
-      `).join('')}
-    </div>` : ''}
-  `;
+      <div class="farm-source-grid">
+        ${linkedFarms.map(f => {
+          // Find which ingredients this farm supplies in this recipe
+          const suppliedIngredients = (r.ingredients||[])
+            .filter(ing => ing.farmId === f.id)
+            .map(ing => ing.text.replace(/^\d+\s*(g|kg|dl|l|ss|ts|stk|bunt|fedd)?\s*/i,'').split(',')[0].trim());
+          const otherProducts = f.products.filter(p =>
+            !suppliedIngredients.some(s => s.toLowerCase().includes(p.toLowerCase()))
+          ).slice(0,3);
+          return `
+          <div class="farm-source-card" onclick="showFarmFromRecipe(${f.id})">
+            <div class="farm-source-icon">${f.icon}</div>
+            <div class="farm-source-info">
+              <div class="farm-source-name">${f.name}</div>
+              <div class="farm-source-loc">📍 ${f.location}</div>
+              <div class="farm-source-products">
+                ${suppliedIngredients.slice(0,3).map(p=>`<span class="source-pill match">${p}</span>`).join('')}
+                ${otherProducts.map(p=>`<span class="source-pill other">${p}</span>`).join('')}
+              </div>
+            </div>
+            <div class="farm-source-arrow">→</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>` : '';
+
+  document.getElementById('detail-content').innerHTML = `
+    <h2>${r.title}</h2>
+    <div class="detail-badges">
+      ${r.category ? `<span class="badge badge-cat">${getIcon(r.category)} ${r.category}</span>` : ''}
+      ${r.cuisine ? `<span class="badge badge-cuisine">📍 ${r.cuisine}</span>` : ''}
+    </div>
+    ${r.description ? `<p class="detail-desc">${r.description}</p>` : ''}
+    ${ingredientsHtml}
+    ${stepsHtml}
+    ${farmSourceHtml}`;
 
   document.getElementById('detail-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
+}
+
+function showFarmFromRecipe(farmId) {
+  // Navigate to garder.html — in a full implementation this would open the farm overlay
+  window.location.href = `garder.html?farm=${farmId}`;
 }
 
 function closeDetail() {
@@ -955,135 +708,133 @@ function closeDetail() {
   document.body.style.overflow = '';
 }
 
-function handleOverlayClick(e, id) {
-  if (e.target === document.getElementById(id)) {
-    if (id === 'detail-overlay') closeDetail();
-    else closeAddModal();
-  }
-}
-
-// ---- SLIDER ----
+/* ── SLIDER ── */
 function updateSlider() {
   document.getElementById('slider-track').style.transform = `translateX(-${sliderIndex*100}%)`;
   document.querySelectorAll('.slider-dot').forEach((d,i) => d.classList.toggle('active', i===sliderIndex));
 }
-function sliderPrev() { sliderIndex = (sliderIndex - 1 + currentSliderImages.length) % currentSliderImages.length; updateSlider(); }
-function sliderNext() { sliderIndex = (sliderIndex + 1) % currentSliderImages.length; updateSlider(); }
+function sliderPrev() { sliderIndex = (sliderIndex-1+currentSliderImages.length)%currentSliderImages.length; updateSlider(); }
+function sliderNext() { sliderIndex = (sliderIndex+1)%currentSliderImages.length; updateSlider(); }
 function goSlide(i) { sliderIndex = i; updateSlider(); }
 
-// ---- ADD MODAL ----
-function openAddModal() {
-  document.getElementById('add-modal').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
+/* ── ADD MODAL ── */
+function openAddModal() { document.getElementById('add-modal').classList.add('open'); document.body.style.overflow='hidden'; }
 function closeAddModal() {
   document.getElementById('add-modal').classList.remove('open');
-  document.body.style.overflow = '';
-  selectedFarms = [];
-  document.getElementById('selected-farms').innerHTML = '';
-  document.getElementById('farm-search').value = '';
-  uploadedImages = [];
-  document.getElementById('img-previews').innerHTML = '';
-  document.getElementById('img-count-hint').textContent = '';
-  document.getElementById('save-status').className = 'save-status';
-  ['rec-title','rec-desc','rec-ing','rec-steps','rec-cuisine'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('rec-cat').value = '';
+  document.body.style.overflow='';
+  uploadedImages=[]; selectedFarms=[];
+  document.getElementById('img-previews').innerHTML='';
+  document.getElementById('img-count-hint').textContent='';
+  document.getElementById('selected-farms-list').innerHTML='';
+  document.getElementById('save-status').className='save-status';
+  ['rec-title','rec-desc','rec-ing','rec-steps','rec-cuisine','farm-search-input'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('rec-cat').value='';
 }
 
-// ---- IMAGE UPLOAD ----
+/* ── IMAGE UPLOAD ── */
 function handleImageUpload(event) {
   const files = Array.from(event.target.files);
-  const remaining = 5 - uploadedImages.length;
-  const toAdd = files.slice(0, remaining);
-
-  toAdd.forEach(file => {
+  files.slice(0, 5-uploadedImages.length).forEach(file => {
     const reader = new FileReader();
-    reader.onload = e => {
-      uploadedImages.push(e.target.result);
-      renderPreviews();
-    };
+    reader.onload = e => { uploadedImages.push(e.target.result); renderPreviews(); };
     reader.readAsDataURL(file);
   });
-  event.target.value = '';
+  event.target.value='';
 }
-
 function renderPreviews() {
-  const container = document.getElementById('img-previews');
-  const hint = document.getElementById('img-count-hint');
-  container.innerHTML = uploadedImages.map((src, i) => `
+  document.getElementById('img-previews').innerHTML = uploadedImages.map((src,i)=>`
     <div class="img-preview-item">
       <img src="${src}" alt="Bilde ${i+1}"/>
-      <button class="img-preview-remove" onclick="removeImage(${i})" title="Fjern bilde">✕</button>
-    </div>
-  `).join('');
+      <button class="img-remove" onclick="removeImg(${i})">✕</button>
+    </div>`).join('');
   const n = uploadedImages.length;
-  hint.textContent = n === 0 ? '' : `${n} av 5 bilder valgt${n < 2 ? ' – legg til minst 2 bilder' : ''}`;
-  hint.style.color = n < 2 ? '#c07030' : 'var(--text-light)';
+  const hint = document.getElementById('img-count-hint');
+  hint.textContent = n===0?'': `${n} av 5 bilder valgt${n<2?' — legg til minst 2':''}`;
+  hint.style.color = n<2?'#c07030':'var(--tl)';
+}
+function removeImg(i) { uploadedImages.splice(i,1); renderPreviews(); }
+
+/* ── FARM PICKER ── */
+function filterFarmDropdown() { openFarmDd(); }
+function openFarmDd() {
+  const q = document.getElementById('farm-search-input').value.toLowerCase();
+  const dd = document.getElementById('farm-dd');
+  const available = farmData.filter(f =>
+    !selectedFarms.find(s=>s.id===f.id) &&
+    (f.name.toLowerCase().includes(q) || f.products.some(p=>p.toLowerCase().includes(q)) || f.location.toLowerCase().includes(q))
+  );
+  dd.innerHTML = available.length
+    ? available.map(f=>`
+        <div class="farm-option" onmousedown="selectFarm(${f.id})">
+          <span style="font-size:1.1rem;">${f.icon}</span>
+          <div><div>${f.name}</div><div class="farm-option-meta">📍 ${f.location} · ${f.products.slice(0,3).join(', ')}</div></div>
+        </div>`).join('')
+    : `<div class="farm-option" style="color:var(--tl);cursor:default">Ingen gårder funnet</div>`;
+  dd.classList.add('open');
+}
+function closeFarmDd() { document.getElementById('farm-dd').classList.remove('open'); }
+function selectFarm(id) {
+  const farm = farmData.find(f=>f.id===id);
+  if (farm && !selectedFarms.find(f=>f.id===id)) {
+    selectedFarms.push(farm);
+    renderSelectedFarms();
+    document.getElementById('farm-search-input').value='';
+  }
+}
+function removeFarmSel(id) { selectedFarms=selectedFarms.filter(f=>f.id!==id); renderSelectedFarms(); }
+function renderSelectedFarms() {
+  document.getElementById('selected-farms-list').innerHTML = selectedFarms.map(f=>`
+    <span class="selected-farm-tag">
+      ${f.icon} ${f.name}
+      <button class="remove-farm-btn" onclick="removeFarmSel(${f.id})">✕</button>
+    </span>`).join('');
 }
 
-function removeImage(index) {
-  uploadedImages.splice(index, 1);
-  renderPreviews();
-}
-
-// ---- SAVE ----
+/* ── SAVE ── */
 async function saveRecipe() {
   const title = document.getElementById('rec-title').value.trim();
-  if (!title) { showStatus('error', '⚠️ Fyll inn navn på oppskrift'); return; }
-  if (uploadedImages.length < 2) { showStatus('error', '⚠️ Legg til minst 2 bilder'); return; }
-
+  if (!title) { showStatus('error','⚠️ Fyll inn navn på oppskrift'); return; }
+  if (uploadedImages.length < 2) { showStatus('error','⚠️ Legg til minst 2 bilder'); return; }
   const data = {
     title,
     description: document.getElementById('rec-desc').value,
-    ingredients: document.getElementById('rec-ing').value,
+    ingredients_text: document.getElementById('rec-ing').value,
     steps: document.getElementById('rec-steps').value,
     category: document.getElementById('rec-cat').value,
     cuisine: document.getElementById('rec-cuisine').value,
     images: uploadedImages,
     farms: selectedFarms,
   };
-
-  document.getElementById('save-btn').disabled = true;
+  document.getElementById('save-btn').disabled=true;
   try {
-    const r = await fetch(`${API}/api/recipes`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
-    if (r.ok) {
-      showStatus('success', `✅ "${title}" er lagt til!`);
-      setTimeout(() => { closeAddModal(); loadRecipes(); }, 2000);
-    } else { showStatus('error', '❌ Kunne ikke lagre. Prøv igjen.'); }
-  } catch(e) {
-    showStatus('error', '❌ Tilkoblingsfeil. Prøv igjen.');
-  }
-  document.getElementById('save-btn').disabled = false;
+    const r = await fetch(`${API}/api/recipes`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    if (r.ok) { showStatus('success',`✅ "${title}" er lagt til!`); setTimeout(()=>{ closeAddModal(); loadRecipes(); },2000); }
+    else { showStatus('error','❌ Kunne ikke lagre. Prøv igjen.'); }
+  } catch(e) { showStatus('error','❌ Tilkoblingsfeil. Prøv igjen.'); }
+  document.getElementById('save-btn').disabled=false;
 }
 
 function showStatus(type, msg) {
   const el = document.getElementById('save-status');
-  el.className = `save-status ${type}`;
-  el.textContent = msg;
+  el.className=`save-status ${type}`;
+  el.textContent=msg;
 }
 
-// ---- AUTH ----
+/* ── AUTH ── */
 async function checkAuth() {
   try {
-    const r = await fetch('/.auth/me');
-    const d = await r.json();
-    if (d.clientPrincipal) {
-      document.getElementById('login-btn').style.display = 'none';
-      document.getElementById('nav-user').style.display = 'flex';
-      document.getElementById('user-name').textContent = d.clientPrincipal.userDetails;
-      document.getElementById('add-recipe-btn').style.display = 'flex';
+    const r=await fetch('/.auth/me');const d=await r.json();
+    if(d.clientPrincipal){
+      document.getElementById('login-btn').style.display='none';
+      document.getElementById('nav-user').style.display='flex';
+      document.getElementById('user-name').textContent=d.clientPrincipal.userDetails;
+      document.getElementById('add-recipe-btn').style.display='flex';
     }
-  } catch(e) {}
+  } catch(e){}
 }
 
-// Nav scroll
-window.addEventListener('scroll', () => {
-  document.getElementById('main-nav').classList.toggle('scrolled', window.scrollY > 50);
-});
+window.addEventListener('scroll',()=>document.getElementById('main-nav').classList.toggle('scrolled',window.scrollY>50));
+if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
 
 loadRecipes();
 checkAuth();
